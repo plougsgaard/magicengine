@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;
 import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.repository.user.UserDao;
-import dk.ratio.magic.services.web.UserManager;
+import dk.ratio.magic.services.user.UserManager;
 
 /**
  * A general user validator. Is never called directly. Rather it is called
@@ -27,7 +27,7 @@ public class UserValidator
         }
         /*
          * Besides the blank-check we also perform a simple email
-         * validity check.
+         * validity check in the else-branch.
          */
         else if (!EmailValidator.getInstance().isValid(user.getEmail())) {
             errors.rejectValue("email", "invalid", "not a valid email");

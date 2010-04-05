@@ -14,21 +14,15 @@
 		   ANNOTATIONS SCAN
 		*********************
      -->
-
     <context:component-scan base-package="dk.ratio.magic.web" />
 
     <!--
 		*********************
-		   REQUEST MAPPING
+		    INTERCEPTORS
 		*********************
 	-->
-        <!--
-        **
-        TEMP: Something to do with interceptors
-        **
-
-
-    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"
+    <!--
+     <bean class="org.springframework.user.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"
     	p:order="0" >
         <property name="interceptors">
             <list>
@@ -36,9 +30,8 @@
             </list>
         </property>
     </bean>
+    <bean class="org.springframework.user.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
     -->
-
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 
     <!--
 		*********************
@@ -87,6 +80,3 @@
     </bean>
 
 </beans>
-
-
-

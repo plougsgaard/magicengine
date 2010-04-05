@@ -3,7 +3,7 @@ package dk.ratio.magic.validation.user;
 import org.springframework.validation.Errors;
 import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.repository.user.UserDao;
-import dk.ratio.magic.services.web.UserManager;
+import dk.ratio.magic.services.user.UserManager;
 
 public class RegisterUserValidator
 {

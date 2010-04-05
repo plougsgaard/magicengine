@@ -9,19 +9,25 @@
 
         <p>Listing decks ordered by <b>date</b> of creation.</p>
 
-        <h3>Page &ndash;
-            1
-            <a href="">2</a>
-            <a href="">3</a>
-            <a href="">4</a>
+        <h3>
+            Page &ndash;
+            <#list 1..deckPage.pageCount as i>
+            <#if i != deckPage.pageNumber>
+            <a href="${rc.getContextPath()}/decks/page/${i}">${i}</a>
+            <#else>
+            ${i}
+            </#if>
+            </#list>
         </h3>
 
     </div> <!-- end content-header -->
 
+    <#list deckPage.items as deck>
+
     <!-- Deck item begin -->
     <div class="grid_2 alpha">
         <div class="list-image">
-            <img src="images/temp1.png" style="width: 100%;"/>
+            <img src="${rc.getContextPath()}/static/images/symbols/0.gif" style="width: 100%;"/>
         </div>
     </div>
 
@@ -30,65 +36,17 @@
             <div style="float:right;">
             <@drawSymbol "R" /><@drawSymbol "B" />
             </div>
-            <h4><a href="">Henry Fonda's Twin Brother in Law
-            </a></h4>
+            <h4><a href="${rc.getContextPath()}/deck/${deck.id}">${deck.title}</a></h4>
 
             <p>
-                by <a href="">Thomas</a>
+                by <a href="${rc.getContextPath()}/decks/user/${deck.author.id}">${deck.author.name}</a>
             </p>
         </div>
     </div>
 
     <div class="clear"></div>
     <!-- Deck item end -->
-
-    <!-- Deck item begin -->
-    <div class="grid_2 alpha">
-        <div class="list-image">
-            <img src="images/temp2.png" style="width: 100%;"/>
-        </div>
-    </div>
-
-    <div class="grid_4 omega">
-        <div class="content">
-            <div style="float:right;">
-            <@drawSymbol "G" />
-            </div>
-            <h4><a href="">Tenderish Thinking
-            </a></h4>
-
-            <p>
-                by <a href="">Thomas</a>
-            </p>
-        </div>
-    </div>
-
-    <div class="clear"></div>
-    <!-- Deck item end -->
-
-    <!-- Deck item begin -->
-    <div class="grid_2 alpha">
-        <div class="list-image">
-            <img src="images/temp3.png" style="width: 100%;"/>
-        </div>
-    </div>
-
-    <div class="grid_4 omega">
-        <div class="content">
-            <div style="float:right;">
-            <@drawSymbol "B" /><@drawSymbol "W" /><@drawSymbol "R" />
-            </div>
-            <h4><a href="">Evil in the Making
-            </a></h4>
-
-            <p>
-                by <a href="">Kasper</a>
-            </p>
-        </div>
-    </div>
-
-    <div class="clear"></div>
-    <!-- Deck item end -->
+    </#list>
 
 </div> <!-- end content-pane -->
 

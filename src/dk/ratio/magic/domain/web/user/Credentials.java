@@ -1,4 +1,4 @@
-package dk.ratio.magic.domain.user;
+package dk.ratio.magic.domain.web.user;
 
 /**
  * Used for form binding.
