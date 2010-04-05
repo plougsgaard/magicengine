@@ -1,0 +1,110 @@
+ul {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background-color: #2A2B2B;
+    font-family:Georgia, "Times New Roman", serif;
+
+}
+
+.content {
+    padding: 0 1em 1em 1em;
+}
+
+.list-image {
+    padding: 0 0 1em 1em;
+}
+
+#side {
+    padding: 0 1em 1em 1em;
+}
+
+p.option {
+    padding: 0; margin: 0;
+}
+
+a {
+    color: #0071BC;
+    text-decoration: none;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	font-size:100%;
+	font-weight:normal;
+	margin-bottom:0.3em;
+}
+
+
+h1{
+	color:#242424; /* happy black */
+	font-size:3em;
+	font-style:none;
+	line-height:1.2em;
+}
+
+h2{
+	color:#242424; /* happy black */
+	font-size:2em;
+}
+
+h3{
+	color:#242424; /* happy black */
+	font-size:1.5em;
+	margin-top:0.5em;
+	line-height:1.5em;
+}
+
+h4 {
+    font-size:1.1em;
+}
+
+#container {
+    background-color: white;
+    overflow: hidden;
+}
+
+#separator {
+    margin-bottom: 1em;
+}
+
+#menu {
+    padding-left: 0.7em;
+}
+
+#menu a {
+    color: #2A2B2B;
+}
+
+#menu ul, #menu p {
+    padding: 0.5em 1em 0.5em 1em;
+    margin: 0;
+}
+
+#menu ul {
+    list-style: none;
+	padding-left: 1em;
+	font-weight: bold;
+}
+
+#menu li {
+    font-weight: normal;
+    margin-left: 0.0em;
+}
+
+#selected {
+    background-color: #DEFCF9;
+}
+
+.separator {
+
+}
+
+#logo {
+    padding: 3em 0 0.5em 2.7em;
+}
+
+.full-width {
+    width: 100%;
+}

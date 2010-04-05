@@ -1,9 +1,9 @@
 <#include "../macros/site.ftl">
 
 <@page>
-<div id="content-pane" class="grid_6 alpha"> <!-- content pane -->
+<div id="content-pane" class="grid_6 alpha">
 
-    <div class="content">
+    <div id="content-header" class="content">
 
         <h1>Decks</h1>
 
@@ -16,9 +16,9 @@
             <a href="">4</a>
         </h3>
 
-    </div>
-    <!-- end content -->
+    </div> <!-- end content-header -->
 
+    <!-- Deck item begin -->
     <div class="grid_2 alpha">
         <div class="list-image">
             <img src="images/temp1.png" style="width: 100%;"/>
@@ -40,9 +40,9 @@
     </div>
 
     <div class="clear"></div>
+    <!-- Deck item end -->
 
     <!-- Deck item begin -->
-
     <div class="grid_2 alpha">
         <div class="list-image">
             <img src="images/temp2.png" style="width: 100%;"/>
@@ -64,11 +64,9 @@
     </div>
 
     <div class="clear"></div>
-
     <!-- Deck item end -->
 
     <!-- Deck item begin -->
-
     <div class="grid_2 alpha">
         <div class="list-image">
             <img src="images/temp3.png" style="width: 100%;"/>
@@ -90,47 +88,41 @@
     </div>
 
     <div class="clear"></div>
-
     <!-- Deck item end -->
 
-</div>
+</div> <!-- end content-pane -->
 
 
 <div id="filter-pane" class="grid_3 omega">
+
     <div class="content">
         <h2>Filter</h2>
 
-        <form>
+        <form action="${rc.getContextPath()}/decks/filter" method="post">
 
             <h3>+Colours</h3>
 
             <p class="option">
-                <input id="colour-green-checkbox" name="colours" value="green" checked="checked"
-                       type="checkbox"><@drawSymbol "G" />
-
-                <input id="colour-white-checkbox" name="colours" value="white" checked="checked"
-                       type="checkbox"><@drawSymbol "W" />
-
-                <input id="colour-blue-checkbox" name="colours" value="blue" type="checkbox"><@drawSymbol "U" />
+                <@drawColourCheckbox "G" />
+                <@drawColourCheckbox "W" />
+                <@drawColourCheckbox "U" />
             </p>
 
             <p class="option">
-                <input id="colour-black-checkbox" name="colours" value="black"
-                       type="checkbox"><@drawSymbol "B" />
-
-                <input id="colour-red-checkbox" name="colours" value="red" type="checkbox"><@drawSymbol "R" />
-            </p>
+                <@drawColourCheckbox "B" />
+                <@drawColourCheckbox "R" />
+           </p>
 
             <h3>+Title</h3>
 
             <p>
-                <input class="full-width" type="text" value="bitterblossom"/>
+                <input name="title" id="title-input" class="full-width" type="text" value="bitterblossom"/>
             </p>
 
             <h3>+Author</h3>
 
             <p>
-                <select id="author-select" name="author" class="full-width">
+                <select name="author" id="author-select" class="full-width">
                     <option value="Thomas" selected="selected">Thomas</option>
                     <option value="Bjarke">Bjarke</option>
                     <option value="Kasper">Kasper</option>
@@ -141,6 +133,6 @@
 
         </form>
     </div>
-    <!-- end side -->
-</div>
+
+</div> <!-- end filter-pane -->
 </@page>
