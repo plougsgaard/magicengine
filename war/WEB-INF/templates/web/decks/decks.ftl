@@ -1,0 +1,1 @@
+Freemarker page for Decks.

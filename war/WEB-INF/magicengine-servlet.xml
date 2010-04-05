@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 
+        *********************
+		   ANNOTATIONS SCAN
+		*********************
+     -->
+
+    <context:component-scan base-package="dk.ratio.magic.web" />
+
+    <!--
+		*********************
+		   REQUEST MAPPING
+		*********************
+	-->
+        <!--
+        **
+        TEMP: Something to do with interceptors
+        **
+
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"
+    	p:order="0" >
+        <property name="interceptors">
+            <list>
+                <bean class="dk.ratio.magic.interceptors.UserInterceptor"/>
+            </list>
+        </property>
+    </bean>
+    -->
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    <!--
+		*********************
+		   VIEW RENDERING
+		*********************
+	-->
+
+    <!-- FreeMarker configuration. -->
+    <bean id="freemarkerConfig"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/WEB-INF/templates/web/" />
+    </bean>
+
+    <!--
+        View resolver that enables the use of FreeMarker among other things.
+        Priority: 1 (0 is the highest priority)
+    -->
+    <bean id="jsonViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+        <property name="order" value="1" />
+        <property name="location" value="/WEB-INF/views.xml" />
+    </bean>
+
+    <!--
+        View resolver that enables the use of FreeMarker among other things.
+        Priority: 2 (0 is the highest priority)
+    -->
+    <bean id="freemarkerViewResolver"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="order" value="2" />
+
+        <property name="cache" value="true" />
+        <property name="prefix" value="" />
+        <property name="suffix" value=".ftl" />
+
+        <!-- enable the use of Spring Freemarker macros -->
+        <property name="exposeSpringMacroHelpers" value="true" />
+
+        <!--
+        Enable access to context path in FreeMarker.
+
+        The context path has information such as the getContextPath()
+        and the getRequestURI(), which is conveniently accessed through
+        FreeMarker.
+        -->
+        <property name="requestContextAttribute" value="rc" />
+    </bean>
+
+</beans>
+
+
+

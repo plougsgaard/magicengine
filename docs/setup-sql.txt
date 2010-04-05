@@ -1,0 +1,6 @@
+Creating the user 'magicadmin'.
+
+CREATE DATABASE `magicengine` /*!40100 DEFAULT CHARACTER SET utf8 */;
+
+CREATE USER 'magicadmin' IDENTIFIED BY 'hest123';
+GRANT ALL PRIVILEGES ON `magicengine`.* TO `magicadmin`;
