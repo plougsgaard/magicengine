@@ -23,9 +23,9 @@
 		*********************
 
     <context:component-scan base-package="dk.ratio.magic.services" />
-    <context:component-scan base-package="dk.ratio.magic.repository" />
     <context:component-scan base-package="dk.ratio.magic.tasks" />
      -->
+    <context:component-scan base-package="dk.ratio.magic.repository" />
     
     <!--
 		************************
@@ -34,11 +34,10 @@
 
 		Define the data access object beans. These are used throughout the
 		entire application.
-
+	-->
     <bean id="cardDao" class="dk.ratio.magic.repository.card.JdbcCardDao" />
     <bean id="deckDao" class="dk.ratio.magic.repository.deck.JdbcDeckDao" />
     <bean id="userDao" class="dk.ratio.magic.repository.user.JdbcUserDao" />
-	-->
 
     <!--
 		************************
@@ -46,11 +45,11 @@
 		************************
 
 	-->
-    <!-- The card crawler crawls information, images and prices for cards.
-    <bean id="cardCrawler" class="dk.ratio.magic.services.card.Crawler" />  -->
+    <!-- The card crawler crawls information, images and prices for cards. -->
+    <bean id="cardCrawler" class="dk.ratio.magic.services.card.crawler.Crawler" />
 
-    <!-- A manager for getting, storing and purging user login sessions.
-    <bean id="userSession" class="dk.ratio.magic.services.web.UserManager" />  -->
+    <!-- A manager for getting, storing and purging user login sessions. -->
+    <bean id="userSession" class="dk.ratio.magic.services.user.UserManager" />
 
     <!--
 		************************
@@ -78,15 +77,11 @@
         <property name="exceptionMappings">
             <map>
                 <!-- Database probably down. -->
-                <entry key="CannotGetJdbcConnectionException" value="/errors/db" />
-                <!-- Probably caused by a missing resource. -->
-                <entry key="NullPointerException" value="/errors/existence" />
-                <!-- All other errors. -->
-                <entry key="Exception" value="/errors/generic" />
+                <entry key="CannotGetJdbcConnectionException" value="/error/db" />
             </map>
         </property>
-        <!-- All other errors. (painfully redundant) -->
-        <property name="defaultErrorView" value="/errors/generic" />
+        <!-- Errors not caught in map. -->
+        <property name="defaultErrorView" value="/error/default" />
     </bean>
 
     <!--

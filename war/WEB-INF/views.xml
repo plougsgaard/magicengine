@@ -3,11 +3,6 @@
 		  "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 
 <beans>
-
     <!-- The bean used by controllers wishing to generate JSON output -->
 	<bean name="jsonView" class="org.springframework.web.servlet.view.json.JsonView" />
-	
 </beans>
-
-
-

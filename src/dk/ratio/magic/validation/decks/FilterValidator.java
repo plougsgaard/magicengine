@@ -1,12 +1,11 @@
 package dk.ratio.magic.validation.decks;
 
-import dk.ratio.magic.domain.web.decks.DeckFilterBean;
-import org.apache.commons.lang.StringUtils;
+import dk.ratio.magic.domain.web.decks.DeckFilter;
 import org.springframework.validation.Errors;
 
 public class FilterValidator
 {
-    public void validate(DeckFilterBean deckFilter, Errors errors)
+    public void validate(DeckFilter deckFilter, Errors errors)
     {
         if (deckFilter.getAuthor() == null) {
             errors.rejectValue("author", "not null", "not null");

@@ -2,7 +2,7 @@ package dk.ratio.magic.domain.web.decks;
 
 import java.util.Arrays;
 
-public class DeckFilterBean
+public class DeckFilter
 {
     String title;
     String author;
@@ -41,7 +41,7 @@ public class DeckFilterBean
     @Override
     public String toString()
     {
-        return "DeckFilterBean{" +
+        return "DeckFilter{" +
                 "title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", colours=" + (colours == null ? null : Arrays.asList(colours)) +

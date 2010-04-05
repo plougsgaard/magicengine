@@ -62,6 +62,11 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
+    <error-page>
+        <error-code>404</error-code>
+        <location>/errors/404</location>
+    </error-page>
+
 	<!--
 	    Catch everything (aside from the static resources above) in the application
     -->
