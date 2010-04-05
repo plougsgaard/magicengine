@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/task
+           http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+    <!--
+        *********************
+		   ANNOTATIONS SCAN
+		*********************
+
+    <context:component-scan base-package="dk.ratio.magic.services" />
+    <context:component-scan base-package="dk.ratio.magic.repository" />
+    <context:component-scan base-package="dk.ratio.magic.tasks" />
+     -->
+    
+    <!--
+		************************
+		      DAO SERVICES
+		************************
+
+		Define the data access object beans. These are used throughout the
+		entire application.
+
+    <bean id="cardDao" class="dk.ratio.magic.repository.card.JdbcCardDao" />
+    <bean id="deckDao" class="dk.ratio.magic.repository.deck.JdbcDeckDao" />
+    <bean id="userDao" class="dk.ratio.magic.repository.user.JdbcUserDao" />
+	-->
+
+    <!--
+		************************
+		     CUSTOM SERVICES
+		************************
+
+	-->
+    <!-- The card crawler crawls information, images and prices for cards.
+    <bean id="cardCrawler" class="dk.ratio.magic.services.card.Crawler" />  -->
+
+    <!-- A manager for getting, storing and purging user login sessions.
+    <bean id="userSession" class="dk.ratio.magic.services.web.UserManager" />  -->
+
+    <!--
+		************************
+		      TASKS
+		************************
+	-->
+
+    <!-- Enables the use of annotations for task scheduling -->
+    <task:annotation-driven />
+
+    <!-- Pretty standard definition of the task executor. Used globally. -->
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+         <property name="corePoolSize" value="5" />
+         <property name="maxPoolSize" value="10" />
+         <property name="queueCapacity" value="25" />
+    </bean>
+
+    <!--
+		************************
+		   EXCEPTION MAPPING
+		************************
+	-->
+
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <map>
+                <!-- Database probably down. -->
+                <entry key="CannotGetJdbcConnectionException" value="/errors/db" />
+                <!-- Probably caused by a missing resource. -->
+                <entry key="NullPointerException" value="/errors/existence" />
+                <!-- All other errors. -->
+                <entry key="Exception" value="/errors/generic" />
+            </map>
+        </property>
+        <!-- All other errors. (painfully redundant) -->
+        <property name="defaultErrorView" value="/errors/generic" />
+    </bean>
+
+    <!--
+		************************
+		        DATABASE
+		************************
+	-->
+
+    <!--
+		The data source that is used when connecting to the database.
+
+		Using the same DAO in several classes (controllers) can lead to a
+		com.mysql.jdbc.exceptions.jdbc4.CommunicationsException because the
+		server has been idle for a long time.
+
+		To alleviate this behavior we do a testOnBorrow (the DAO is 'borrowed')
+		and give the configuration a validation query to test with. One could
+		also try toying around with timeouts and such, but I feel this is (so far)
+		the most optimal solution.
+	-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="validationQuery" value="SELECT 1" />
+        <property name="testOnBorrow" value="true" />
+    </bean>
+
+    <!-- Tell the configuration reader to look for properties in these locations -->
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <!--
+                    Database properties.
+
+                    Example:
+
+                    jdbc.driver=com.mysql.jdbc.Driver
+                    jdbc.url=jdbc:mysql://localhost:3306/mtgengine
+                    jdbc.username=root
+                    jdbc.password=hest123
+                -->
+                <value>/WEB-INF/jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--
+		************************
+		     JDBC TEMPLATES
+		************************
+	-->
+
+    <!--
+        Instantiation of a simple jdbc template that enables data access objects to
+        use this cool tool without the need of inefficient subclassing.
+    -->
+    <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+        <constructor-arg ref="dataSource" />
+    </bean>
+
+    <!--
+        Instantiation of a parameter-based jdbc template that enables data access objects to
+        use this tool without the need of inefficient subclassing.
+    -->
+    <bean id="namedParameterJdbcTemplate"
+          class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+        <constructor-arg ref="dataSource" />
+    </bean>
+
+</beans>

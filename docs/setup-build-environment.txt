@@ -1,0 +1,54 @@
+Windows `build.properties` example:
+--
+
+# General properties
+appserver.home=C:\\Program Files\\Apache Software Foundation\\Tomcat 6.0
+appserver.lib=${appserver.home}\\lib
+deploy.path=${appserver.home}\\webapps
+
+# For using the tomcat manager
+tomcat.manager.url=http://localhost:8080/manager
+tomcat.manager.username=magicadmin
+tomcat.manager.password=hest123
+
+# For running SQL scripts
+db.driver=com.mysql.jdbc.Driver
+db.url=jdbc:mysql://localhost:3306/mtgengine
+db.user=magicadmin
+db.pw=hest123
+
+Mac `build.properties` example:
+--
+
+# General properties
+appserver.home=/Library/Tomcat/Home
+appserver.lib=${appserver.home}/lib
+deploy.path=${appserver.home}/webapps
+
+# For using the tomcat manager
+tomcat.manager.url=http://localhost:8080/manager
+tomcat.manager.username=magicadmin
+tomcat.manager.password=hest123
+
+# For running SQL scripts
+db.driver=com.mysql.jdbc.Driver
+db.url=jdbc:mysql://localhost:3306/mtgengine
+db.user=magicadmin
+db.pw=hest123
+
+Any platform `jdbc.properties` example:
+--
+
+jdbc.driver=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/magicengine
+jdbc.username=magicadmin
+jdbc.password=hest123
+
+Any platform `conf/tomcat-users.xml` example:
+
+<?xml version='1.0' encoding='utf-8'?>
+<tomcat-users>
+<role rolename="manager"/>
+<user username="magicadmin" password="hest123" roles="manager"/>
+</tomcat-users>
+

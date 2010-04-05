@@ -1,0 +1,3 @@
+Example:
+
+mysql -umagicadmin -phest123 <backup.sql
