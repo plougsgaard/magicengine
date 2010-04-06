@@ -21,9 +21,6 @@
         *********************
 		   ANNOTATIONS SCAN
 		*********************
-
-    <context:component-scan base-package="dk.ratio.magic.services" />
-    <context:component-scan base-package="dk.ratio.magic.tasks" />
      -->
     <context:component-scan base-package="dk.ratio.magic.repository" />
     

@@ -20,7 +20,7 @@
 <div id="container" class="container_12">
     <div class="grid_12 alpha omega">
         <div id="logo">
-            <img src="${rc.getContextPath()}/static/images/site/logo.png"/>
+            <a href="${rc.getContextPath()}/"><img src="${rc.getContextPath()}/static/images/site/logo.png"/></a>
         </div>
     </div>
 
@@ -31,25 +31,23 @@
     <div class="grid_3 alpha">
         <div id="menu">
             <ul>
-                <a href="" id="selected">Decks</a>
-                <li><a href="">Advanced Search</a></li>
-                <li><a href="">Create New</a></li>
+                <a href="${rc.getContextPath()}/decks" id="selected">Decks</a>
+                <li><a href="${rc.getContextPath()}/decks/search">Advanced Search</a></li>
+                <li><a href="${rc.getContextPath()}/deck/create">Create New</a></li>
             </ul>
             <ul>
-                <a href="">Cards</a>
-                <li><a href="">Advanced Search</a></li>
-                <li><a href="">Update Queue</a></li>
+                <a href="${rc.getContextPath()}/cards">Cards</a>
+                <li><a href="${rc.getContextPath()}/cards/search">Advanced Search</a></li>
+                <li><a href="${rc.getContextPath()}/cards/queue">Update Queue</a></li>
             </ul>
             <ul>
-                <a href="">Users</a>
-                <li><a href="">Login</a></li>
+                <a href="${rc.getContextPath()}/users">Users</a>
+                <li><a href="${rc.getContextPath()}/user/login">Login</a></li>
             </ul>
         </div>
     </div>
 
-    <div class="grid_9 omega">
-        <#nested />
-    </div>
+    <#nested />
 </div>
 
 

@@ -1,6 +1,7 @@
 <#include "../macros/site.ftl">
 
 <@page>
+<div class="grid_9 omega">
 <div id="content-pane" class="grid_6 alpha">
 
     <div id="content-header" class="content">
@@ -17,5 +18,5 @@
 <div class="grid_3 omega">
     &nbsp;
 </div>
-
+</div>
 </@page>
