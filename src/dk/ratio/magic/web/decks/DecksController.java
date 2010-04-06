@@ -47,6 +47,7 @@ public class DecksController
     @RequestMapping("/decks/user/{userId}")
     public ModelAndView userDecksHandler(@PathVariable("userId") Integer userId)
     {
+        // return the first page
         return userPageHandler(1, userId);
     }
 

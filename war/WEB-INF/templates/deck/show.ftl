@@ -3,33 +3,42 @@
 
 <@page>
 <div class="grid_9 omega">
-<div id="content-pane" class="grid_8 alpha">
 
-    <div id="content-header" class="content">
+    <div class="grid_9 alpha omega">
+        <div class="content">
+            <h1><a href="${rc.getContextPath()}/decks">Decks</a> | Show Deck</h1>
+            <h3>`${deck.title}` by ${deck.author.name}</h3>
+        </div> <!-- end content -->
+    </div>
 
-        <h1><a href="${rc.getContextPath()}/decks">Decks</a> | Show Deck</h1>
-
-        <h2>`${deck.title}`</h2>
-
-        <p>This deck has <b>60</b> cards and cost <b>&pound;43.35</b>.</p>
-
-        <!-- INDSÆT KORT HER eller heromkring -->
-
-    </div> <!-- end content-header -->
-
-</div> <!-- end content-pane -->
+    <div id="content-pane" class="grid_6 alpha">
+        <div class="content">
+            ${deck.description?replace("\n", "<br />")}
+        </div> <!-- end content -->
 
 
-<div class="grid_1 omega">
-&nbsp;
-</div>
-</div>
 
-<div class="grid_12 alpha omega">
-<div style="padding:13px;">
-    <#list deck.cards as card>
-    <@drawCardImage card.id />
-    </#list>
+    </div> <!-- end content-pane -->
+
+
+    <div class="grid_3 omega">
+        <div class="content">
+            <p>
+            ${deck.format}
+            </p>
+            <p>
+            <@drawSymbols deck.colours /> &ndash; &pound; 12
+            </p>
+        </div> <!-- end content -->
+    </div>
+
+</div> <!-- right pane -->
+
+<div class="grid_12">
+<div style="padding:10px 0 10px 0; text-align: center;">
+<#list deck.cards as card>
+<@drawCardImage card />
+</#list>
 </div>
 </div>
 </@page>
