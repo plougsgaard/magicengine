@@ -2,7 +2,7 @@ package dk.ratio.magic.domain.db.card;
 
 import java.util.List;
 
-public class Card
+public class Card implements Comparable<Card>
 {
     private int id;
 
@@ -168,5 +168,39 @@ public class Card
                ", prices=" + prices +
                ", count=" + count +
                '}';
+    }
+
+    /**
+     * Order:
+     *
+     * 1) Lands
+     * 2) Creatures
+     * 3) Other
+     *
+     * @param other other card
+     * @return -1, 0 and 1 depending on the order
+     */
+    public int compareTo(Card other)
+    {
+        if (types.contains("Land")) {
+            if (other.getTypes().contains("Land")) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+        else if (types.contains("Creature")) {
+            if (other.getTypes().contains("Land")) {
+                return 1;
+            } else if (other.getTypes().contains("Creature")) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+        else if (other.getTypes().contains("Land") || other.getTypes().contains("Creature")) {
+            return 1;
+        }
+        return 0;
     }
 }

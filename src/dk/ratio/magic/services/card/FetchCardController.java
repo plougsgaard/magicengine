@@ -3,16 +3,16 @@ package dk.ratio.magic.services.card;
 import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.services.card.crawler.Crawler;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.servlet.ModelAndView;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 /**
@@ -24,10 +24,10 @@ import java.util.HashMap;
  * When a card is created its image is automatically stored in the
  * database for later retrieval.
  *
- * @see ImageController
+ * @see dk.ratio.magic.services.card.ImageController
  */
 @Controller
-public class FetchController
+public class FetchCardController
 {
     protected final Log logger = LogFactory.getLog(getClass());
 

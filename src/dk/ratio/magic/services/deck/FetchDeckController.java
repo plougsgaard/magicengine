@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.HashMap;
 
 @Controller
-public class FetchController
+public class FetchDeckController
 {
     protected final Log logger = LogFactory.getLog(getClass());
 

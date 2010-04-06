@@ -1,7 +1,9 @@
 package dk.ratio.magic.web.decks;
 
+import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.domain.web.decks.DeckFilter;
 import dk.ratio.magic.repository.deck.DeckDao;
+import dk.ratio.magic.repository.user.UserDao;
 import dk.ratio.magic.util.web.Views;
 import dk.ratio.magic.validation.decks.FilterValidator;
 import org.apache.commons.logging.Log;
@@ -24,6 +26,9 @@ public class DecksController
     @Autowired
     private DeckDao deckDao;
 
+    @Autowired
+    private UserDao userDao;
+
     @RequestMapping({"/", "/decks"})
     public ModelAndView decksHandler()
     {
@@ -38,6 +43,29 @@ public class DecksController
         mv.addObject("deckPage", deckDao.getPublicDeckPage(pageNumber));
         return mv;
     }
+
+    @RequestMapping("/decks/user/{userId}")
+    public ModelAndView userDecksHandler(@PathVariable("userId") Integer userId)
+    {
+        return userPageHandler(1, userId);
+    }
+
+    @RequestMapping("/decks/user/{userId}/page/{pageNumber}")
+    public ModelAndView userPageHandler(@PathVariable("pageNumber") Integer pageNumber,
+                                          @PathVariable("userId") Integer userId)
+    {
+        ModelAndView mv = new ModelAndView("/decks/user/list");
+        mv.addObject("deckPage", deckDao.getPublicUserDeckPage(
+                pageNumber, userId));
+        User user = userDao.getUser(userId);
+        mv.addObject("user", user);
+
+        return mv;
+    }
+
+
+
+
 
     @RequestMapping(value = "/decks/filterz", method = RequestMethod.POST)
     public ModelAndView filterHandler(HttpServletRequest request,
