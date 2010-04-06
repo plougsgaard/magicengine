@@ -29,7 +29,7 @@ import java.util.HashMap;
 @Controller
 public class FetchCardController
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
     private CardDao cardDao;

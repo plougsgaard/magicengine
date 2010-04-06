@@ -1,3 +1,5 @@
+<#include "utilities.ftl" />
+
 <#macro drawPageSelect deckPage>
 Page &ndash;
 <#list 1..deckPage.pageCount as i>
@@ -15,20 +17,16 @@ ${i}
 <!-- Deck item begin -->
 <div class="grid_3 alpha">
     <div class="list-image">
-        <img src="${rc.getContextPath()}/services/card/crop-image/${deck.id}" style="width: 100%;"/>
+        <img src="${rc.getContextPath()}/services/card/crop-image/${deck.id}"/>
     </div>
 </div>
 
 <div class="grid_5 omega">
-    <div class="content">
-        <h3><a href="${rc.getContextPath()}/deck/${deck.id}">${deck.title}</a>
+    <div class="list-deck">
+        <h3><a href="${rc.getContextPath()}/deck/${deck.id}">${deck.title} <@drawSymbols deck.colours /></a>
         </h3>
-
         <p>
             by <a href="${rc.getContextPath()}/decks/user/${deck.author.id}">${deck.author.name}</a>
-        </p>
-        <p>
-            <@drawSymbols deck.colours />
         </p>
     </div>
 </div>
@@ -57,13 +55,13 @@ ${i}
         <@drawColourCheckbox "R" />
    </p>
 
-    <h3>+Title</h3>
+    <h3><label for="title-input">+Title</label></h3>
 
     <p>
         <input name="title" id="title-input" class="full-width" type="text" value=""/>
     </p>
 
-    <h3>+Author</h3>
+    <h3><label for="author-select">+Author</label></h3>
 
     <p>
         <select name="author" id="author-select" class="full-width">

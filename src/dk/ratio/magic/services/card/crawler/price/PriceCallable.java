@@ -15,16 +15,16 @@ import java.util.concurrent.Future;
 
 public class PriceCallable implements Callable<List<Price>>
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
-    public enum UPDATE { AUTO, NO };
+    public enum UPDATE { AUTO, NO }
 
-    Class[] callables = {
+    private Class[] callables = {
             ManaleakPriceCallable.class,
             MagicMadhousePriceCallable.class
     };
 
-    List<Future<Price>> futures = new ArrayList<Future<Price>>(callables.length);
+    private List<Future<Price>> futures = new ArrayList<Future<Price>>(callables.length);
 
 
     private CardDao cardDao;

@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class UserManager
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
     private UserDao userDao;
@@ -22,7 +22,7 @@ public class UserManager
     public static final String USER_COOKIE_SECRET = "user_cookie_secret";
     public static final String USER_COOKIE_ID = "user_cookie_id";
 
-    final int DAYS = 24 * 60 * 60;
+    private final int DAYS = 24 * 60 * 60;
 
     public void createSessionUser(HttpServletRequest request, HttpServletResponse response, User user)
     {
@@ -109,7 +109,7 @@ public class UserManager
         return getSessionUser(request) != null;
     }
 
-    public String makeCookieSecret(User user)
+    private String makeCookieSecret(User user)
     {
         return userDao.SHA1(user.getPassword() + "secret" + user.getPasswordSalt());
     }

@@ -7,13 +7,15 @@
 </#macro>
 
 <#macro drawColourCheckbox colour>
-<input name="colours" value="${colour}" type="checkbox"><@drawSymbol "${colour}" />
+<label>
+<input name="colours" value="${colour}" type="checkbox">
+</label><@drawSymbol "${colour}" />
 </#macro>
 
 <#macro drawCardImage card>
 <div style="display:inline; float:left; margin: 7px 7px 14px 7px;">
     <a href="${rc.getContextPath()}/card/${card.id}"><img src="${rc.getContextPath()}/services/card/image/${card.id}" width="220" /></a><br />
-    <b>${card.count}</b>x &ndash; &pound;${card.count * card.price}
+    <strong>${card.count}</strong>x &ndash; &pound;${card.count * card.price}
 </div>
 </#macro>
 

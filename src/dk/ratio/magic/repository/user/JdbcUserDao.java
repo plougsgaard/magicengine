@@ -20,12 +20,13 @@ import java.util.Random;
 
 public class JdbcUserDao implements UserDao
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
-    protected SimpleJdbcTemplate simpleJdbcTemplate;
+    private SimpleJdbcTemplate simpleJdbcTemplate;
+
     @Autowired
-    protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public User getUser(int id)
     {

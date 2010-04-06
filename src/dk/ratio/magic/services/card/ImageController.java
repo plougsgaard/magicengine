@@ -30,7 +30,7 @@ import dk.ratio.magic.repository.card.CardDao;
 @Controller
 public class ImageController
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
     private CardDao cardDao;
@@ -87,7 +87,7 @@ public class ImageController
         return null;
     }
 
-    private byte[] crop(byte[] data) throws IOException
+    private byte[] crop(byte[] data)
     {
         /*
             7.3 Cropping an Image

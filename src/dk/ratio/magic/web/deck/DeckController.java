@@ -16,7 +16,7 @@ import java.util.Collections;
 @Controller
 public class DeckController
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
     private DeckDao deckDao;

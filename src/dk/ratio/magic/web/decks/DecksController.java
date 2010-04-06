@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class DecksController
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
     private DeckDao deckDao;
