@@ -25,7 +25,7 @@ import java.util.List;
 @Controller
 public class SuggestionController
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
     private CardDao cardDao;

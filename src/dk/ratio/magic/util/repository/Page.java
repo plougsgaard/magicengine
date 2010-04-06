@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Page<T>
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     private Integer pageNumber;
     private Integer pageCount;

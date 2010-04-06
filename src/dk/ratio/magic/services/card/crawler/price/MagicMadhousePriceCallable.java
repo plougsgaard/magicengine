@@ -16,9 +16,9 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MagicMadhousePriceCallable implements Callable<Price>
+class MagicMadhousePriceCallable implements Callable<Price>
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     private static final String PATH = "http://www.magicmadhouse.co.uk/catalog/advanced_search_" +
                                        "result.php?x=31&y=11&categories_id=21&inc_subcat=1&" +

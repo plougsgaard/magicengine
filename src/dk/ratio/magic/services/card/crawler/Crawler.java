@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 
 public class Crawler
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
     private CardDao cardDao;
@@ -43,8 +43,6 @@ public class Crawler
 
             Future<Image> imageFuture = taskExecutor.submit(
                     new ImageCallable(card));
-            Future<List<Price>> pricesFuture = taskExecutor.submit(
-                    new PriceCallable(cardDao, taskExecutor, card, UPDATE.AUTO));
 
             Image image = imageFuture.get();
 

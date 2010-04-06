@@ -12,9 +12,9 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ImageCallable implements Callable<Image>
+class ImageCallable implements Callable<Image>
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     private final String PATH = "http://magiccards.info/query?q=!";
 
@@ -66,7 +66,7 @@ public class ImageCallable implements Callable<Image>
             URL imageUrl = new URL(imageUrlString);
             ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
             InputStream reader = imageUrl.openStream();
-            int b = -1;
+            int b;
             while ((b = reader.read()) != -1) {
                 byteArray.write(b);
             }

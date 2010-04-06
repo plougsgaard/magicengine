@@ -16,9 +16,9 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ManaleakPriceCallable implements Callable<Price>
+class ManaleakPriceCallable implements Callable<Price>
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     private static final String PATH = "http://www.manaleak.com/store/advanced_search_result.php?" +
                                        "search_in_description=1&inc_subcat=1&x=0&y=0&exact_title=1" +

@@ -17,7 +17,7 @@ import java.util.HashMap;
 @Controller
 public class FetchDeckController
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
     private DeckDao deckDao;
@@ -76,7 +76,7 @@ public class FetchDeckController
         return new ModelAndView("jsonView", model);
     }
 
-    public ModelAndView failHandler() {
+    private ModelAndView failHandler() {
         HashMap<String, Object> model = new HashMap<String, Object>();
         model.put("fail", "true");
         return new ModelAndView("jsonView", model);

@@ -13,19 +13,19 @@
     <div class="grid_5 alpha">
         <div class="content">
             <h2>${card.cardName}</h2>
-            <p><b>Types</b>: ${card.types?replace("—", "&ndash;")}</p>
-            <p><b>Rarity</b>: ${card.rarity}</p>
-            <p><b>CMC</b>: ${card.convertedManaCost}</p>
-            <p><b>Expansion</b>: ${card.expansion}</p>
-            <p><b>Artist</b>: ${card.artist}</p>
-            <p><b>Rules text</b>: ${card.cardText}</p>
+            <p><strong>Types</strong>: ${card.types?replace("—", "&ndash;")}</p>
+            <p><strong>Rarity</strong>: ${card.rarity}</p>
+            <p><strong>CMC</strong>: ${card.convertedManaCost}</p>
+            <p><strong>Expansion</strong>: ${card.expansion}</p>
+            <p><strong>Artist</strong>: ${card.artist}</p>
+            <p><strong>Rules text</strong>: ${card.cardText}</p>
             <h3>Lowest Price</h3>
-            <p><b>${card.price?string.currency}</b></p>
+            <p><strong>${card.price?string.currency}</strong></p>
 
             <h3>All Sellers</h3>
             <#list card.prices as price>
-            <p><@getSellerName price.seller.id />: <b>${price.price?string.currency}</b>
-               <small>${price.dateAdded?datetime?string.short}</small></p>
+            <p><@getSellerName price.seller.id />: <strong>${price.price?string.currency}</strong>
+               <span style="font-size: small;">${price.dateAdded?datetime?string.short}</span></p>
             </#list>
         </div> <!-- end content -->
     </div> <!-- end content-pane -->

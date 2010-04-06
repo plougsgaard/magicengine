@@ -1,5 +1,7 @@
 package dk.ratio.magic.domain.db.card;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.List;
 
 public class Card implements Comparable<Card>
@@ -53,6 +55,9 @@ public class Card implements Comparable<Card>
 
     public String getConvertedManaCost()
     {
+        if (StringUtils.isBlank(convertedManaCost)) {
+            return "0";
+        }
         return convertedManaCost;
     }
 

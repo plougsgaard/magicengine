@@ -25,12 +25,12 @@ import java.util.List;
 
 public class JdbcDeckDao implements DeckDao
 {    
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
-    protected SimpleJdbcTemplate simpleJdbcTemplate;
+    private SimpleJdbcTemplate simpleJdbcTemplate;
     @Autowired
-    protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
     private CardDao cardDao;
@@ -463,7 +463,7 @@ public class JdbcDeckDao implements DeckDao
      */
     private static class DeckMapper implements RowMapper<Deck>
     {
-        protected final Log logger = LogFactory.getLog(getClass());
+        private final Log logger = LogFactory.getLog(getClass());
         public Deck mapRow(ResultSet rs, int rowNum) throws SQLException
         {
             Deck deck = new Deck();
@@ -488,7 +488,7 @@ public class JdbcDeckDao implements DeckDao
 
     private static class CommentMapper implements RowMapper<Comment>
     {
-        protected final Log logger = LogFactory.getLog(getClass());
+        private final Log logger = LogFactory.getLog(getClass());
         public Comment mapRow(ResultSet rs, int rowNum) throws SQLException
         {
             Comment comment = new Comment();
@@ -510,7 +510,7 @@ public class JdbcDeckDao implements DeckDao
 
     private static class DeckCardMapper implements RowMapper<Card>
     {
-        protected final Log logger = LogFactory.getLog(getClass());
+        private final Log logger = LogFactory.getLog(getClass());
         public Card mapRow(ResultSet rs, int rowNum) throws SQLException
         {
             Card card = new Card();

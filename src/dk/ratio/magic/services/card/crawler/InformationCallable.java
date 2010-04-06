@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public class InformationCallable implements Callable<Card>
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     private final String PATH = "http://gatherer.wizards.com/Pages/Card/Details.aspx?name=";
 

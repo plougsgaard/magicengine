@@ -9,7 +9,7 @@
 
         <h1><a href="${rc.getContextPath()}/decks">Decks</a></h1>
 
-        <p>Listing decks ordered by <b>date</b> of creation.</p>
+        <p>Listing decks ordered by <strong>date</strong> of creation.</p>
 
         <h3>
             <@drawPageSelect deckPage />

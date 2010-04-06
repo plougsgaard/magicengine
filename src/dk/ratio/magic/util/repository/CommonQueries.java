@@ -11,14 +11,15 @@ import java.util.List;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CommonQueries
+class CommonQueries
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
-    protected SimpleJdbcTemplate simpleJdbcTemplate;
+    private SimpleJdbcTemplate simpleJdbcTemplate;
+
     @Autowired
-    protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public Integer getResultCount(String fromWhereClause)
     {

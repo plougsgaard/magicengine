@@ -40,7 +40,7 @@ h1,h2,h3,h4,h5,h6 {
 h1{
 	color:#242424; /* happy black */
 	font-size:3em;
-	font-style:none;
+	font-style:normal;
 	line-height:1.2em;
 }
 
@@ -107,4 +107,12 @@ h4 {
 
 .full-width {
     width: 100%;
+}
+
+.list-image img {
+    width: 160px;
+}
+
+.list-deck {
+    
 }

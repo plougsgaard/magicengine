@@ -25,12 +25,13 @@ import java.sql.SQLException;
 
 public class JdbcCardDao implements CardDao
 {
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
-    protected SimpleJdbcTemplate simpleJdbcTemplate;
+    private SimpleJdbcTemplate simpleJdbcTemplate;
+
     @Autowired
-    protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     /**
      * Picks out a card with a given name if it exists.
@@ -206,7 +207,7 @@ public class JdbcCardDao implements CardDao
      * @param limit the maximum number of card names to return
      * @return a suggestion list of card names
      */
-    public List<Card> getSuggestions(String fragment, int limit)
+    private List<Card> getSuggestions(String fragment, int limit)
     {
         String query =
                 "SELECT " +
@@ -431,9 +432,9 @@ public class JdbcCardDao implements CardDao
         return card;
     }
 
-    public static class CardMapper implements RowMapper<Card>
+    private static class CardMapper implements RowMapper<Card>
     {
-        protected final Log logger = LogFactory.getLog(getClass());
+        private final Log logger = LogFactory.getLog(getClass());
         public Card mapRow(ResultSet rs, int rowNum) throws SQLException
         {
             Card card = new Card();
@@ -452,7 +453,7 @@ public class JdbcCardDao implements CardDao
         }
     }
 
-    public static class PriceMapper implements RowMapper<Price>
+    private static class PriceMapper implements RowMapper<Price>
     {
         public Price mapRow(ResultSet rs, int rowNum) throws SQLException
         {
@@ -473,9 +474,9 @@ public class JdbcCardDao implements CardDao
         }
     }
 
-    public static class ImageMapper implements RowMapper<Image>
+    private static class ImageMapper implements RowMapper<Image>
     {
-        protected final Log logger = LogFactory.getLog(getClass());
+        private final Log logger = LogFactory.getLog(getClass());
         public Image mapRow(ResultSet rs, int rowNum) throws SQLException
         {
             Image image = new Image();
