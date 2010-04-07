@@ -1,6 +1,8 @@
 package dk.ratio.magic.services.deck.chart;
 
 import dk.ratio.magic.domain.db.deck.Deck;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -11,6 +13,8 @@ import org.jfree.data.category.DefaultCategoryDataset;
  * mana curve for other spells.
  */
 public class ManaCurveChart implements Chart {
+    private final Log logger = LogFactory.getLog(getClass());
+
     JFreeChart creatureCurveChart;
     JFreeChart spellCurveChart;
     JFreeChart coalescedCurveChart;
@@ -68,16 +72,21 @@ public class ManaCurveChart implements Chart {
     private JFreeChart makeCoalescedChart() {
         DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
 
-        // Add column with other spells mana curve to data set:
-        for (Pair<Integer, Integer> pair : stats.getSpellCMCs()) {
-            dataSet.addValue(pair.getSecond(), "CMC " + pair.getFirst(), "");
-        }
-
         // Add column with creature mana curve to data set:
         for (Pair<Integer, Integer> pair : stats.getCreatureCMCs()) {
-            dataSet.addValue(pair.getSecond(), "CMC " + pair.getFirst(), "");
+            if (pair.getSecond() != 0) {
+                //logger.info("CMC, #Creatures: " + pair.getFirst() + ", " + pair.getSecond());
+                dataSet.addValue(pair.getSecond(), pair.getFirst(), "Spells");
+            }
         }
 
+        // Add column with other spells mana curve to data set:
+        for (Pair<Integer, Integer> pair : stats.getSpellCMCs()) {
+            if (pair.getSecond() != 0) {
+                //logger.info("CMC, #Spells: " + pair.getFirst() + ", " + pair.getSecond());
+                dataSet.addValue(pair.getSecond(), pair.getFirst(), "Creatures");
+            }
+        }
         return ChartFactory.createBarChart(
                 "Mana curve (coalesced)", // Chart title
                 "CMC", // x-axis description
