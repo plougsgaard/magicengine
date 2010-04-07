@@ -5,12 +5,12 @@ ul {
 
 body {
     background-color: #2A2B2B;
-    font-family:Georgia, "Times New Roman", serif;
-
+    font:13pt/1.5em 'Georgia','Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif;
+    color: #303030; /* generic gray */
 }
 
 .content {
-    padding: 0 1em 1em 1em;
+    padding: 1em 1em 1em 1em;
 }
 
 .list-image {
@@ -26,8 +26,14 @@ p.option {
 }
 
 a {
-    color: #0071BC;
+
+    color:#556270; /* blue slate */
+    color: #015288;
     text-decoration: none;
+}
+
+a:hover {
+    color:#E03838; /* red */
 }
 
 h1,h2,h3,h4,h5,h6 {
@@ -47,13 +53,14 @@ h1{
 h2{
 	color:#242424; /* happy black */
 	font-size:2em;
+	line-height:1.2em;
 }
 
 h3{
 	color:#242424; /* happy black */
 	font-size:1.5em;
 	margin-top:0.5em;
-	line-height:1.5em;
+	line-height:1.2em;
 }
 
 h4 {
@@ -65,12 +72,12 @@ h4 {
     overflow: hidden;
 }
 
-#separator {
+.separator {
     margin-bottom: 1em;
 }
 
 #menu {
-    padding-left: 0.7em;
+    padding: 1em 0 0 0.7em;
 }
 
 #menu a {
@@ -97,10 +104,6 @@ h4 {
     background-color: #DEFCF9;
 }
 
-.separator {
-
-}
-
 #logo {
     padding: 3em 0 0.5em 2.7em;
 }
@@ -110,9 +113,33 @@ h4 {
 }
 
 .list-image img {
-    width: 160px;
+    width: 130px;
 }
 
-.list-deck {
-    
-}
+.card-list ul.deck {
+        line-height: 1.2em;
+        list-style-type:none;
+    }
+
+        .card-list ul.deck li {
+            margin: 0 0 4px 0;
+        }
+
+        .card-list ul.deck li input {
+            width:18px;
+        }
+
+        .card-list ul.deck li img {
+            width:13px;
+            height:13px;
+        }
+
+        .card-list ul.deck li a {
+            color:#242424; /* happy black */
+        }
+
+
+
+
+
+

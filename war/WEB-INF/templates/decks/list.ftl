@@ -5,19 +5,25 @@
 <div class="grid_9 omega">
 <div id="content-pane" class="grid_8 alpha">
 
-    <div id="content-header" class="content">
+    <div class="content">
 
         <h1><a href="${rc.getContextPath()}/decks">Decks</a></h1>
 
         <p>Listing decks ordered by <strong>date</strong> of creation.</p>
 
         <h3>
-            <@drawPageSelect deckPage />
+            <@drawPageSelect deckPage "/decks/page/" />
         </h3>
 
-    </div> <!-- end content-header -->
+    </div>
 
     <@drawPageItems deckPage />
+
+    <div class="content">
+        <h3>
+            <@drawPageSelect deckPage "/decks/page/" />
+        </h3>
+    </div>
 
 </div> <!-- end content-pane -->
 

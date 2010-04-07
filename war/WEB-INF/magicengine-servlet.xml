@@ -61,6 +61,10 @@
         FreeMarker.
         -->
         <property name="requestContextAttribute" value="rc" />
+
+        <!-- Use UTF-8 because that's what all the cool kids are using -->
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+
     </bean>
 
 </beans>

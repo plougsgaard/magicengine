@@ -7,17 +7,23 @@
 
     <div id="content-header" class="content">
 
-        <h1><a href="${rc.getContextPath()}/decks">Decks</a></h1>
+        <h1><a href="${rc.getContextPath()}/decks">Decks</a> | User</h1>
 
         <p>Listing decks that are created by <strong>${user.name}</strong> ordered by <strong>date</strong> of creation.</p>
 
         <h3>
-            <@drawPageSelect deckPage />
+            <@drawPageSelect deckPage "/decks/user/${user.id}/page/" />
         </h3>
 
     </div> <!-- end content-header -->
 
     <@drawPageItems deckPage />
+
+    <div class="content">
+        <h3>
+            <@drawPageSelect deckPage "/decks/user/${user.id}/page/" />
+        </h3>
+    </div>
 
 </div> <!-- end content-pane -->
 
