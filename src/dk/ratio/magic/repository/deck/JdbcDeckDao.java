@@ -48,12 +48,14 @@ public class JdbcDeckDao implements DeckDao
     {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int count = namedParameterJdbcTemplate.update(
-            "INSERT INTO decks (title, description, author_id) " +
-            "VALUES (:title, :description, :author_id)",
+            "INSERT INTO decks (title, description, author_id, date_added, date_modified) " +
+            "VALUES (:title, :description, :author_id, :date_added, :date_modified)",
             new MapSqlParameterSource()
                 .addValue("title", deck.getTitle())
                 .addValue("description", "")
-                .addValue("author_id", author.getId()),
+                .addValue("author_id", author.getId())
+                .addValue("date_added", new Timestamp(System.currentTimeMillis()))
+                .addValue("date_modified", new Timestamp(System.currentTimeMillis())),
                 keyHolder
         );
         if (keyHolder.getKeyList().size() == 0) {
@@ -134,7 +136,7 @@ public class JdbcDeckDao implements DeckDao
         }
         int updateCount = namedParameterJdbcTemplate.update(
             "UPDATE decks SET title = :title, format = :format, status = :status, " +
-            "colours = :colours, description = :description WHERE id = :id",
+            "colours = :colours, description = :description, date_modified = :date_modified WHERE id = :id",
             new MapSqlParameterSource()
                 .addValue("id", deck.getId())
                 .addValue("title", deck.getTitle())
@@ -142,6 +144,7 @@ public class JdbcDeckDao implements DeckDao
                 .addValue("status", deck.getStatus())
                 .addValue("colours", deck.getColours())
                 .addValue("description", deck.getDescription())
+                .addValue("date_modified", new Timestamp(System.currentTimeMillis()))
         );
         logger.info("Deck successfully saved. " +
                         "[deck.getId(): " + deck.getId() + "] " +

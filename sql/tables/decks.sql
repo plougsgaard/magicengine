@@ -7,6 +7,8 @@ CREATE TABLE  `magicengine`.`decks` (
   `colours` varchar(45) NOT NULL DEFAULT '',
   `description` mediumtext,
   `author_id` int(10) unsigned NOT NULL DEFAULT '1',
+  `date_added` datetime NOT NULL,
+  `date_modified` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

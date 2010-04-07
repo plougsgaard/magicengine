@@ -1,7 +1,7 @@
 <#include "../macros/site.ftl">
 <#include "../macros/decks.ftl">
 
-<@page>
+<@page title="${deck.title}">
 <div class="grid_9 omega">
 
     <div class="grid_9 alpha omega">
@@ -32,6 +32,9 @@
                 ${deck.description?replace("\n", "<br />")}
                 </#if>
             </p>
+            <p>
+                <a href="${rc.getContextPath()}/deck/${deck.id}/edit">Edit</a>
+            </p>
         </div> <!-- end content -->
     </div>
 
@@ -40,31 +43,37 @@
     <div id="main-deck">
 
         <div class="grid_4 alpha">
-            <div class="content card-list">
+            <div class="content">
                 <h3>Lands</h3>
+                <div class="card-list">
                 <ul class="deck">
                 <#list deck.cards as card>
                 <#if card.types?contains("Land")><@drawCardItem card /></#if>
                 </#list>
                 </ul>
+                </div>
 
-                <h3>Other Spells</h3>
+                <h3>Spells</h3>
+                <div class="card-list">
                 <ul class="deck">
                 <#list deck.cards as card>
                 <#if !card.types?contains("Land") && !card.types?contains("Creature")><@drawCardItem card /></#if>
                 </#list>
                 </ul>
+                </div>
             </div> <!-- end content -->
         </div>
 
         <div class="grid_5 omega">
-            <div class="content card-list">
+            <div class="content">
                 <h3>Creatures</h3>
+                <div class="card-list">
                 <ul class="deck">
                 <#list deck.cards as card>
                 <#if card.types?contains("Creature")><@drawCardItem card /></#if>
                 </#list>
                 </ul>
+                </div>
             </div> <!-- end content -->
         </div>
 

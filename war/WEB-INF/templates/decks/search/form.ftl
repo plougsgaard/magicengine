@@ -1,7 +1,7 @@
 <#include "../../macros/site.ftl">
 <#include "../../macros/decks.ftl">
 
-<@page>
+<@page title="Deck Search">
 <div class="grid_9 omega">
 
 <div id="content-pane" class="grid_9 alpha">

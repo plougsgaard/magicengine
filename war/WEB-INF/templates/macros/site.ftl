@@ -2,7 +2,7 @@
 
 <#include "utilities.ftl">
 
-<#macro page><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+<#macro page title="" scripts=[]><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -10,12 +10,21 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-    <title>Magic Engine</title>
+    <title>${title} - Magic Engine</title>
 
     <link rel="stylesheet" href="${rc.getContextPath()}/static/css/reset.css" type="text/css" media="screen"/>
     <link rel="stylesheet" href="${rc.getContextPath()}/static/css/960.css" type="text/css" media="screen"/>
     <link rel="stylesheet" href="${rc.getContextPath()}/static/css/text.css" type="text/css" media="screen"/>
     <link rel="stylesheet" href="${rc.getContextPath()}/static/css/default.css" type="text/css" media="screen"/>
+
+    <script src="${rc.getContextPath()}/static/javascript/lib/prototype.js" type="text/javascript"></script>
+    <script src="${rc.getContextPath()}/static/javascript/src/scriptaculous.js" type="text/javascript"></script>
+    
+    <#list scripts as script>
+    <script type="text/javascript">
+    <#include script>
+    </script>
+    </#list>
 </head>
 <body>
 <div id="container" class="container_12">

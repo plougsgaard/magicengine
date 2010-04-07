@@ -1,26 +1,5 @@
 <#include "utilities.ftl" />
 
-<#macro drawPageSelect deckPage prefix>
-Page &ndash;
-<#if deckPage.pageNumber == 1>
-&laquo;
-<#else >
-<a href="${rc.getContextPath()}${prefix}${deckPage.pageNumber - 1}">&laquo;</a>
-</#if>
-<#list 1..deckPage.pageCount as i>
-<#if i != deckPage.pageNumber>
-<a href="${rc.getContextPath()}${prefix}${i}">${i}</a>
-<#else>
-${i}
-</#if>
-</#list>
-<#if deckPage.pageNumber == deckPage.pageCount>
-&raquo;
-<#else >
-<a href="${rc.getContextPath()}${prefix}${deckPage.pageNumber + 1}">&raquo;</a>
-</#if>
-</#macro>
-
 <#macro drawPageItems deckPage>
 <#list deckPage.items as deck>
 
@@ -79,14 +58,14 @@ ${i}
     <h3>+Colours</h3>
 
     <p class="option">
-        <@drawColourCheckbox "G" />
-        <@drawColourCheckbox "W" />
-        <@drawColourCheckbox "U" />
+        <@drawColourCheckboxClear "G" />
+        <@drawColourCheckboxClear "W" />
+        <@drawColourCheckboxClear "U" />
     </p>
 
     <p class="option">
-        <@drawColourCheckbox "B" />
-        <@drawColourCheckbox "R" />
+        <@drawColourCheckboxClear "B" />
+        <@drawColourCheckboxClear "R" />
    </p>
 
     <h3><label for="title-input">+Title</label></h3>
