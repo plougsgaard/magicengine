@@ -79,6 +79,13 @@
 
     </div>
 
+    <div class="grid_9 alpha omega">
+        <div class="content">
+        <h3>Mana Curve</h3>
+        <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart"/>
+        </div>
+    </div>
+
 </div> <!-- right pane -->
 
 <div class="grid_12 separator alpha omega">
