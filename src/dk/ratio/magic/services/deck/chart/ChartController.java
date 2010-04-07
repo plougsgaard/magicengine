@@ -27,16 +27,16 @@ public class ChartController
                                       @PathVariable("deckId") Integer deckId)
             throws ServletException, IOException
     {
-        ChartBuilder builder = new ChartBuilder(200, 400);
+        ChartBuilder builder = new ChartBuilder(260, 600);
         BufferedImage image = builder.createManaCurveChart(deckDao.getDeck(deckId));
 
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpeg", byteOutputStream );
+        ImageIO.write(image, "png", byteOutputStream );
         byteOutputStream.flush();
         byte[] bytes = byteOutputStream.toByteArray();
         byteOutputStream.close();
 
-        response.setContentType("image/jpeg");
+        response.setContentType("image/png");
         OutputStream outputStream = response.getOutputStream();
         outputStream.write(bytes);
         outputStream.close();

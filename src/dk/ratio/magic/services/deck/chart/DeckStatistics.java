@@ -45,10 +45,10 @@ public class DeckStatistics {
         for (Card card : deck.getCards()) {
             if (isCreature(card)) {
                 Pair<Integer, Integer> cmcPair = creatureCMCs.get(getCMC(card));
-                incrementCardsInPair(cmcPair);
+                incrementCardsInPair(cmcPair, card.getCount());
             } else if (isOtherSpell(card)) {
                 Pair<Integer, Integer> cmcPair = spellCMCs.get(getCMC(card));
-                incrementCardsInPair(cmcPair);
+                incrementCardsInPair(cmcPair, card.getCount());
             } else if (isLand(card)) {
                 // Do nothing - here for clarity.
             }
@@ -96,8 +96,8 @@ public class DeckStatistics {
     }
 
     // TODO: I am not impressed by this - might be it should be removed... 
-    private void incrementCardsInPair(Pair<Integer, Integer> cmcPair) {
-        int numberWithThisCMC = cmcPair.getSecond() + 1;
+    private void incrementCardsInPair(Pair<Integer, Integer> cmcPair, int count) {
+        int numberWithThisCMC = cmcPair.getSecond() + count;
         cmcPair.setSecond(numberWithThisCMC);
     }
 
