@@ -1,7 +1,7 @@
 <#include "../macros/site.ftl">
 <#include "../macros/decks.ftl">
 
-<@page>
+<@page title="Decks">
 <div class="grid_9 omega">
 <div id="content-pane" class="grid_8 alpha">
 
@@ -11,18 +11,14 @@
 
         <p>Listing decks ordered by <strong>date</strong> of creation.</p>
 
-        <h3>
-            <@drawPageSelect deckPage "/decks/page/" />
-        </h3>
+        <@drawPageSelect deckPage "/decks/page/" />
 
     </div>
 
     <@drawPageItems deckPage />
 
     <div class="content">
-        <h3>
-            <@drawPageSelect deckPage "/decks/page/" />
-        </h3>
+        <@drawPageSelect deckPage "/decks/page/" />
     </div>
 
 </div> <!-- end content-pane -->

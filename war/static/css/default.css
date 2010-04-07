@@ -5,7 +5,7 @@ ul {
 
 body {
     background-color: #2A2B2B;
-    font:13pt/1.5em 'Georgia','Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif;
+    font:12pt/1.2em 'Georgia','Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif;
     color: #303030; /* generic gray */
 }
 
@@ -77,7 +77,9 @@ h4 {
 }
 
 #menu {
-    padding: 1em 0 0 0.7em;
+    padding: 1em 0 2em 0.7em;
+    font-size: 13pt;
+    line-height: 1.5em;
 }
 
 #menu a {
@@ -116,6 +118,10 @@ h4 {
     width: 130px;
 }
 
+.card-list {
+    margin: 0.7em 0;
+}
+
 .card-list ul.deck {
         line-height: 1.2em;
         list-style-type:none;
@@ -126,6 +132,12 @@ h4 {
         }
 
         .card-list ul.deck li input {
+            text-align:center;
+            border-width: 0 0 1px 0;
+            border-style:solid;
+            border-color:#333;
+            font-weight: bold;
+            font-size:8pt;
             width:18px;
         }
 
@@ -139,7 +151,119 @@ h4 {
         }
 
 
+input.text, textarea.text {
+    width: 100%;
+}
 
 
 
+/* SORRY !! */
 
+#controls {}
+
+    #controls input.button {
+        width:100%;
+    }
+
+#colours-chooser {}
+
+    #colours-chooser p.option {
+        margin:0;
+    }
+
+#card-information {
+    
+}
+
+    #card-information img.card {
+        width: 250px;
+        height: 357px;
+    }
+
+#card-search {
+
+}
+
+    #card-search input#search-input {
+        width:300px;
+    }
+
+    #card-search input#findadd-button {
+        width:110px;
+    }
+
+#search-form {
+    border-color:#ddd; /* corn yellow */
+}
+
+    #search-form input#search-input {
+        width:200px;
+    }
+
+    #search-form input#search-submit {
+        width:85px;
+    }
+
+#main-deck {
+
+}
+
+    #main-deck ul.deck {
+        list-style-type:none;
+    }
+
+        #main-deck ul.deck li {
+            margin: 0 0 4px 0;
+        }
+
+        #main-deck ul.deck li input {
+            width:18px;
+        }
+
+        #main-deck ul.deck li img {
+            width:13px;
+            height:13px;
+        }
+
+        #main-deck ul.deck li a {
+            color:#242424; /* happy black */
+        }
+
+div#suggestion-area {
+    position:absolute;
+    width:250px;
+    background-color:#eee;
+    border:1px solid #242424; /* happy black */
+    margin:0;
+    padding:0;
+}
+
+    div#suggestion-area ul {
+        list-style-type:none;
+        margin:0;
+        padding:0;
+    }
+
+    div#suggestion-area ul li.selected {
+        background-color:#B9D7D9; /* sky blue */
+    }
+
+    div#suggestion-area ul li {
+        list-style-type:none;
+        display:block;
+        margin:0;
+        padding:2px;
+        cursor:pointer;
+    }
+
+h1.center, h2.center, h3.center, h4.center, h5.center, p.center, div.center {
+    text-align:center;
+}
+
+.price {
+    color:#999999; font-weight:bold;
+}
+
+.page-select {
+    margin: 1em 0;
+}

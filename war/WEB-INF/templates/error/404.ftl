@@ -1,6 +1,6 @@
 <#include "../macros/site.ftl">
 
-<@page>
+<@page title="404">
 <div class="grid_9 omega">
 <div id="content-pane" class="grid_6 alpha">
 

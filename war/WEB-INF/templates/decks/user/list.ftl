@@ -1,7 +1,7 @@
 <#include "../../macros/site.ftl">
 <#include "../../macros/decks.ftl">
 
-<@page>
+<@page title="Decks by ${user.name}">
 <div class="grid_9 omega">
 <div id="content-pane" class="grid_8 alpha">
 

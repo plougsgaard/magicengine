@@ -1,7 +1,10 @@
 package dk.ratio.magic.repository.user;
 
+import dk.ratio.magic.domain.db.deck.Deck;
 import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.domain.web.user.PasswordChange;
+import dk.ratio.magic.util.repository.Page;
+import dk.ratio.magic.util.repository.Pagination;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -62,6 +65,19 @@ public class JdbcUserDao implements UserDao
             return null;
         }
         return results.get(0);
+    }
+
+    public Page<User> getUserPage(Integer pageNumber)
+    {
+        String selectClause =
+                "SELECT id, email, password, password_salt, name ";
+        String fromWhereClause =
+                "FROM users ";
+        return new Pagination<User>().fetchPage(
+                pageNumber, simpleJdbcTemplate, selectClause, fromWhereClause,
+                new MapSqlParameterSource(),
+                new UserMapper()
+        );
     }
 
     public User addUser(User user)
