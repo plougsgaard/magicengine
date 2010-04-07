@@ -1,11 +1,15 @@
 package dk.ratio.magic.domain.db.card;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
 public class Card implements Comparable<Card>
 {
+    private final Log logger = LogFactory.getLog(getClass());
+
     private int id;
 
     private String cardName;
@@ -182,12 +186,25 @@ public class Card implements Comparable<Card>
      * 2) Creatures
      * 3) Other
      *
+     * Internal order is subject to CMC where less is first.
+     *
      * @param other other card
      * @return -1, 0 and 1 depending on the order
      */
     public int compareTo(Card other)
     {
+        int cmc = 0, cmcOther = 0;
+        try {
+            cmc = Integer.parseInt(convertedManaCost);
+        } catch (NumberFormatException ignored) {}
+        try {
+            cmcOther = Integer.parseInt(other.getConvertedManaCost());
+        } catch (NumberFormatException ignored) {}
+
         if (types.contains("Land")) {
+            if (other.getTypes().contains("Basic Land")) {
+                return 1;
+            }
             if (other.getTypes().contains("Land")) {
                 return 0;
             } else {
@@ -198,7 +215,7 @@ public class Card implements Comparable<Card>
             if (other.getTypes().contains("Land")) {
                 return 1;
             } else if (other.getTypes().contains("Creature")) {
-                return 0;
+                return cmc <= cmcOther ? -1 : 1;
             } else {
                 return -1;
             }
@@ -206,6 +223,6 @@ public class Card implements Comparable<Card>
         else if (other.getTypes().contains("Land") || other.getTypes().contains("Creature")) {
             return 1;
         }
-        return 0;
+        return cmc <= cmcOther ? -1 : 1;
     }
 }

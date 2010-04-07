@@ -1,23 +1,57 @@
 <#include "utilities.ftl" />
 
-<#macro drawPageSelect deckPage>
+<#macro drawPageSelect deckPage prefix>
 Page &ndash;
+<#if deckPage.pageNumber == 1>
+&laquo;
+<#else >
+<a href="${rc.getContextPath()}${prefix}${deckPage.pageNumber - 1}">&laquo;</a>
+</#if>
 <#list 1..deckPage.pageCount as i>
 <#if i != deckPage.pageNumber>
-<a href="${rc.getContextPath()}/decks/page/${i}">${i}</a>
+<a href="${rc.getContextPath()}${prefix}${i}">${i}</a>
 <#else>
 ${i}
 </#if>
 </#list>
+<#if deckPage.pageNumber == deckPage.pageCount>
+&raquo;
+<#else >
+<a href="${rc.getContextPath()}${prefix}${deckPage.pageNumber + 1}">&raquo;</a>
+</#if>
 </#macro>
 
 <#macro drawPageItems deckPage>
 <#list deckPage.items as deck>
 
 <!-- Deck item begin -->
+<div class="grid_8 alpha omega">
+    <div class="list-image" style="float:left; padding: 0 1em 0 1em;">
+        <a href="${rc.getContextPath()}/deck/${deck.id}">
+        <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/crop-image/${deck.id}"/>
+        </a>
+    </div>
+    <div class="list-deck" style="margin: 0 0 0 0.5em;">
+        <h3><a href="${rc.getContextPath()}/deck/${deck.id}">${deck.title} <@drawSymbols deck.colours /></a>
+        </h3>
+        <p>
+            by <a href="${rc.getContextPath()}/decks/user/${deck.author.id}">${deck.author.name}</a>
+        </p>
+    </div>
+</div>
+
+<div class="clear"></div>
+<!-- Deck item end -->
+</#list>
+</#macro>
+
+<#macro drawPageItems_ deckPage>
+<#list deckPage.items as deck>
+
+<!-- Deck item begin -->
 <div class="grid_3 alpha">
     <div class="list-image">
-        <img src="${rc.getContextPath()}/services/card/crop-image/${deck.id}"/>
+        <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/crop-image/${deck.id}"/>
     </div>
 </div>
 
