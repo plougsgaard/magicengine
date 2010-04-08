@@ -99,14 +99,29 @@ public class ManaCurveChart implements Chart {
         );
     }
 
+    /**
+     * Get a chart showing the mana curve only for creatures.
+     *
+     * @return the mana curve for creatures as a chart.
+     */
     public JFreeChart getCreatureCurveChart() {
         return creatureCurveChart;
     }
 
+    /**
+     * Get a chart showing the mana curve only for non-creature spells.
+     *
+     * @return the mana curve for non-creature spells as a chart.
+     */
     public JFreeChart getSpellCurveChart() {
         return spellCurveChart;
     }
 
+    /**
+     * Get a chart showing the mana curve for all spells.
+     *
+     * @return the mana curve for all spells.
+     */
     public JFreeChart getCoalescedCurveChart() {
         return coalescedCurveChart;
     }
@@ -117,6 +132,6 @@ public class ManaCurveChart implements Chart {
      * @return the coalesced mana curve chart.
      */
     public JFreeChart getChart() {
-        return coalescedCurveChart;
+        return getCoalescedCurveChart();
     }
 }

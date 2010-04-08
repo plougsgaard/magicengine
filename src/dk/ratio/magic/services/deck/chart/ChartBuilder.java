@@ -19,8 +19,18 @@ public class ChartBuilder {
         return chart.createBufferedImage(width, height);
     }
 
-    public BufferedImage createManaCurveChart(Deck deck) {
-        Chart manaCurveChart = new ManaCurveChart(deck);
+    public BufferedImage createCoalescedManaCurveChart(Deck deck) {
+        ManaCurveChart manaCurveChart = new ManaCurveChart(deck);
         return imageFromChart(manaCurveChart.getChart());
+    }
+
+    public BufferedImage createCreatureManaCurveChart(Deck deck) {
+        ManaCurveChart manaCurveChart = new ManaCurveChart(deck);
+        return imageFromChart(manaCurveChart.getCreatureCurveChart());
+    }
+
+    public BufferedImage createSpellManaCurveChart(Deck deck) {
+        ManaCurveChart manaCurveChart = new ManaCurveChart(deck);
+        return imageFromChart(manaCurveChart.getSpellCurveChart());
     }
 }
