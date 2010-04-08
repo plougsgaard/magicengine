@@ -116,6 +116,10 @@ public class ManaCurveChart implements Chart {
         NumberAxis axis = (NumberAxis) plot.getRangeAxis();
         axis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
+        // Set x-axis to display integral values only:
+        NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
+        xAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
         // Set bar colours to blue:
         // TODO: Find 7 colours that fit well and set the bars to use those.
         XYItemRenderer renderer = plot.getRenderer();
