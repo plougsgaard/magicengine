@@ -80,9 +80,13 @@
     </div>
 
     <div class="grid_9 alpha omega">
-        <div class="content">
-        <h3>Mana Curve</h3>
-        <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart"/>
+       <div class="content">
+        <h3>Mana Curve (creatures)</h3>
+        <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/creature"/>
+        <h3>Mana Curve (other spells)</h3>
+        <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/spell"/>
+        <h3>Mana Curve (coalesced)</h3>
+        <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/coalesced"/>
         </div>
     </div>
 
