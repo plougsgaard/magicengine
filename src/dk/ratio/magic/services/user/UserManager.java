@@ -29,7 +29,7 @@ public class UserManager
         request.getSession().setAttribute(USER_SESSION_NAME, user);
     }
 
-    public void createSessionUser(HttpServletRequest request, HttpServletResponse response, Credentials credentials)
+    public User createSessionUser(HttpServletRequest request, HttpServletResponse response, Credentials credentials)
     {
         User user = userDao.getUser(credentials.getEmail());
 
@@ -49,6 +49,8 @@ public class UserManager
             response.addCookie(idCookie);
             response.addCookie(secretCookie);
         }
+
+        return user;
     }
 
     public User getSessionUser(HttpServletRequest request)

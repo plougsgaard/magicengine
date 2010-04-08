@@ -1,6 +1,5 @@
 Windows `build.properties` example:
 --
-
 # General properties
 appserver.home=C:\\Program Files\\Apache Software Foundation\\Tomcat 6.0
 appserver.lib=${appserver.home}\\lib
@@ -13,13 +12,12 @@ tomcat.manager.password=hest123
 
 # For running SQL scripts
 db.driver=com.mysql.jdbc.Driver
-db.url=jdbc:mysql://localhost:3306/mtgengine
+db.url=jdbc:mysql://localhost:3306/magicengine
 db.user=magicadmin
 db.pw=hest123
 
 Mac `build.properties` example:
 --
-
 # General properties
 appserver.home=/Library/Tomcat/Home
 appserver.lib=${appserver.home}/lib
@@ -32,13 +30,12 @@ tomcat.manager.password=hest123
 
 # For running SQL scripts
 db.driver=com.mysql.jdbc.Driver
-db.url=jdbc:mysql://localhost:3306/mtgengine
+db.url=jdbc:mysql://localhost:3306/magicengine
 db.user=magicadmin
 db.pw=hest123
 
 Any platform `jdbc.properties` example:
 --
-
 jdbc.driver=com.mysql.jdbc.Driver
 jdbc.url=jdbc:mysql://localhost:3306/magicengine
 jdbc.username=magicadmin

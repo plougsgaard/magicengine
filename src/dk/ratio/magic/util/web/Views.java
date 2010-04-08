@@ -15,4 +15,10 @@ public class Views
         request.getSession().setAttribute("urlAfterSuccess", request.getRequestURI());
         return new ModelAndView(new RedirectView(request.getContextPath() + "/user/login"));
     }
+
+    public static ModelAndView disallow(String message) {
+        ModelAndView errorModel = new ModelAndView("/error/disallow");
+        errorModel.addObject("message", message);
+        return errorModel;
+    }
 }

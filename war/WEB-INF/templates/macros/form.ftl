@@ -1,3 +1,19 @@
+<#import "/spring.ftl" as spring />
+
+<#macro createInputText field>
+<@spring.bind field />
+<input type="text"
+name="${spring.status.expression}"
+value="${spring.status.value?default("")}" /><br>
+<#list spring.status.errorMessages as error> <b>${error}</b> <br> </#list>
+</#macro>
+
+<!--
+
+TODO: Replace the use of these with the proper ones...
+
+-->
+
 <#macro drawFormInput fieldName bindingObject>
 <#if fieldName?lower_case?contains("password") >
 <#assign fieldType = "password" />

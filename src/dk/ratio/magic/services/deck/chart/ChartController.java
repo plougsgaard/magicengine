@@ -31,12 +31,12 @@ public class ChartController
         BufferedImage image = builder.createCoalescedManaCurveChart(deckDao.getDeck(deckId));
 
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", byteOutputStream );
+        ImageIO.write(image, "jpeg", byteOutputStream );
         byteOutputStream.flush();
         byte[] bytes = byteOutputStream.toByteArray();
         byteOutputStream.close();
 
-        response.setContentType("image/png");
+        response.setContentType("image/jpeg");
         OutputStream outputStream = response.getOutputStream();
         outputStream.write(bytes);
         outputStream.close();
