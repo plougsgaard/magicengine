@@ -8,8 +8,9 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StandardXYBarPainter;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYIntervalSeries;
 import org.jfree.data.xy.XYIntervalSeriesCollection;
 
@@ -116,10 +117,16 @@ public class ManaCurveChart implements Chart {
         axis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
         // Set bar colours to blue:
+        // TODO: Find 7 colours that fit well and set the bars to use those.
         XYItemRenderer renderer = plot.getRenderer();
-        for (int i = 0; i <= 15; i++) {
+        for (int i = 0; i <= 7; i++) {
             renderer.setSeriesPaint(i, Color.BLUE);
         }
+
+        // Remove ugly 3D-like shadow effect:
+        XYBarRenderer xyRenderer = (XYBarRenderer) renderer;
+        xyRenderer.setShadowVisible(false);
+        xyRenderer.setBarPainter(new StandardXYBarPainter());
     }
 
     private void addToSeriesWithXInterval(XYIntervalSeries series, double interval, int xVal, int yVal) {
