@@ -1,7 +1,6 @@
 package dk.ratio.magic.services.card.crawler;
 
 import dk.ratio.magic.domain.db.card.Card;
-import dk.ratio.magic.domain.db.card.Image;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -12,7 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class ImageCallable implements Callable<Image>
+class ImageCallable implements Callable<byte[]>
 {
     private final Log logger = LogFactory.getLog(getClass());
 
@@ -25,7 +24,7 @@ class ImageCallable implements Callable<Image>
         this.card = card;
     }
 
-    public Image call() throws Exception
+    public byte[] call() throws Exception
     {
         URL url = new URL(PATH + URLEncoder.encode(card.getCardName(), "latin1"));
 
@@ -44,9 +43,7 @@ class ImageCallable implements Callable<Image>
         Matcher matcher = p.matcher(html);
 
         if (matcher.find()) {
-            Image image = new Image();
-            image.setData(getBytes("http://magiccards.info" + matcher.group(1)));
-            return image;
+            return getBytes("http://magiccards.info" + matcher.group(1));
         } else {
             logger.warn("Could not find the card image URL.");
             return null;

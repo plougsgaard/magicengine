@@ -76,28 +76,6 @@
     <div class='grid_2'>
         <div id="colours-chooser" class="content">
             <h4>Colours</h4>
-            <!--
-            <p class="option">
-                <input id="colour-green-checkbox" type="checkbox" name="colours"
-                       value="green"<#if deck.colours?contains("G")> checked="checked"</#if>/> Green
-            </p>
-            <p class="option">
-                <input id="colour-white-checkbox" type="checkbox" name="colours"
-                       value="white"<#if deck.colours?contains("W")> checked="checked"</#if>/> White
-            </p>
-            <p class="option">
-                <input id="colour-blue-checkbox" type="checkbox" name="colours"
-                       value="blue"<#if deck.colours?contains("U")> checked="checked"</#if>/> Blue
-            </p>
-            <p class="option">
-                <input id="colour-black-checkbox" type="checkbox" name="colours"
-                       value="black"<#if deck.colours?contains("B")> checked="checked"</#if>/> Black
-            </p>
-            <p class="option">
-                <input id="colour-red-checkbox" type="checkbox" name="colours"
-                       value="red"<#if deck.colours?contains("R")> checked="checked"</#if>/> Red
-            </p>
-            -->
             <@drawColourCheckbox deck.colours "G" /><br />
             <@drawColourCheckbox deck.colours "W" /><br />
             <@drawColourCheckbox deck.colours "U" /><br />
@@ -167,6 +145,21 @@
                 <!-- Filled in by JavaScript -->
              </ul>
             </div>
+        </div>
+
+        <div class="content">
+            <h4>Feature Card</h4>
+            <p>
+                <select name="featureCardId" class="text">
+                    <#list deck.cards as card>
+                        <option value="${card.id}" 
+                                <#if (card.id == deck.featureCardId)>
+                                selected="selected"
+                                </#if>
+                                >${card.cardName}</option>
+                    </#list>
+                </select>
+            </p>
         </div>
     </div>
     </form>

@@ -9,7 +9,6 @@ import dk.ratio.magic.repository.user.UserDao;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
 import dk.ratio.magic.validation.deck.EditDeckValidator;
-import dk.ratio.magic.validation.deck.NewDeckValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +98,6 @@ public class DeckEditForm
          * Validation block
          */
         new EditDeckValidator().validate(deckDao, deck, bindingResult);
-
         if (bindingResult.hasErrors()) {
             ModelAndView mv = new ModelAndView("/deck/edit");
             logger.error("Error binding the result. Number of errors: " + bindingResult.getErrorCount());
@@ -111,6 +109,8 @@ public class DeckEditForm
             return mv;
         }
 
+        logger.info("Deck being edited: [" + deck + "]");
+
         /*
          * Preparing the deck to be saved
          */
@@ -120,20 +120,11 @@ public class DeckEditForm
         String colours = "";
         if (request.getParameterValues("colours") != null) {
             for (String s : request.getParameterValues("colours")) {
-                if ("white".equals(s)) {
-                    colours += "W,";
-                } else if ("blue".equals(s)) {
-                    colours += "U,";
-                } else if ("black".equals(s)) {
-                    colours += "B,";
-                } else if ("red".equals(s)) {
-                    colours += "R,";
-                } else if ("green".equals(s)) {
-                    colours += "G,";
-                }
+                colours += s + ",";
             }
         }
         deck.setColours(colours);
+
 
         // Cards
         List<Card> cards = new ArrayList<Card>();
@@ -157,7 +148,7 @@ public class DeckEditForm
 
         // Save the deck
         deck.setCards(cards);
-        deckDao.saveDeck(deck);
+        deckDao.update(deck);
 
         // Redirect to the edit site to avoid the POST-reload irritation element
         return Views.redirect(request, "/deck/" + deckId + "/edit");

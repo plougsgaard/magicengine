@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import dk.ratio.magic.domain.db.card.Card;
-import dk.ratio.magic.domain.db.card.Image;
 import dk.ratio.magic.domain.db.card.Price;
 
 import java.sql.Timestamp;
@@ -165,26 +164,32 @@ public class JdbcCardDao implements CardDao
      * @param cardId id of card
      * @return image of card if it exists, null ow.
      */
-    public Image getCardImage(int cardId)
+    public byte[] getImage(int cardId)
     {
-        String query = "SELECT " +
-                       "card.id, " +
-                       "card.image " +
-                       "FROM cards card " +
-                       "WHERE card.id=:id ";
-        List<Image> results = simpleJdbcTemplate.query(
-                query,
-                new ImageMapper(),
+        return simpleJdbcTemplate.queryForObject(
+                "SELECT image FROM cards WHERE id = :cardId", byte[].class,
                 new MapSqlParameterSource()
-                    .addValue("id", cardId)
+                .addValue("cardId", cardId)
         );
-        if (results.size() != 1)
-        {
-            logger.warn("An image was requested, but was not found. " +
-                        "[cardId: " + cardId + "]");
-            return null;
-        }
-        return results.get(0);
+    }
+
+    public byte[] getCutout(int cardId)
+    {
+        return simpleJdbcTemplate.queryForObject(
+                "SELECT cutout FROM cards WHERE id = :cardId", byte[].class,
+                new MapSqlParameterSource()
+                .addValue("cardId", cardId)
+        );
+    }
+
+    public void setCutout(int cardId, byte[] data)
+    {
+        simpleJdbcTemplate.update(
+                "UPDATE cards SET cutout = :cutout WHERE id = :cardId",
+                new MapSqlParameterSource()
+                .addValue("cardId", cardId)
+                .addValue("cutout", data)
+        );
     }
 
     /**
@@ -270,7 +275,7 @@ public class JdbcCardDao implements CardDao
         );
     }
 
-    public Card addCard(Card card, Image image)
+    public Card addCard(Card card, byte[] image)
     {
         // Insert the card (with image) into the `cards` table
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -293,7 +298,7 @@ public class JdbcCardDao implements CardDao
                 .addValue("rarity", card.getRarity())
                 .addValue("card_number", card.getCardNumber())
                 .addValue("artist", card.getArtist())
-                .addValue("image", image.getData()),
+                .addValue("image", image),
                 keyHolder
         );
         if (cardInsertCount != 1 || keyHolder.getKeyList().size() == 0) {
@@ -309,56 +314,6 @@ public class JdbcCardDao implements CardDao
         card.setId(keyHolder.getKey().intValue());
 
         return card;
-    }
-
-    /**
-     * Add a card to the database.
-     *
-     * @param card card to add
-     * @param image image of card
-     * @param prices list of prices (possibly empty)
-     * @return the card just added - with the id added to it,
-     *         and null if something went terribly wrong
-     */
-    public Card addCard(Card card, Image image, List<Price> prices)
-    {
-        // Insert the card (with image) into the `cards` table
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        String insertClause = "INSERT INTO cards " +
-                              "(card_name, mana_cost, converted_mana_cost, types, card_text, " +
-                              " expansion, rarity, card_number, artist, image) ";
-        String valuesClause = "VALUES " +
-                              "(:card_name, :mana_cost, :converted_mana_cost, :types, :card_text, " +
-                              " :expansion, :rarity, :card_number, :artist, :image)";
-        String query = insertClause + valuesClause;
-        int cardInsertCount = namedParameterJdbcTemplate.update(
-                query,
-                new MapSqlParameterSource()
-                .addValue("card_name", card.getCardName())
-                .addValue("mana_cost", card.getManaCost())
-                .addValue("converted_mana_cost", card.getConvertedManaCost())
-                .addValue("types", card.getTypes())
-                .addValue("card_text", card.getCardText())
-                .addValue("expansion", card.getExpansion())
-                .addValue("rarity", card.getRarity())
-                .addValue("card_number", card.getCardNumber())
-                .addValue("artist", card.getArtist())
-                .addValue("image", image.getData()),
-                keyHolder
-        );
-        if (cardInsertCount != 1 || keyHolder.getKeyList().size() == 0) {
-            logger.error("Error inserting card into database. " +
-                        "[card.getCardName(): " + card.getCardName() + "]");
-            return null;
-        } else {
-            logger.info("Card successfully inserted. " +
-                        "[card.getCardName(): " + card.getCardName() + "] " +
-                        "[cardInsertCount: " + cardInsertCount + "] ");
-        }
-
-        card.setId(keyHolder.getKey().intValue());
-
-        return addPrices(card, prices);
     }
 
     /**
@@ -471,17 +426,6 @@ public class JdbcCardDao implements CardDao
             price.setCard(card);
             price.setSeller(seller);
             return price;
-        }
-    }
-
-    private static class ImageMapper implements RowMapper<Image>
-    {
-        private final Log logger = LogFactory.getLog(getClass());
-        public Image mapRow(ResultSet rs, int rowNum) throws SQLException
-        {
-            Image image = new Image();
-            image.setData(rs.getBytes("card.image"));
-            return image;
         }
     }
 }

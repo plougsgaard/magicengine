@@ -16,6 +16,8 @@ public class Deck
     private List<Card> cards;
     private User author;
 
+    private int featureCardId;
+
     public int getId()
     {
         return id;
@@ -96,17 +98,29 @@ public class Deck
         this.author = author;
     }
 
+    public int getFeatureCardId()
+    {
+        return featureCardId;
+    }
+
+    public void setFeatureCardId(int featureCardId)
+    {
+        this.featureCardId = featureCardId;
+    }
+
+    @Override
     public String toString()
     {
         return "Deck{" +
-               "id=" + id +
-               ", title='" + title + '\'' +
-               ", format='" + format + '\'' +
-               ", status='" + status + '\'' +
-               ", colours='" + colours + '\'' +
-               ", description='" + description + '\'' +
-               ", cards=" + cards +
-               ", author=" + author +
-               '}';
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", format='" + format + '\'' +
+                ", status='" + status + '\'' +
+                ", colours='" + colours + '\'' +
+                ", description='" + description + '\'' +
+                ", cards=" + cards +
+                ", author=" + author +
+                ", featureCard=" + featureCardId +
+                '}';
     }
 }

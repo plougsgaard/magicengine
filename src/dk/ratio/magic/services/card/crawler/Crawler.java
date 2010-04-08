@@ -3,7 +3,6 @@ package dk.ratio.magic.services.card.crawler;
 import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.card.Price;
-import dk.ratio.magic.domain.db.card.Image;
 import dk.ratio.magic.services.card.crawler.price.PriceCallable;
 import dk.ratio.magic.services.card.crawler.price.PriceCallable.UPDATE;
 import org.apache.commons.logging.Log;
@@ -41,10 +40,10 @@ public class Crawler
                 return null;
             }
 
-            Future<Image> imageFuture = taskExecutor.submit(
+            Future<byte[]> imageFuture = taskExecutor.submit(
                     new ImageCallable(card));
 
-            Image image = imageFuture.get();
+            byte[] image = imageFuture.get();
 
             if (image == null) {
                 logger.warn("Crawling could not be completed. " +

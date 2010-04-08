@@ -23,7 +23,7 @@ public interface DeckDao
 
     public Deck addDeck(Deck deck, User author);
     public Deck duplicateDeck(User author, int oldDeckId, String newTitle);
-    public void saveDeck(Deck deck);
+    public void update(Deck deck);
     public void deleteDeck(Integer deckId);
 
     public Comment addComment(Comment comment, int deckId, User author);
