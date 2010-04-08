@@ -96,25 +96,18 @@ public class DeckStatistics {
     }
 
     private boolean isCreature(Card card) {
-        return getLowerCaseCardTypes(card).startsWith("creature")
-                || getLowerCaseCardTypes(card).startsWith("legendary creature");
+        return card.getTypes().contains("Creature");
     }
 
     private boolean isOtherSpell(Card card) {
-        return getLowerCaseCardTypes(card).startsWith("instant")
-                || getLowerCaseCardTypes(card).startsWith("sorcery")
-                || getLowerCaseCardTypes(card).startsWith("enchantment")
-                || getLowerCaseCardTypes(card).startsWith("artifact")
-                || getLowerCaseCardTypes(card).startsWith("legendary artifact");
+        return card.getTypes().contains("Instant")
+                || card.getTypes().contains("Sorcery")
+                || card.getTypes().contains("Enchantment")
+                || card.getTypes().contains("Artifact");
     }
 
     private boolean isLand(Card card) {
-        return getLowerCaseCardTypes(card).startsWith("land")
-                || getLowerCaseCardTypes(card).startsWith("legendary land");
-    }
-
-    private String getLowerCaseCardTypes(Card card) {
-        return card.getTypes().toLowerCase();
+        return card.getTypes().contains("Land");
     }
 
     public ArrayList<Pair<Integer, Integer>> getSpellCMCs() {
