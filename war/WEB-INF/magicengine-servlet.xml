@@ -19,6 +19,21 @@
 
     <!--
 		*********************
+		    INTERCEPTORS
+		*********************
+	-->
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"
+    	p:order="0" >
+        <property name="interceptors">
+            <list>
+                <bean class="dk.ratio.magic.services.user.UserInterceptor"/>
+            </list>
+        </property>
+    </bean>
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    <!--
+		*********************
 		   VIEW RENDERING
 		*********************
 	-->
@@ -52,6 +67,7 @@
 
         <!-- enable the use of Spring Freemarker macros -->
         <property name="exposeSpringMacroHelpers" value="true" />
+        <property name="exposeSessionAttributes" value="true" />
 
         <!--
         Enable access to context path in FreeMarker.

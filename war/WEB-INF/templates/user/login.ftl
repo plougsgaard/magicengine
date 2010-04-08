@@ -20,7 +20,7 @@
             <@drawFormInput "password" "credentials"/>
 
             <p>
-                <input type="checkbox" id="remember-input" name="remember" value="true" disabled="true" />
+                <input type="checkbox" id="remember-input" name="remember" value="true" />
                 <label for="remember-input">Stay logged in</label>
             </p>
 

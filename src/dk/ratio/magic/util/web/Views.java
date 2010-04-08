@@ -12,6 +12,7 @@ public class Views
     }
 
     public static ModelAndView loginRedirect(HttpServletRequest request) {
+        request.getSession().setAttribute("urlAfterSuccess", request.getRequestURI());
         return new ModelAndView(new RedirectView(request.getContextPath() + "/user/login"));
     }
 }

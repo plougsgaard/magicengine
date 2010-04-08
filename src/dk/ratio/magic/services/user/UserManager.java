@@ -18,9 +18,9 @@ public class UserManager
     @Autowired
     private UserDao userDao;
 
-    public static final String USER_SESSION_NAME = "user_session";
-    public static final String USER_COOKIE_SECRET = "user_cookie_secret";
-    public static final String USER_COOKIE_ID = "user_cookie_id";
+    public static final String USER_SESSION_NAME = "userSession";
+    public static final String USER_COOKIE_SECRET = "userCookieSecret";
+    public static final String USER_COOKIE_ID = "userCookieId";
 
     private final int DAYS = 24 * 60 * 60;
 
@@ -109,7 +109,7 @@ public class UserManager
         return getSessionUser(request) != null;
     }
 
-    private String makeCookieSecret(User user)
+    protected String makeCookieSecret(User user)
     {
         return userDao.SHA1(user.getPassword() + "secret" + user.getPasswordSalt());
     }
