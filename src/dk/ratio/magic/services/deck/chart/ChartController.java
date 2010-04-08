@@ -30,15 +30,9 @@ public class ChartController
         ChartBuilder builder = new ChartBuilder(260, 600);
         BufferedImage image = builder.createCoalescedManaCurveChart(deckDao.getDeck(deckId));
 
-        ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpeg", byteOutputStream );
-        byteOutputStream.flush();
-        byte[] bytes = byteOutputStream.toByteArray();
-        byteOutputStream.close();
-
-        response.setContentType("image/jpeg");
+        response.setContentType("image/png");
         OutputStream outputStream = response.getOutputStream();
-        outputStream.write(bytes);
+        ImageIO.write(image, "png", outputStream);
         outputStream.close();
 
         /*
