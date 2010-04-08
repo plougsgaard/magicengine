@@ -44,13 +44,13 @@
         <div id="menu">
             <ul>
                 <li><strong><a href="${rc.getContextPath()}/decks">Decks</a></strong></li>
-                <li><a href="${rc.getContextPath()}/decks/search">Advanced Search</a></li>
+                <!--li><a href="${rc.getContextPath()}/decks/search">Advanced Search</a></li-->
                 <li><a href="${rc.getContextPath()}/deck/create">Create New</a></li>
             </ul>
             <ul>
                 <li><strong><a href="${rc.getContextPath()}/cards">Cards</a></strong></li>
-                <li><a href="${rc.getContextPath()}/cards/search">Advanced Search</a></li>
-                <li><a href="${rc.getContextPath()}/cards/queue">Update Queue</a></li>
+                <!--li><a href="${rc.getContextPath()}/cards/search">Advanced Search</a></li-->
+                <!--li><a href="${rc.getContextPath()}/cards/queue">Update Queue</a></li-->
             </ul>
             <ul>
                 <li><strong><a href="${rc.getContextPath()}/users">Users</a></strong></li>
