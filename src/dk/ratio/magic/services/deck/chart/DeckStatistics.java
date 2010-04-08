@@ -32,7 +32,7 @@ public class DeckStatistics {
         coalescedCMCs = new ArrayList<Pair<Integer, Integer>>();
 
         int cmc = 0;
-        while (cmc <= 15) {
+        while (cmc <= 7) {
             spellCMCs.add(new Pair<Integer, Integer>(cmc, 0));
             creatureCMCs.add(new Pair<Integer, Integer>(cmc, 0));
             coalescedCMCs.add(new Pair<Integer, Integer>(cmc, 0));
@@ -51,10 +51,10 @@ public class DeckStatistics {
     private void populateStatLists(Deck deck) {
         for (Card card : deck.getCards()) {
             if (isCreature(card)) {
-                Pair<Integer, Integer> cmcPair = creatureCMCs.get(getCMC(card));
+                Pair<Integer, Integer> cmcPair = getCMCPair(creatureCMCs, card);
                 cmcPair.setSecond(cmcPair.getSecond() + card.getCount());
             } else if (isOtherSpell(card)) {
-                Pair<Integer, Integer> cmcPair = spellCMCs.get(getCMC(card));
+                Pair<Integer, Integer> cmcPair = getCMCPair(spellCMCs, card);
                 cmcPair.setSecond(cmcPair.getSecond() + card.getCount());
             } else if (isLand(card)) {
                 // Do nothing - here for clarity.
@@ -64,12 +64,23 @@ public class DeckStatistics {
             if (isLand(card)) {
                 // Do nothing
             } else {
-                Pair<Integer, Integer> cmcPair = coalescedCMCs.get(getCMC(card));
+                Pair<Integer, Integer> cmcPair = getCMCPair(coalescedCMCs, card);
                 cmcPair.setSecond(cmcPair.getSecond() + card.getCount());
             }
 
             updateColourHeavyList(card);
         }
+    }
+
+    private Pair<Integer, Integer> getCMCPair(ArrayList<Pair<Integer, Integer>> list, Card card) {
+        Pair<Integer, Integer> result = null;
+        if (getCMC(card) >= 7) {
+            result = list.get(7);
+        } else {
+            result = list.get(getCMC(card));
+        }
+
+        return result;
     }
 
     private void updateColourHeavyList(Card card) {
