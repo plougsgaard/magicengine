@@ -2,10 +2,13 @@
 
 <#macro createInputText field>
 <@spring.bind field />
-<input type="text"
-name="${spring.status.expression}"
-value="${spring.status.value?default("")}" /><br>
-<#list spring.status.errorMessages as error> <b>${error}</b> <br> </#list>
+<input
+    <#if (field?contains(".password"))>type="password"<#else>type="text"</#if>
+    name="${spring.status.expression}"
+    value="${spring.status.value?default("")}" /><br />
+<#list spring.status.errorMessages as error>
+<b>Error:</b> ${error}<br />
+</#list>
 </#macro>
 
 <!--
