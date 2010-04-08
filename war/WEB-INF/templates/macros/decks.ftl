@@ -7,35 +7,10 @@
 <div class="grid_8 alpha omega">
     <div class="list-image" style="float:left; padding: 0 1em 0 1em;">
         <a href="${rc.getContextPath()}/deck/${deck.id}">
-        <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/crop-image/${deck.id}"/>
+        <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/crop-image/${deck.featureCardId}"/>
         </a>
     </div>
     <div class="list-deck" style="margin: 0 0 0 0.5em;">
-        <h3><a href="${rc.getContextPath()}/deck/${deck.id}">${deck.title} <@drawSymbols deck.colours /></a>
-        </h3>
-        <p>
-            by <a href="${rc.getContextPath()}/decks/user/${deck.author.id}">${deck.author.name}</a>
-        </p>
-    </div>
-</div>
-
-<div class="clear"></div>
-<!-- Deck item end -->
-</#list>
-</#macro>
-
-<#macro drawPageItems_ deckPage>
-<#list deckPage.items as deck>
-
-<!-- Deck item begin -->
-<div class="grid_3 alpha">
-    <div class="list-image">
-        <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/crop-image/${deck.id}"/>
-    </div>
-</div>
-
-<div class="grid_5 omega">
-    <div class="list-deck">
         <h3><a href="${rc.getContextPath()}/deck/${deck.id}">${deck.title} <@drawSymbols deck.colours /></a>
         </h3>
         <p>

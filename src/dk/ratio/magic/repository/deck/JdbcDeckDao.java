@@ -117,7 +117,7 @@ public class JdbcDeckDao implements DeckDao
      *
      * @param deck  deck to save (update) - must include a card list.
      */
-    public void saveDeck(Deck deck)
+    public void update(Deck deck)
     {
         int deleteCount = namedParameterJdbcTemplate.update(
             "DELETE FROM deckcards WHERE deck_id = :id",
@@ -136,7 +136,8 @@ public class JdbcDeckDao implements DeckDao
         }
         int updateCount = namedParameterJdbcTemplate.update(
             "UPDATE decks SET title = :title, format = :format, status = :status, " +
-            "colours = :colours, description = :description, date_modified = :date_modified WHERE id = :id",
+            "colours = :colours, description = :description, feature_card_id = :feature_card_id, " +
+            "date_modified = :date_modified WHERE id = :id",
             new MapSqlParameterSource()
                 .addValue("id", deck.getId())
                 .addValue("title", deck.getTitle())
@@ -144,6 +145,7 @@ public class JdbcDeckDao implements DeckDao
                 .addValue("status", deck.getStatus())
                 .addValue("colours", deck.getColours())
                 .addValue("description", deck.getDescription())
+                .addValue("feature_card_id", deck.getFeatureCardId())
                 .addValue("date_modified", new Timestamp(System.currentTimeMillis()))
         );
         logger.info("Deck successfully saved. " +
@@ -194,6 +196,7 @@ public class JdbcDeckDao implements DeckDao
                 "deck.colours, " +
                 "deck.description, " +
                 "deck.author_id, " +
+                "deck.feature_card_id, " +
                 "author.id, " +
                 "author.email, " +
                 "author.name " +
@@ -285,6 +288,7 @@ public class JdbcDeckDao implements DeckDao
                 "deck.colours, " +
                 "deck.description, " +
                 "deck.author_id, " +
+                "deck.feature_card_id, " +
                 "author.id, " +
                 "author.email, " +
                 "author.name " +
@@ -310,6 +314,7 @@ public class JdbcDeckDao implements DeckDao
                 "deck.colours, " +
                 "deck.description, " +
                 "deck.author_id, " +
+                "deck.feature_card_id, " +
                 "author.id, " +
                 "author.email, " +
                 "author.name " +
@@ -342,6 +347,7 @@ public class JdbcDeckDao implements DeckDao
                 "deck.colours, " +
                 "deck.description, " +
                 "deck.author_id, " +
+                "deck.feature_card_id, " +
                 "author.id, " +
                 "author.email, " +
                 "author.name " +
@@ -365,6 +371,7 @@ public class JdbcDeckDao implements DeckDao
                 "deck.colours, " +
                 "deck.description, " +
                 "deck.author_id, " +
+                "deck.feature_card_id, " +
                 "author.id, " +
                 "author.email, " +
                 "author.name ";
@@ -392,6 +399,7 @@ public class JdbcDeckDao implements DeckDao
                 "deck.colours, " +
                 "deck.description, " +
                 "deck.author_id, " +
+                "deck.feature_card_id, " +
                 "author.id, " +
                 "author.email, " +
                 "author.name ";
@@ -419,6 +427,7 @@ public class JdbcDeckDao implements DeckDao
                 "deck.colours, " +
                 "deck.description, " +
                 "deck.author_id, " +
+                "deck.feature_card_id, " +
                 "author.id, " +
                 "author.email, " +
                 "author.name ";
@@ -477,6 +486,7 @@ public class JdbcDeckDao implements DeckDao
             deck.setStatus(rs.getString("deck.status"));
             deck.setColours(rs.getString("deck.colours"));
             deck.setDescription(rs.getString("deck.description"));
+            deck.setFeatureCardId(rs.getInt("deck.feature_card_id"));
 
             User author = new User();
             author.setId(rs.getInt("author.id"));

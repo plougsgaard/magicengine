@@ -16,8 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.*;
-import java.net.URL;
-import java.util.Random;
 
 import dk.ratio.magic.repository.card.CardDao;
 
@@ -43,7 +41,7 @@ public class ImageController
 
         response.setContentType("image/jpeg");
         OutputStream outputStream = response.getOutputStream();
-        outputStream.write(cardDao.getCardImage(id).getData());
+        outputStream.write(cardDao.getImage(id));
         outputStream.close();
 
         /*
@@ -53,14 +51,14 @@ public class ImageController
         return null;
     }
 
-    @RequestMapping("/services/card/image/{imageId}")
+    @RequestMapping("/services/card/image/{cardId}")
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response,
-                                      @PathVariable("imageId") Integer imageId)
+                                      @PathVariable("cardId") Integer cardId)
             throws ServletException, IOException
     {
         response.setContentType("image/jpeg");
         OutputStream outputStream = response.getOutputStream();
-        outputStream.write(cardDao.getCardImage(imageId).getData());
+        outputStream.write(cardDao.getImage(cardId));
         outputStream.close();
 
         /*
@@ -70,14 +68,23 @@ public class ImageController
         return null;
     }
 
-    @RequestMapping("/services/card/crop-image/{imageId}")
+    @RequestMapping("/services/card/crop-image/{cardId}")
     public ModelAndView cropHandle(HttpServletRequest request, HttpServletResponse response,
-                                   @PathVariable("imageId") Integer imageId)
+                                   @PathVariable("cardId") Integer cardId)
             throws ServletException, IOException
     {
+        byte[] image = cardDao.getCutout(cardId);
+
+        if (image == null || image.length == 0) {
+            logger.info("No cached cutout for card. Creating one. " +
+                        "[cardId: " + cardId + "]");
+            image = crop(cardDao.getImage(cardId));
+            cardDao.setCutout(cardId, image);
+        }
+
         response.setContentType("image/jpeg");
         OutputStream outputStream = response.getOutputStream();
-        outputStream.write(crop(cardDao.getCardImage(imageId).getData()));
+        outputStream.write(image);
         outputStream.close();
 
         /*
