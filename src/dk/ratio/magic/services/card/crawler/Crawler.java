@@ -40,8 +40,11 @@ public class Crawler
                 return null;
             }
 
-            Future<byte[]> imageFuture = taskExecutor.submit(
-                    new ImageCallable(card));
+            // we need the image a bit later
+            Future<byte[]> imageFuture = taskExecutor.submit(new ImageCallable(card));
+
+            // we submit the prices to be crawled at some point -
+            taskExecutor.submit(new PriceCallable(cardDao, taskExecutor, card, UPDATE.AUTO));
 
             byte[] image = imageFuture.get();
 
