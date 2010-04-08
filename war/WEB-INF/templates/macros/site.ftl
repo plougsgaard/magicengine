@@ -1,5 +1,7 @@
 <#ftl encoding="UTF-8" strip_whitespace=true />
 
+<#assign springtags=JspTaglibs["http://www.springframework.org/tags"]>
+
 <#include "utilities.ftl">
 
 <#macro page title="" scripts=[]><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -52,7 +54,12 @@
             </ul>
             <ul>
                 <li><strong><a href="${rc.getContextPath()}/users">Users</a></strong></li>
+                <#if Session.userSession??>
+                <li><a href="${rc.getContextPath()}/user/${Session.userSession.id}">Profile</a></li>
+                <li><a href="${rc.getContextPath()}/user/logout">Logout</a></li>
+                <#else >
                 <li><a href="${rc.getContextPath()}/user/login">Login</a></li>
+                </#if>
             </ul>
         </div>
     </div>

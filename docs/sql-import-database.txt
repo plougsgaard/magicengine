@@ -1,3 +1,7 @@
 Example:
-
+--
 mysql -umagicadmin -phest123 <backup.sql
+
+Afterwards:
+--
+ant createViews

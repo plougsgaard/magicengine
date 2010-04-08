@@ -15,9 +15,22 @@
         <h2>Options</h2>
         <h4>
             <a href="${rc.getContextPath()}/decks/user/${user.id}">
-                Show Decks
+                Public Decks
             </a>
         </h4>
+
+        <#if Session.userSession?? && Session.userSession.id == user.id>
+        <h4>
+            <a href="${rc.getContextPath()}/user/${user.id}/edit">
+                Edit Profile
+            </a>
+        </h4>
+
+        <h2>All Decks</h2>
+
+        <p>Lacks implementation..</p>
+
+        </#if>
     </div>
 </div>
 

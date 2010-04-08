@@ -26,8 +26,6 @@ p.option {
 }
 
 a {
-
-    color:#556270; /* blue slate */
     color: #015288;
     text-decoration: none;
 }
@@ -48,19 +46,21 @@ h1{
 	font-size:3em;
 	font-style:normal;
 	line-height:1.2em;
+    margin-bottom:0.5em;
 }
 
 h2{
 	color:#242424; /* happy black */
 	font-size:2em;
 	line-height:1.2em;
+    margin:0.5em 0;
 }
 
 h3{
 	color:#242424; /* happy black */
 	font-size:1.5em;
-	margin-top:0.5em;
 	line-height:1.2em;
+	margin:0.5em 0;
 }
 
 h4 {

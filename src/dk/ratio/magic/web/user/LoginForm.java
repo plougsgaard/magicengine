@@ -5,6 +5,7 @@ import dk.ratio.magic.repository.user.UserDao;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
 import dk.ratio.magic.validation.user.UserLoginValidator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,19 +64,21 @@ public class LoginForm
     {
         new UserLoginValidator().validate(userManager, userDao, credentials, bindingResult);
 
-        logger.info("Credentials: " + credentials);
-
+        // implicit authentication
         if (bindingResult.hasErrors()) {
             ModelAndView mv = new ModelAndView("/user/login");
             mv.addObject("bindingResult", bindingResult);
             return mv;
         }
 
-        /*
-         * If no errors did occur we set the session and forward the user to its home.
-         * Remember that the validator also authenticates. Sneaky.
-         */
+        // set session
         userManager.createSessionUser(request, response, credentials);
-        return Views.redirect(request, "/user/home");
+
+        String urlAfterSuccess = (String) request.getSession().getAttribute("urlAfterSuccess");
+        if (StringUtils.isBlank(urlAfterSuccess)) {
+            // if a forward url was set not set we default to /user/home
+            return Views.redirect(request, "/user/home");
+        }
+        return new ModelAndView(new RedirectView(urlAfterSuccess));
     }
 }
