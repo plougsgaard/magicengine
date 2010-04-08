@@ -46,9 +46,9 @@ public class ManaCurveChart implements Chart {
     private JFreeChart makeCreatureChart() {
         JFreeChart chart = ChartFactory.createXYBarChart(
                 null,
-                "CMC",
+                "Converted Mana Cost",
                 false,
-                "Number of cards",
+                "Cards",
                 makeDataSet(stats.getCreatureCMCs()),
                 PlotOrientation.VERTICAL,
                 false,
@@ -64,9 +64,9 @@ public class ManaCurveChart implements Chart {
     private JFreeChart makeSpellsChart() {
         JFreeChart chart = ChartFactory.createXYBarChart(
                 null,
-                "CMC",
+                "Converted Mana Cost",
                 false,
-                "Number of cards",
+                "Cards",
                 makeDataSet(stats.getSpellCMCs()),
                 PlotOrientation.VERTICAL,
                 false,
@@ -82,9 +82,9 @@ public class ManaCurveChart implements Chart {
     private JFreeChart makeCoalescedChart() {
         JFreeChart chart = ChartFactory.createXYBarChart(
                 null,
-                "CMC",
+                "Converted Mana Cost",
                 false,
-                "Number of cards",
+                "Cards",
                 makeDataSet(stats.getCoalescedCMCs()),
                 PlotOrientation.VERTICAL,
                 false,
@@ -112,6 +112,38 @@ public class ManaCurveChart implements Chart {
     private void setStyle(JFreeChart chart) {
         XYPlot plot = chart.getXYPlot();
 
+        chart.setAntiAlias(true);
+
+        chart.getPlot().setBackgroundPaint(new Color(238, 238, 238));
+
+        // domain axis = x axis
+        chart.getXYPlot().getDomainAxis().setAxisLineVisible(false);
+        chart.getXYPlot().getDomainAxis().setLabelPaint(new Color(139, 138, 138));
+        chart.getXYPlot().getDomainAxis().setLabelFont(new Font("Georgia", Font.PLAIN, 22));
+        chart.getXYPlot().getDomainAxis().setTickMarkPaint(new Color(160, 160, 160));
+        chart.getXYPlot().getDomainAxis().setTickLabelPaint(new Color(77, 76, 76));
+        chart.getXYPlot().getDomainAxis().setTickLabelFont(new Font("Georgia", Font.BOLD, 16));
+
+        // range axis = y axis
+        chart.getXYPlot().getRangeAxis().setAxisLineVisible(false);
+        chart.getXYPlot().getRangeAxis().setLabelPaint(new Color(139, 138, 138));
+        chart.getXYPlot().getRangeAxis().setLabelFont(new Font("Georgia", Font.PLAIN, 22));
+        chart.getXYPlot().getRangeAxis().setTickMarkPaint(new Color(160, 160, 160));
+        chart.getXYPlot().getRangeAxis().setTickLabelPaint(new Color(77, 76, 76));
+        chart.getXYPlot().getRangeAxis().setTickLabelFont(new Font("Georgia", Font.BOLD, 16));
+
+        chart.getXYPlot().setDomainGridlinePaint(new Color(160, 160, 160)); // y-grid
+        chart.getXYPlot().setDomainCrosshairVisible(false);
+        chart.getXYPlot().setDomainMinorGridlinesVisible(false);
+        chart.getXYPlot().setOutlineVisible(true);
+        chart.getXYPlot().setOutlinePaint(new Color(160, 160, 160));
+
+        chart.getXYPlot().setRangeZeroBaselineVisible(false);
+        chart.getXYPlot().setRangeMinorGridlinesVisible(true);
+        chart.getXYPlot().setRangeMinorGridlinePaint(new Color(217,  91,  67)); // x-grid
+        chart.getXYPlot().setRangeGridlinesVisible(false);
+        chart.getXYPlot().setRangeCrosshairVisible(false);
+
         // Set y-axis to display integral values only:
         NumberAxis axis = (NumberAxis) plot.getRangeAxis();
         axis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
@@ -120,12 +152,16 @@ public class ManaCurveChart implements Chart {
         NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
         xAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
-        // Set bar colours to blue:
-        // TODO: Find 7 colours that fit well and set the bars to use those.
+        // Set bar colours
         XYItemRenderer renderer = plot.getRenderer();
-        for (int i = 0; i <= 7; i++) {
-            renderer.setSeriesPaint(i, Color.BLUE);
-        }
+        renderer.setSeriesPaint(0, new Color(246, 230, 179));
+        renderer.setSeriesPaint(1, new Color(236, 208, 120));
+        renderer.setSeriesPaint(2, new Color(217,  91,  67));
+        renderer.setSeriesPaint(3, new Color(192,  41,  66));
+        renderer.setSeriesPaint(4, new Color( 84,  36,  55));
+        renderer.setSeriesPaint(5, new Color( 83, 119, 122));
+        renderer.setSeriesPaint(6, new Color(  0, 133, 191));
+        renderer.setSeriesPaint(7, new Color(  0, 110, 183));
 
         // Remove ugly 3D-like shadow effect:
         XYBarRenderer xyRenderer = (XYBarRenderer) renderer;
