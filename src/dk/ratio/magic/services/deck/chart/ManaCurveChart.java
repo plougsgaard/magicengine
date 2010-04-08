@@ -5,8 +5,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.xy.XYIntervalSeries;
+import org.jfree.data.xy.XYIntervalSeriesCollection;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * A chart representing the mana curve of a deck. It presents two categories; the mana curve for creatures, and the
@@ -22,81 +30,100 @@ public class ManaCurveChart implements Chart {
     Deck deck;
 
     public ManaCurveChart(Deck deck) {
+        logger.info("[ManaCurveChart] Instantiating!");
         this.deck = deck;
+
+        logger.info("[ManaCurveChart] Creating statistics.");
         stats = new DeckStatistics(deck);
+
+        logger.info("[ManaCurveChart] Creating charts...");
         creatureCurveChart = makeCreatureChart();
         spellCurveChart = makeSpellsChart();
         coalescedCurveChart = makeCoalescedChart();
     }
 
     private JFreeChart makeCreatureChart() {
-        DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
-
-        // Add column with creature spell mana curve:
-        for (Pair<Integer, Integer> pair : stats.getCreatureCMCs()) {
-            dataSet.addValue(pair.getSecond(), "CMC " + pair.getFirst(), "");
-        }
-
-        return ChartFactory.createBarChart(
-                "Mana curve (creatures)", // Chart title
-                "CMC", // x-axis description
-                "Number of cards", // y-axis description
-                dataSet,
+        JFreeChart chart = ChartFactory.createXYBarChart(
+                null,
+                "CMC",
+                false,
+                "Number of cards",
+                makeDataSet(stats.getCreatureCMCs()),
                 PlotOrientation.VERTICAL,
-                true, // Chart contains a legend
-                false, // No tooltips
-                false // No urls
+                false,
+                false,
+                false
         );
+
+        setStyle(chart);
+
+        return chart;
     }
 
     private JFreeChart makeSpellsChart() {
-        DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
-
-        // Add column with other spells mana curve:
-        for (Pair<Integer, Integer> pair : stats.getSpellCMCs()) {
-            dataSet.addValue(pair.getSecond(), "CMC " + pair.getFirst(), "");
-        }
-
-        return ChartFactory.createBarChart(
-                "Mana curve (other spells)", // Chart title
-                "CMC", // x-axis description
-                "Number of cards", // y-axis description
-                dataSet,
+        JFreeChart chart = ChartFactory.createXYBarChart(
+                null,
+                "CMC",
+                false,
+                "Number of cards",
+                makeDataSet(stats.getSpellCMCs()),
                 PlotOrientation.VERTICAL,
-                true, // Chart contains a legend
-                false, // No tooltips
-                false // No urls
+                false,
+                false,
+                false
         );
+
+        setStyle(chart);
+
+        return chart;
     }
 
     private JFreeChart makeCoalescedChart() {
-        DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
-
-        // Add column with creature mana curve to data set:
-        for (Pair<Integer, Integer> pair : stats.getCreatureCMCs()) {
-            if (pair.getSecond() != 0) {
-                //logger.info("CMC, #Creatures: " + pair.getFirst() + ", " + pair.getSecond());
-                dataSet.addValue(pair.getSecond(), pair.getFirst(), "Spells");
-            }
-        }
-
-        // Add column with other spells mana curve to data set:
-        for (Pair<Integer, Integer> pair : stats.getSpellCMCs()) {
-            if (pair.getSecond() != 0) {
-                //logger.info("CMC, #Spells: " + pair.getFirst() + ", " + pair.getSecond());
-                dataSet.addValue(pair.getSecond(), pair.getFirst(), "Creatures");
-            }
-        }
-        return ChartFactory.createBarChart(
-                "Mana curve (coalesced)", // Chart title
-                "CMC", // x-axis description
-                "Number of cards", // y-axis description
-                dataSet,
+        JFreeChart chart = ChartFactory.createXYBarChart(
+                null,
+                "CMC",
+                false,
+                "Number of cards",
+                makeDataSet(stats.getCoalescedCMCs()),
                 PlotOrientation.VERTICAL,
-                true, // Chart contains a legend
-                false, // No tooltips
-                false // No urls
+                false,
+                false,
+                false
         );
+
+        setStyle(chart);
+
+        return chart;
+    }
+
+    private XYIntervalSeriesCollection makeDataSet(ArrayList<Pair<Integer, Integer>> list) {
+        XYIntervalSeriesCollection dataSet = new XYIntervalSeriesCollection();
+
+        for (Pair<Integer, Integer> pair : list) {
+            XYIntervalSeries series = new XYIntervalSeries(pair.getFirst());
+            addToSeriesWithXInterval(series, 0.25d, pair.getFirst(), pair.getSecond());
+            dataSet.addSeries(series);
+        }
+
+        return dataSet;
+    }
+
+    private void setStyle(JFreeChart chart) {
+        XYPlot plot = chart.getXYPlot();
+
+        // Set y-axis to display integral values only:
+        NumberAxis axis = (NumberAxis) plot.getRangeAxis();
+        axis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
+        // Set bar colours to blue:
+        XYItemRenderer renderer = plot.getRenderer();
+        for (int i = 0; i <= 15; i++) {
+            renderer.setSeriesPaint(i, Color.BLUE);
+        }
+    }
+
+    private void addToSeriesWithXInterval(XYIntervalSeries series, double interval, int xVal, int yVal) {
+        series.add(xVal, xVal - interval, xVal + interval, yVal, yVal, yVal);
     }
 
     /**

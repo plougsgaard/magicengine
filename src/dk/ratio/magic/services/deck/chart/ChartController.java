@@ -1,6 +1,8 @@
 package dk.ratio.magic.services.deck.chart;
 
 import dk.ratio.magic.repository.deck.DeckDao;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,26 +21,52 @@ import java.io.OutputStream;
 @Controller
 public class ChartController
 {
+
+    private final Log logger = LogFactory.getLog(getClass());
+
     @Autowired
     private DeckDao deckDao;
 
-    @RequestMapping("/services/deck/{deckId}/chart")
+    @RequestMapping("/services/deck/{deckId}/chart/{chartType}")
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response,
-                                      @PathVariable("deckId") Integer deckId)
-            throws ServletException, IOException
-    {
-        ChartBuilder builder = new ChartBuilder(260, 600);
-        BufferedImage image = builder.createCoalescedManaCurveChart(deckDao.getDeck(deckId));
+                                      @PathVariable("deckId") Integer deckId,
+                                      @PathVariable("chartType") String chartType)
+            throws ServletException, IOException {
 
-        response.setContentType("image/png");
-        OutputStream outputStream = response.getOutputStream();
-        ImageIO.write(image, "png", outputStream);
+        ChartBuilder builder = new ChartBuilder(260, 600);
+        BufferedImage image = null;
+
+        if (chartType.equals("creature")) {
+            image = builder.createCreatureManaCurveChart(deckDao.getDeck(deckId));
+        } else if (chartType.equals("spell")) {
+            image = builder.createSpellManaCurveChart(deckDao.getDeck(deckId));
+        } else {
+            // Default to the coalesced chart...
+            image = builder.createCoalescedManaCurveChart(deckDao.getDeck(deckId));
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        boolean written = ImageIO.write(image, "png", outputStream);
+
+        if (!written) {
+            logger.warn("Failed to write image!");
+        }
+
+        outputStream.flush();
+        byte[] imageAsBytes = outputStream.toByteArray();
         outputStream.close();
 
-        /*
-         * Returning null tells Spring MVC that we have taken care of
-         * writing the response ourselves.
+        response.setContentType("image/png");
+        OutputStream responseOutputStream = response.getOutputStream();
+        responseOutputStream.write(imageAsBytes);
+        responseOutputStream.flush();
+        responseOutputStream.close();
+
+        /**
+         * Returning null tells Spring we have handled response.
          */
         return null;
     }
+    
+
 }
