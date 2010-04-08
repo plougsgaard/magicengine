@@ -28,7 +28,7 @@ public class ChartController
             throws ServletException, IOException
     {
         ChartBuilder builder = new ChartBuilder(260, 600);
-        BufferedImage image = builder.createManaCurveChart(deckDao.getDeck(deckId));
+        BufferedImage image = builder.createCoalescedManaCurveChart(deckDao.getDeck(deckId));
 
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "png", byteOutputStream );
