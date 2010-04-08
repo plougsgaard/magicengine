@@ -3,6 +3,7 @@ package dk.ratio.magic.repository.user;
 import dk.ratio.magic.domain.db.deck.Deck;
 import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.domain.web.user.PasswordChange;
+import dk.ratio.magic.domain.web.user.ProfileEdit;
 import dk.ratio.magic.util.repository.Page;
 import dk.ratio.magic.util.repository.Pagination;
 import org.apache.commons.logging.Log;
@@ -155,6 +156,19 @@ public class JdbcUserDao implements UserDao
         );
         logger.info("Changed password for " +  user.getEmail() + ". " +
                     "Updated " + count + " rows in `users`.");
+    }
+
+    public void update(ProfileEdit profileEdit)
+    {
+        int count = namedParameterJdbcTemplate.update(
+                "UPDATE users SET name = :name, email = :email " +
+                "WHERE id = :id",
+                new MapSqlParameterSource()
+                    .addValue("id", profileEdit.getId())
+                    .addValue("name", profileEdit.getName())
+                    .addValue("email", profileEdit.getEmail())
+        );
+        logger.info("Updated user. Updated " + count + " rows in `users`.");
     }
 
     public String SHA1(String input)

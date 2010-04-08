@@ -1,5 +1,6 @@
 package dk.ratio.magic.web.user;
 
+import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.domain.web.user.Credentials;
 import dk.ratio.magic.repository.user.UserDao;
 import dk.ratio.magic.services.user.UserManager;
@@ -72,12 +73,12 @@ public class LoginForm
         }
 
         // set session
-        userManager.createSessionUser(request, response, credentials);
+        User user = userManager.createSessionUser(request, response, credentials);
 
         String urlAfterSuccess = (String) request.getSession().getAttribute("urlAfterSuccess");
         if (StringUtils.isBlank(urlAfterSuccess)) {
             // if a forward url was set not set we default to /user/home
-            return Views.redirect(request, "/user/home");
+            return Views.redirect(request, "/user/" + user.getId());
         }
         return new ModelAndView(new RedirectView(urlAfterSuccess));
     }
