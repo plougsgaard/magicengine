@@ -166,6 +166,25 @@ public class JdbcCardDao implements CardDao
         );
     }
 
+    public byte[] getThumbnail(int cardId)
+    {
+        return simpleJdbcTemplate.queryForObject(
+                "SELECT thumbnail FROM cards WHERE id = :cardId", byte[].class,
+                new MapSqlParameterSource()
+                .addValue("cardId", cardId)
+        );
+    }
+
+    public void setThumbnail(int cardId, byte[] data)
+    {
+        simpleJdbcTemplate.update(
+                "UPDATE cards SET thumbnail = :thumbnail WHERE id = :cardId",
+                new MapSqlParameterSource()
+                .addValue("cardId", cardId)
+                .addValue("thumbnail", data)
+        );
+    }
+
     /**
      * Finds suggestions to which cards a text input might refer to.
      *

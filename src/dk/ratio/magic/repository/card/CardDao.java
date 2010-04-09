@@ -18,6 +18,8 @@ public interface CardDao
     public byte[] getImage(int cardId);
     public byte[] getCutout(int cardId);
     public void setCutout(int cardId, byte[] data);
+    public byte[] getThumbnail(int cardId);
+    public void setThumbnail(int cardId, byte[] data);
 
     public List<Card> getSuggestions(String likeness);
 
