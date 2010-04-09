@@ -93,7 +93,7 @@ public class ImageController
         return null;
     }
 
-    @RequestMapping("/services/card/crop-image/{cardId}")
+    @RequestMapping("/services/card/image/{cardId}/cutout")
     public ModelAndView cropHandle(HttpServletRequest request, HttpServletResponse response,
                                    @PathVariable("cardId") Integer cardId)
             throws ServletException, IOException

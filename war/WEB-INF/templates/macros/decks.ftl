@@ -7,7 +7,7 @@
 <div class="grid_8 alpha omega" style="margin-bottom:0.5em;">
     <div class="list-image" style="float:left; padding: 0 1em 0 1em;">
         <a href="${rc.getContextPath()}/deck/${deck.id}">
-        <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/crop-image/${deck.featureCardId}"/>
+        <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/image/${deck.featureCardId}/cutout"/>
         </a>
     </div>
     <div class="list-deck" style="margin: 0 0 0 0.5em;">
