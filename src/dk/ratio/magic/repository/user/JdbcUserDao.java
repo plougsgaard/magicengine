@@ -111,7 +111,10 @@ public class JdbcUserDao implements UserDao
         else
         {
             user.setId(keyHolder.getKey().intValue());
-            logger.info("Added User: " + user + ". Affected rows: " + count);
+            logger.info("Added user to the database. " +
+                        "[user: " + user + "] " +
+                        "[count: " + count + "] " +
+                        "");
         }
         return user;
     }
@@ -126,7 +129,10 @@ public class JdbcUserDao implements UserDao
                     .addValue("name", profileEdit.getName())
                     .addValue("email", profileEdit.getEmail())
         );
-        logger.info("Updated user. Updated " + count + " rows in `users`.");
+        logger.info("Updated user in the database. " +
+                        "[profileEdit: " + profileEdit + "] " +
+                        "[count: " + count + "] " +
+                        "");
     }
 
     public String SHA1(String input)

@@ -58,9 +58,6 @@ public class UserEditForm
             return Views.disallow("You can only edit your own profile.");
         }
 
-        logger.info("Mandatory logging. " +
-                    "[profileEdit: " + profileEdit + "]");
-
         ModelAndView mv = new ModelAndView("/user/edit/form");
 
         new UserEditValidator().validate(userManager, userDao, profileEdit, bindingResult);
@@ -75,6 +72,8 @@ public class UserEditForm
         }
 
         // update user and refresh session
+        logger.info("Profile was edited. " +
+                    "[profileEdit: " + profileEdit + "]");
         userDao.update(profileEdit);
         userManager.destroySessionUser(request, response);
         userManager.createSessionUser(request, response, userDao.get(userId));

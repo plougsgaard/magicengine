@@ -86,8 +86,6 @@ public class UserManager
 
         String encryptedPassword = userDao.SHA1(credentials.getPassword() + user.getPasswordSalt());
 
-        logger.info(encryptedPassword);
-
         return encryptedPassword.equals(user.getPassword());
     }
 
@@ -100,8 +98,6 @@ public class UserManager
         }
 
         String encryptedPassword = userDao.SHA1(password + user.getPasswordSalt());
-
-        logger.info(encryptedPassword);
 
         return encryptedPassword.equals(user.getPassword());
     }

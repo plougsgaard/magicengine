@@ -31,13 +31,9 @@ public class ManaCurveChart implements Chart {
     Deck deck;
 
     public ManaCurveChart(Deck deck) {
-        logger.info("[ManaCurveChart] Instantiating!");
         this.deck = deck;
 
-        logger.info("[ManaCurveChart] Creating statistics.");
         stats = new DeckStatistics(deck);
-
-        logger.info("[ManaCurveChart] Creating charts...");
         creatureCurveChart = makeCreatureChart();
         spellCurveChart = makeSpellsChart();
         coalescedCurveChart = makeCoalescedChart();
