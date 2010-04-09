@@ -1,6 +1,4 @@
-<#ftl encoding="UTF-8" strip_whitespace=true />
 
-<#assign springtags=JspTaglibs["http://www.springframework.org/tags"]>
 <#setting locale="en_GB">
 
 <#include "utilities.ftl">

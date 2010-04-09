@@ -1,7 +1,7 @@
 <#include "../macros/site.ftl">
 <#include "../macros/decks.ftl">
 
-<@page title="${deck.title}">
+<@page title="${deck.title}" scripts=["/deck/show.js"]>
 <div class="grid_9 omega">
 
     <div class="grid_9 alpha omega">
@@ -9,7 +9,7 @@
 
             <h1><a href="${rc.getContextPath()}/decks">Decks</a> | ${deck.title}</h1>
 <div class="content" style="float:right;">
-                <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/crop-image/${deck.featureCardId}"/>
+                <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/image/${deck.featureCardId}/cutout"/>
             </div>
             <h2 style="margin:0 0 1em 0;">by ${deck.author.name}</h2>
 
@@ -80,21 +80,32 @@
     </div>
 
     <div class="grid_9 alpha omega">
-       <div class="content">
-        <h3>Mana Curve (creatures)</h3>
-        <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/creature"/>
-        <h3>Mana Curve (other spells)</h3>
-        <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/spell"/>
-        <h3>Mana Curve (coalesced)</h3>
-        <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/coalesced"/>
+        <div class="content">
+            <h3>Mana Curve <a name="charts"> </a> <a id="expand-extra-charts" href="#charts">+</a></h3>
+
+            <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/coalesced"/>
+
+            <div id="extra-charts" style="display:none;">
+                <h3>Mana Curve (creatures)</h3>
+                <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/creature"/>
+
+                <h3>Mana Curve (other spells)</h3>
+                <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/spell"/>
+            </div>
+
+            <h3>Pictures <a name="pictures"> </a> <a id="expand-card-pictures" href="#pictures">+</a></h3>
+
         </div>
     </div>
 
 </div> <!-- right pane -->
 
+
 <div class="grid_12 separator alpha omega">
     <img alt="Separator" src="${rc.getContextPath()}/static/images/site/separator.png"/>
 </div>
+
+<div id="card-pictures" style="display:none;">
 
 <div class="grid_12">
 <div style="padding:10px 0 10px 0; text-align: center;">
@@ -102,5 +113,7 @@
 <@drawCardImage card />
 </#list>
 </div>
+</div>
+
 </div>
 </@page>
