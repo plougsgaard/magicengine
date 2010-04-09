@@ -32,7 +32,7 @@ public class JdbcUserDao implements UserDao
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public User getUser(int id)
+    public User get(int id)
     {
         List<User> results = simpleJdbcTemplate.query(
                 "SELECT id, email, password, password_salt, name FROM users " +
@@ -50,7 +50,7 @@ public class JdbcUserDao implements UserDao
         return results.get(0);
     }
 
-    public User getUser(String email)
+    public User get(String email)
     {
         List<User> results = simpleJdbcTemplate.query(
                 "SELECT id, email, password, password_salt, name FROM users " +
@@ -81,7 +81,7 @@ public class JdbcUserDao implements UserDao
         );
     }
 
-    public User addUser(User user)
+    public User create(User user)
     {
         /*
          * Generate password salt first. It might be set, and then again
@@ -114,48 +114,6 @@ public class JdbcUserDao implements UserDao
             logger.info("Added User: " + user + ". Affected rows: " + count);
         }
         return user;
-    }
-
-    /**
-     * Save (change) a user (without changing password or id).
-     *
-     * @param user  the user object containing the relevant fields
-     *              we wish to save
-     */
-    public void saveUser(User user)
-    {
-        int count = namedParameterJdbcTemplate.update(
-            "UPDATE users SET name = :name, email = :email " +
-            "WHERE id = :id",
-            new MapSqlParameterSource()
-                .addValue("id", user.getId())
-                .addValue("name", user.getName())
-                .addValue("email", user.getEmail())
-        );
-        logger.info("Saved user. Updated " + count + " rows in `users`.");
-    }
-
-    public void changePassword(User user)
-    {
-        /*
-         * Generate password salt first. It might be set, and then again
-         * it might not. We don't really care.
-         */
-        String passwordSalt = String.valueOf(
-                System.currentTimeMillis() * new Random().nextGaussian()
-        );
-        user.setPasswordSalt(passwordSalt);
-
-        int count = namedParameterJdbcTemplate.update(
-            "UPDATE users SET password = sha1(:password), password_salt = :password_salt " +
-            "WHERE id = :id",
-            new MapSqlParameterSource()
-                .addValue("id", user.getId())
-                .addValue("password", user.getPassword() + user.getPasswordSalt())
-                .addValue("password_salt", user.getPasswordSalt())
-        );
-        logger.info("Changed password for " +  user.getEmail() + ". " +
-                    "Updated " + count + " rows in `users`.");
     }
 
     public void update(ProfileEdit profileEdit)

@@ -35,7 +35,7 @@ public class UserController
     public ModelAndView userHandler(@PathVariable("userId") Integer userId)
     {
         ModelAndView mv = new ModelAndView("/user/show");
-        mv.addObject("user", userDao.getUser(userId));
+        mv.addObject("user", userDao.get(userId));
         return mv;
     }
 

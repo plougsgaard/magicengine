@@ -28,7 +28,7 @@ public class FetchDeckController
     @RequestMapping("/services/deck/fetch/{deckId}/key/{key}")
     public ModelAndView defaultHandler(@PathVariable Integer deckId, @PathVariable String key)
     {
-        Deck deck = deckDao.getDeck(deckId);
+        Deck deck = deckDao.get(deckId);
 
         String deckKey = userDao.SHA1(deck.getAuthor().getPassword() + deckId);
 
@@ -65,7 +65,7 @@ public class FetchDeckController
     @RequestMapping("/services/deck/fetch/{deckId}")
     public ModelAndView publicHandler(@PathVariable Integer deckId)
     {
-        Deck deck = deckDao.getDeck(deckId);
+        Deck deck = deckDao.get(deckId);
 
         if (!"public".equalsIgnoreCase(deck.getStatus())) {
             return failHandler();

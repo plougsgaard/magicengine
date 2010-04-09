@@ -31,7 +31,7 @@ public class UserManager
 
     public User createSessionUser(HttpServletRequest request, HttpServletResponse response, Credentials credentials)
     {
-        User user = userDao.getUser(credentials.getEmail());
+        User user = userDao.get(credentials.getEmail());
 
         request.getSession().setAttribute(USER_SESSION_NAME, user);
 
@@ -78,7 +78,7 @@ public class UserManager
 
     public boolean isAuthentic(Credentials credentials)
     {
-        User user = userDao.getUser(credentials.getEmail());
+        User user = userDao.get(credentials.getEmail());
 
         if (user == null) {
             return false;
@@ -93,7 +93,7 @@ public class UserManager
 
     public boolean isAuthentic(int id, String password)
     {
-        User user = userDao.getUser(id);
+        User user = userDao.get(id);
 
         if (user == null) {
             return false;

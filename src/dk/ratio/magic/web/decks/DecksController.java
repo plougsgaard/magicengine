@@ -58,7 +58,7 @@ public class DecksController
         ModelAndView mv = new ModelAndView("/decks/user/list");
         mv.addObject("deckPage", deckDao.getPublicUserDeckPage(
                 pageNumber, userId));
-        User user = userDao.getUser(userId);
+        User user = userDao.get(userId);
         mv.addObject("user", user);
 
         return mv;

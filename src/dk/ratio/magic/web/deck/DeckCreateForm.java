@@ -58,7 +58,7 @@ public class DeckCreateForm
             return mv;
         }
 
-        deck = deckDao.addDeck(deck, userManager.getSessionUser(request));
+        deck = deckDao.create(deck, userManager.getSessionUser(request));
         return Views.redirect(request, "/deck/" + deck.getId() + "/edit");
     }
 }

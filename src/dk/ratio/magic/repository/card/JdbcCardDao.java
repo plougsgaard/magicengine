@@ -70,22 +70,10 @@ public class JdbcCardDao implements CardDao
      */
     public Card getCard(int cardId)
     {
-        String selectClause = "SELECT " +
-                              "card.id, " +
-                              "card.card_name, " +
-                              "card.mana_cost, " +
-                              "card.converted_mana_cost, " +
-                              "card.types, " +
-                              "card.card_text, " +
-                              "card.expansion, " +
-                              "card.rarity, " +
-                              "card.card_number, " +
-                              "card.artist, " +
-                              "card.price ";
-        String fromWhereClause = "FROM cards card " +
+        String fromWhereClause = CardMapper.FROM +
                                  "WHERE card.id=:id " +
                                  "LIMIT 1";
-        String query = selectClause + fromWhereClause;
+        String query = CardMapper.SELECT + fromWhereClause;
         List<Card> cards = simpleJdbcTemplate.query(
                 query,
                 new CardMapper(),
@@ -104,22 +92,8 @@ public class JdbcCardDao implements CardDao
 
     public List<Card> getCards()
     {
-        String selectClause = "SELECT " +
-                              "card.id, " +
-                              "card.card_name, " +
-                              "card.mana_cost, " +
-                              "card.converted_mana_cost, " +
-                              "card.types, " +
-                              "card.card_text, " +
-                              "card.expansion, " +
-                              "card.rarity, " +
-                              "card.card_number, " +
-                              "card.artist, " +
-                              "card.price ";
-        String fromWhereClause = "FROM cards card";
-        String query = selectClause + fromWhereClause;
         return simpleJdbcTemplate.query(
-                query,
+                CardMapper.SELECT + CardMapper.FROM,
                 new CardMapper(),
                 new MapSqlParameterSource()
         );
@@ -215,19 +189,8 @@ public class JdbcCardDao implements CardDao
     private List<Card> getSuggestions(String fragment, int limit)
     {
         String query =
-                "SELECT " +
-                "card.id, " +
-                "card.card_name, " +
-                "card.mana_cost, " +
-                "card.converted_mana_cost, " +
-                "card.types, " +
-                "card.card_text, " +
-                "card.expansion, " +
-                "card.rarity, " +
-                "card.card_number, " +
-                "card.artist, " +
-                "card.price " +
-                "FROM cards card " +
+                CardMapper.SELECT +
+                CardMapper.FROM +
                 "WHERE card.card_name LIKE :fragment " +
                 "LIMIT :limit";
         return simpleJdbcTemplate.query(
@@ -239,37 +202,12 @@ public class JdbcCardDao implements CardDao
         );
     }
 
-    /**
-     * Get the number of cards in the database. Useful stuff!
-     *
-     * @return number of cards in database
-     */
-    public int getCardCount()
-    {
-        return simpleJdbcTemplate.queryForInt(
-                "SELECT COUNT(*) FROM cards",
-                new MapSqlParameterSource()
-        );
-    }
-
     public Page<Card> getCardPage(Integer pageNumber)
     {
-        String selectClause = "SELECT " +
-                              "card.id, " +
-                              "card.card_name, " +
-                              "card.mana_cost, " +
-                              "card.converted_mana_cost, " +
-                              "card.types, " +
-                              "card.card_text, " +
-                              "card.expansion, " +
-                              "card.rarity, " +
-                              "card.card_number, " +
-                              "card.artist, " +
-                              "card.price ";
-        String fromWhereClause = "FROM cards card " +
+        String fromWhereClause = CardMapper.FROM +
                                  "ORDER BY card.card_name ASC";
         return new Pagination<Card>().fetchPage(
-                pageNumber, simpleJdbcTemplate, selectClause, fromWhereClause,
+                pageNumber, simpleJdbcTemplate, CardMapper.SELECT, fromWhereClause,
                 new MapSqlParameterSource(),
                 new CardMapper()
         );
@@ -406,6 +344,22 @@ public class JdbcCardDao implements CardDao
             card.setPrice(rs.getDouble("card.price"));
             return card;
         }
+
+        public static final String SELECT = 
+                "SELECT " +
+                "card.id, " +
+                "card.card_name, " +
+                "card.mana_cost, " +
+                "card.converted_mana_cost, " +
+                "card.types, " +
+                "card.card_text, " +
+                "card.expansion, " +
+                "card.rarity, " +
+                "card.card_number, " +
+                "card.artist, " +
+                "card.price ";
+        public static final String FROM =
+                "FROM cards card ";
     }
 
     private static class PriceMapper implements RowMapper<Price>

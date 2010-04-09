@@ -25,7 +25,7 @@ public class DeckController
     public ModelAndView showHandler(HttpServletRequest request, @PathVariable("deckId") int deckId)
     {
         ModelAndView mv = new ModelAndView("/deck/show");
-        Deck deck = deckDao.getDeck(deckId);
+        Deck deck = deckDao.get(deckId);
         Collections.sort(deck.getCards());
         mv.addObject("deck", deck);
 

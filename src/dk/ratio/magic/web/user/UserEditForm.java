@@ -42,7 +42,7 @@ public class UserEditForm
         }
 
         ModelAndView mv = new ModelAndView("/user/edit/form");
-        mv.addObject("profileEdit", new ProfileEdit(userDao.getUser(userId)));
+        mv.addObject("profileEdit", new ProfileEdit(userDao.get(userId)));
         return mv;
     }
 
@@ -77,7 +77,7 @@ public class UserEditForm
         // update user and refresh session
         userDao.update(profileEdit);
         userManager.destroySessionUser(request, response);
-        userManager.createSessionUser(request, response, userDao.getUser(userId));
+        userManager.createSessionUser(request, response, userDao.get(userId));
         
         return mv;
     }

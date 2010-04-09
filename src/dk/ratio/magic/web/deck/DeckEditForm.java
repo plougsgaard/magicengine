@@ -49,7 +49,7 @@ public class DeckEditForm
             return Views.loginRedirect(request);
         }
 
-        Deck originalDeck = deckDao.getDeck(deckId);
+        Deck originalDeck = deckDao.get(deckId);
         User author = originalDeck.getAuthor();
         User sessionUser = userManager.getSessionUser(request);
 
@@ -60,13 +60,13 @@ public class DeckEditForm
         }
 
         ModelAndView mv = new ModelAndView("/deck/edit");
-        mv.addObject("deck", deckDao.getDeck(deckId));
+        mv.addObject("deck", deckDao.get(deckId));
 
         /*
          * Sets the key used by js authentication when doing the async
          * callback method to retrieve the cards in the deck.
          */
-        String encryptedPassword = deckDao.getDeck(deckId).getAuthor().getPassword();
+        String encryptedPassword = deckDao.get(deckId).getAuthor().getPassword();
         String deckKey = userDao.SHA1(encryptedPassword + deckId);
         mv.addObject("deckKey", deckKey);
 
@@ -84,7 +84,7 @@ public class DeckEditForm
             return Views.loginRedirect(request);
         }
 
-        Deck originalDeck = deckDao.getDeck(deckId);
+        Deck originalDeck = deckDao.get(deckId);
         User author = originalDeck.getAuthor();
         User sessionUser = userManager.getSessionUser(request);
 
@@ -126,6 +126,8 @@ public class DeckEditForm
         deck.setColours(colours);
 
 
+
+
         // Cards
         List<Card> cards = new ArrayList<Card>();
 
@@ -144,6 +146,10 @@ public class DeckEditForm
                     cards.add(card);
                 }
             }
+        }
+
+        if (deck.getFeatureCardId() == 0) {
+            deck.setFeatureCardId(1);
         }
 
         // Save the deck
