@@ -19,19 +19,18 @@
 
 <div class="grid_6 alpha">
     <div class="content">
-        <h2><a href="${rc.getContextPath()}/decks/user/${user.id}">Public Decks</a></h2>
-
         <#if Session.userSession?? && Session.userSession.id == user.id>
         <h2>
-            Hidden Decks
+            Your decks
         </h2>
         <@drawPageSelect deckPage "/user/${user.id}/page/" />
 
         <@drawPageItems deckPage />
 
         <@drawPageSelect deckPage "/user/${user.id}/page/" />
+        <#else>
+        <h2><a href="${rc.getContextPath()}/decks/user/${user.id}">Public decks by ${user.name}</a></h2>
         </#if>
-
     </div>
 </div>
 
