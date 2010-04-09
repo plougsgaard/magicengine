@@ -33,8 +33,9 @@
 
 <#macro getSellerName id>
 <#switch id>
-<#case 1>ManaLeak.com<#break>
-<#case 2>MagicMadhouse.co.uk<#break>
+<#case 1><a href="http://www.manaleak.com">ManaLeak.com</a><#break>
+<#case 2><a href="http://www.magicmadhouse.co.uk">MagicMadhouse.co.uk</a><#break>
+<#case 3><a href="http://www.booster-packs.com">Booster-Packs.com</a><#break>
 <#default>Unknown Seller
 </#switch>
 </#macro>

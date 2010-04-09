@@ -21,7 +21,8 @@ public class PriceCallable implements Callable<List<Price>>
 
     private Class[] callables = {
             ManaleakPriceCallable.class,
-            MagicMadhousePriceCallable.class
+            MagicMadhousePriceCallable.class,
+            BoosterPacksPriceCallable.class
     };
 
     private List<Future<Price>> futures = new ArrayList<Future<Price>>(callables.length);
