@@ -140,8 +140,9 @@ public class ManaCurveChart implements Chart {
 
         chart.getXYPlot().setRangeZeroBaselineVisible(false);
         chart.getXYPlot().setRangeMinorGridlinesVisible(true);
-        chart.getXYPlot().setRangeMinorGridlinePaint(new Color(217,  91,  67)); // x-grid
-        chart.getXYPlot().setRangeGridlinesVisible(false);
+        chart.getXYPlot().setRangeMinorGridlinePaint(new Color(200,  200,  200)); // minor x-grid
+        chart.getXYPlot().setRangeGridlinePaint(new Color(217,  91,  67)); // x-grid
+        chart.getXYPlot().setRangeGridlinesVisible(true);
         chart.getXYPlot().setRangeCrosshairVisible(false);
 
         // Set y-axis to display integral values only:
