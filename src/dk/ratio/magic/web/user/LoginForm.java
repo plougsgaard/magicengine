@@ -63,9 +63,8 @@ public class LoginForm
     public ModelAndView submitHandler(HttpServletRequest request, HttpServletResponse response,
                                       Credentials credentials, BindingResult bindingResult)
     {
-        new UserLoginValidator().validate(userManager, userDao, credentials, bindingResult);
-
         // implicit authentication
+        new UserLoginValidator().validate(userManager, userDao, credentials, bindingResult);
         if (bindingResult.hasErrors()) {
             ModelAndView mv = new ModelAndView("/user/login");
             mv.addObject("bindingResult", bindingResult);

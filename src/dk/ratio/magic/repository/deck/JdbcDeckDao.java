@@ -1,22 +1,21 @@
 package dk.ratio.magic.repository.deck;
 
+import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.deck.Comment;
 import dk.ratio.magic.domain.db.deck.Deck;
+import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.repository.card.CardDao;
-import dk.ratio.magic.repository.deck.DeckDao;
 import dk.ratio.magic.util.repository.Page;
 import dk.ratio.magic.util.repository.Pagination;
-import dk.ratio.magic.domain.db.user.User;
-import dk.ratio.magic.domain.db.card.Card;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,6 +35,42 @@ public class JdbcDeckDao implements DeckDao
     private CardDao cardDao;
 
     /**
+     * Fetches a deck (fully populated) from the database.
+     *
+     * @param deckId id of the deck to fetch
+     * @return       deck if found, null ow.
+     */
+    public Deck get(int deckId)
+    {
+        List<Deck> results = simpleJdbcTemplate.query(
+                DeckMapper.SELECT_FROM +
+                        "WHERE deck.id = :deckId",
+                new DeckMapper(),
+                new MapSqlParameterSource()
+                        .addValue("deckId", deckId));
+        if (results.size() != 1) {
+            logger.warn("A deck was requested, but was not found. " +
+                    "[deckId: " + deckId + "]");
+            return null;
+        }
+        Deck result = results.get(0);
+        List<Card> shallowCards = simpleJdbcTemplate.query(
+                "SELECT " +
+                        "card.id, " +
+                        "card.deck_id, " +
+                        "card.count " +
+                        "FROM view_cardscount card " +
+                        "WHERE card.deck_id = :deckId",
+                new DeckCardMapper(),
+                new MapSqlParameterSource()
+                        .addValue("deckId", deckId)
+        );
+        result.setCards(cardDao.getCards(shallowCards));
+
+        return result;
+    }
+
+    /**
      * Adds a deck (with no id) to the database and
      * returns the same deck, now with an id.
      *
@@ -44,18 +79,19 @@ public class JdbcDeckDao implements DeckDao
      * @return          deck with id added, null if it could not
      *                  be added for some reason
      */
-    public Deck addDeck(Deck deck, User author)
+    public Deck create(Deck deck, User author)
     {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int count = namedParameterJdbcTemplate.update(
-            "INSERT INTO decks (title, description, author_id, date_added, date_modified) " +
-            "VALUES (:title, :description, :author_id, :date_added, :date_modified)",
+            "INSERT INTO decks (title, description, author_id, date_added, date_modified, feature_card_id) " +
+            "VALUES (:title, :description, :author_id, :date_added, :date_modified, :feature_card_id)",
             new MapSqlParameterSource()
                 .addValue("title", deck.getTitle())
                 .addValue("description", "")
                 .addValue("author_id", author.getId())
                 .addValue("date_added", new Timestamp(System.currentTimeMillis()))
-                .addValue("date_modified", new Timestamp(System.currentTimeMillis())),
+                .addValue("date_modified", new Timestamp(System.currentTimeMillis()))
+                .addValue("feature_card_id", 1),
                 keyHolder
         );
         if (keyHolder.getKeyList().size() == 0) {
@@ -68,20 +104,23 @@ public class JdbcDeckDao implements DeckDao
         return deck;
     }
 
-    public Deck duplicateDeck(User author, int oldDeckId, String newTitle)
+    public Deck copy(User author, int oldDeckId, String newTitle)
     {
-        Deck deck = getDeck(oldDeckId);
+        Deck deck = get(oldDeckId);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int count = namedParameterJdbcTemplate.update(
-                "INSERT INTO decks (title, format, status, colours, description, author_id) " +
-                "VALUES (:title, :format, :status, :colours, :description, :author_id)",
+                "INSERT INTO decks (title, format, status, colours, description, author_id, feature_card_id, date_added, date_modified) " +
+                "VALUES (:title, :format, :status, :colours, :description, :author_id, :feature_card_id, :date_added, :date_modified)",
                 new MapSqlParameterSource()
                         .addValue("title", newTitle)
                         .addValue("format", deck.getFormat())
                         .addValue("status", "Hidden")
                         .addValue("colours", deck.getColours())
                         .addValue("description", deck.getDescription())
-                        .addValue("author_id", author.getId()),
+                        .addValue("feature_card_id", deck.getFeatureCardId())
+                        .addValue("author_id", author.getId())
+                        .addValue("date_added", new Timestamp(System.currentTimeMillis()))
+                        .addValue("date_modified", new Timestamp(System.currentTimeMillis())),
                 keyHolder
         );
         if (keyHolder.getKeyList().size() == 0) {
@@ -161,7 +200,7 @@ public class JdbcDeckDao implements DeckDao
      *
      * @param deckId id of deck to be deleted
      */
-    public void deleteDeck(Integer deckId)
+    public void delete(Integer deckId)
     {
         int cardsCount = namedParameterJdbcTemplate.update(
             "DELETE FROM deckcards WHERE deck_id = :id",
@@ -179,238 +218,27 @@ public class JdbcDeckDao implements DeckDao
                         "[deckCount: " + deckCount + "] ");
     }
 
-    /**
-     * Fetches a deck (fully populated) from the database.
-     *
-     * @param deckId id of the deck to fetch
-     * @return       deck if found, null ow.
-     */
-    public Deck getDeck(int deckId)
-    {
-        List<Deck> results = simpleJdbcTemplate.query(
-                "SELECT " +
-                "deck.id, " +
-                "deck.title, " +
-                "deck.format, " +
-                "deck.status, " +
-                "deck.colours, " +
-                "deck.description, " +
-                "deck.author_id, " +
-                "deck.feature_card_id, " +
-                "author.id, " +
-                "author.email, " +
-                "author.name " +
-                "FROM decks deck " +
-                "LEFT JOIN users author " +
-                "ON deck.author_id = author.id " +
-                "WHERE deck.id = :deckId",
-                new DeckMapper(),
-                new MapSqlParameterSource()
-                        .addValue("deckId", deckId));
-        if (results.size() != 1) {
-            logger.warn("A deck was requested, but was not found. " +
-                        "[deckId: " + deckId + "]");
-            return null;
-        }
-        Deck result = results.get(0);
-        List<Card> shallowCards = simpleJdbcTemplate.query(
-                "SELECT " +
-                "card.id, " +
-                "card.deck_id, " +
-                "card.count " +
-                "FROM view_cardscount card " +
-                "WHERE card.deck_id = :deckId",
-                new DeckCardMapper(),
-                new MapSqlParameterSource()
-                        .addValue("deckId", deckId)
-        );
-        result.setCards(cardDao.getCards(shallowCards));
-
-        return result;
-    }
-
-    public List<Comment> getComments(int deckId)
-    {
-        return simpleJdbcTemplate.query(
-                "SELECT " +
-                "comment.id, " +
-                "comment.deck_id, " +
-                "comment.author_id, " +
-                "comment.text, " +
-                "comment.date_added, " +
-                "comment.name, " +
-                "comment.email " +
-                "FROM view_comments AS comment " +
-                "WHERE comment.deck_id = :deckId " +
-                "ORDER BY comment.date_added ASC",
-                new CommentMapper(),
-                new MapSqlParameterSource()
-                .addValue("deckId", deckId));
-    }
-
-    public int getPublicDecksCount()
-    {
-        List<Integer> result = simpleJdbcTemplate.query(
-                "SELECT " +
-                "COUNT(*) " +
-                "FROM decks deck " +
-                "LEFT JOIN users author " +
-                "ON deck.author_id = author.id " +
-                "WHERE LOWER(deck.status) = 'public'",
-                new RowMapper<Integer>()
-                {
-                    public Integer mapRow(ResultSet rs, int i) throws SQLException
-                    {
-                        return rs.getInt(1);
-                    }
-                });
-        if (result.size() != 1) {
-            logger.error("Could not find the number of decks.");
-            return -1;
-        }
-        return result.get(0);
-    }
-
-    /**
-     * Retrieves a list of all public decks. Will probably be overkill
-     * when more decks are added to the site.
-     *
-     * @return list of all public decks with no cards set
-     */
-    public List<Deck> getPublicDecks()
-    {
-        return simpleJdbcTemplate.query(
-                "SELECT " +
-                "deck.id, " +
-                "deck.title, " +
-                "deck.format, " +
-                "deck.status, " +
-                "deck.colours, " +
-                "deck.description, " +
-                "deck.author_id, " +
-                "deck.feature_card_id, " +
-                "author.id, " +
-                "author.email, " +
-                "author.name " +
-                "FROM decks deck " +
-                "LEFT JOIN users author " +
-                "ON deck.author_id = author.id " +
-                "WHERE LOWER(deck.status) = 'public'" +
-                "ORDER BY deck.id DESC ",
-                new DeckMapper());
-    }
-
-    public List<Deck> getPublicDecksInRange(int begin, int end)
-    {
-        if (end < begin) {
-            throw new RuntimeException("Can't get "+ (end - begin)+" records. Duh.");
-        }
-        return simpleJdbcTemplate.query(
-                "SELECT " +
-                "deck.id, " +
-                "deck.title, " +
-                "deck.format, " +
-                "deck.status, " +
-                "deck.colours, " +
-                "deck.description, " +
-                "deck.author_id, " +
-                "deck.feature_card_id, " +
-                "author.id, " +
-                "author.email, " +
-                "author.name " +
-                "FROM decks deck " +
-                "LEFT JOIN users author " +
-                "ON deck.author_id = author.id " +
-                "WHERE LOWER(deck.status) = 'public' " +
-                "ORDER BY deck.id DESC " +
-                "LIMIT :limit OFFSET :offset",
-                new DeckMapper(),
-                new MapSqlParameterSource()
-                .addValue("limit", (end - begin))
-                .addValue("offset", begin));
-    }
-
-    /**
-     * Retrieves a list of all the decks a user has.
-     *
-     * @param userId    the id of the user (author)
-     * @return          list of all user's decks with no cards set
-     */
-    public List<Deck> getUserDecks(int userId)
-    {
-        return simpleJdbcTemplate.query(
-                "SELECT " +
-                "deck.id, " +
-                "deck.title, " +
-                "deck.format, " +
-                "deck.status, " +
-                "deck.colours, " +
-                "deck.description, " +
-                "deck.author_id, " +
-                "deck.feature_card_id, " +
-                "author.id, " +
-                "author.email, " +
-                "author.name " +
-                "FROM decks deck " +
-                "LEFT JOIN users author " +
-                "ON author.id = deck.author_id " +
-                "WHERE author.id = :user_id",
-                new DeckMapper(),
-                new MapSqlParameterSource()
-                .addValue("user_id", userId));
-    }
-
     public Page<Deck> getPublicDeckPage(Integer pageNumber)
     {
-        String selectClause =
-                "SELECT " +
-                "deck.id, " +
-                "deck.title, " +
-                "deck.format, " +
-                "deck.status, " +
-                "deck.colours, " +
-                "deck.description, " +
-                "deck.author_id, " +
-                "deck.feature_card_id, " +
-                "author.id, " +
-                "author.email, " +
-                "author.name ";
         String fromWhereClause =
-                "FROM decks deck " +
-                "LEFT JOIN users author " +
-                "ON deck.author_id = author.id " +
+                DeckMapper.FROM +
                 "WHERE LOWER(deck.status) = 'public' " +
                 "ORDER BY deck.id DESC ";
         return new Pagination<Deck>().fetchPage(
-                pageNumber, simpleJdbcTemplate, selectClause, fromWhereClause,
+                pageNumber, simpleJdbcTemplate, DeckMapper.SELECT, fromWhereClause,
                 new MapSqlParameterSource(),
                 new DeckMapper()
         );
     }
 
-    public Page<Deck> getUserDeckPage(Integer pageNumber, Integer userId)
+    public Page<Deck> getHiddenUserDeckPage(Integer pageNumber, Integer userId)
     {
-        String selectClause =
-                "SELECT " +
-                "deck.id, " +
-                "deck.title, " +
-                "deck.format, " +
-                "deck.status, " +
-                "deck.colours, " +
-                "deck.description, " +
-                "deck.author_id, " +
-                "deck.feature_card_id, " +
-                "author.id, " +
-                "author.email, " +
-                "author.name ";
         String fromWhereClause =
-                "FROM decks deck " +
-                "LEFT JOIN users author " +
-                "ON deck.author_id = author.id " +
+                DeckMapper.FROM +
                 "WHERE author.id = :user_id " +
                 "ORDER BY deck.id DESC ";
         return new Pagination<Deck>().fetchPage(
-                pageNumber, simpleJdbcTemplate, selectClause, fromWhereClause,
+                pageNumber, simpleJdbcTemplate, DeckMapper.SELECT, fromWhereClause,
                 new MapSqlParameterSource().addValue("user_id", userId),
                 new DeckMapper()
         );
@@ -418,31 +246,27 @@ public class JdbcDeckDao implements DeckDao
 
     public Page<Deck> getPublicUserDeckPage(Integer pageNumber, Integer userId)
     {
-        String selectClause =
-                "SELECT " +
-                "deck.id, " +
-                "deck.title, " +
-                "deck.format, " +
-                "deck.status, " +
-                "deck.colours, " +
-                "deck.description, " +
-                "deck.author_id, " +
-                "deck.feature_card_id, " +
-                "author.id, " +
-                "author.email, " +
-                "author.name ";
         String fromWhereClause =
-                "FROM decks deck " +
-                "LEFT JOIN users author " +
-                "ON deck.author_id = author.id " +
+                DeckMapper.FROM +
                 "WHERE author.id = :user_id " +
                 "AND LOWER(deck.status) = 'public' " +
                 "ORDER BY deck.id DESC ";
         return new Pagination<Deck>().fetchPage(
-                pageNumber, simpleJdbcTemplate, selectClause, fromWhereClause,
+                pageNumber, simpleJdbcTemplate, DeckMapper.SELECT, fromWhereClause,
                 new MapSqlParameterSource().addValue("user_id", userId),
                 new DeckMapper()
         );
+    }
+
+    public List<Comment> getComments(int deckId)
+    {
+        return simpleJdbcTemplate.query(
+                        CommentMapper.SELECT_FROM +
+                        "WHERE comment.deck_id = :deckId " +
+                        "ORDER BY comment.date_added ASC",
+                new CommentMapper(),
+                new MapSqlParameterSource()
+                        .addValue("deckId", deckId));
     }
 
     public Comment addComment(Comment comment, int deckId, User author)
@@ -497,6 +321,35 @@ public class JdbcDeckDao implements DeckDao
 
             return deck;
         }
+
+        public static final String SELECT =
+                "SELECT " +
+                "deck.id, " +
+                "deck.title, " +
+                "deck.format, " +
+                "deck.status, " +
+                "deck.colours, " +
+                "deck.description, " +
+                "deck.author_id, " +
+                "deck.feature_card_id, " +
+                "author.id, " +
+                "author.email, " +
+                "author.name ";
+
+        public static final String FROM =
+                "FROM decks deck " +
+                "LEFT JOIN users author " +
+                "ON deck.author_id = author.id ";
+
+        public static final String SELECT_FROM =
+                SELECT + FROM;
+
+        public static final String ORDER_BY =
+                "ORDER BY " +
+                "deck.date_added, " +
+                "deck.date_modified, " +
+                "deck.id " +
+                "DESC ";
     }
 
     private static class CommentMapper implements RowMapper<Comment>
@@ -519,6 +372,25 @@ public class JdbcDeckDao implements DeckDao
 
             return comment;
         }
+
+        public static final String SELECT =
+                "SELECT " +
+                "comment.id, " +
+                "comment.deck_id, " +
+                "comment.author_id, " +
+                "comment.text, " +
+                "comment.date_added, " +
+                "comment.name, " +
+                "comment.email ";
+
+        public static final String FROM =
+                "FROM view_comments AS comment ";
+
+        public static final String SELECT_FROM =
+                SELECT + FROM;
+
+        public static final String ORDER_BY =
+                "ORDER BY comment.date_added ASC ";
     }
 
     private static class DeckCardMapper implements RowMapper<Card>

@@ -51,7 +51,7 @@ public class UserInterceptor extends HandlerInterceptorAdapter
 
         // Decide whether or not to create a session based on the cookies
         if (cookieId != null && cookieSecret != null) {
-            User user = userDao.getUser(cookieId);
+            User user = userDao.get(cookieId);
             if (userManager.makeCookieSecret(user).equals(cookieSecret)) {
                 userManager.createSessionUser(request, response, user);
             }

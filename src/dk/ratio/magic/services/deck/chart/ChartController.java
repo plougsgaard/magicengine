@@ -37,12 +37,12 @@ public class ChartController
         BufferedImage image = null;
 
         if (chartType.equals("creature")) {
-            image = builder.createCreatureManaCurveChart(deckDao.getDeck(deckId));
+            image = builder.createCreatureManaCurveChart(deckDao.get(deckId));
         } else if (chartType.equals("spell")) {
-            image = builder.createSpellManaCurveChart(deckDao.getDeck(deckId));
+            image = builder.createSpellManaCurveChart(deckDao.get(deckId));
         } else {
             // Default to the coalesced chart...
-            image = builder.createCoalescedManaCurveChart(deckDao.getDeck(deckId));
+            image = builder.createCoalescedManaCurveChart(deckDao.get(deckId));
         }
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

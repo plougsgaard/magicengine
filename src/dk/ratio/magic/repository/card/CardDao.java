@@ -21,8 +21,6 @@ public interface CardDao
 
     public List<Card> getSuggestions(String likeness);
 
-    public int getCardCount();
-
     public Page<Card> getCardPage(Integer pageNumber);
 
     public Card addCard(Card card, byte[] image);

@@ -18,7 +18,7 @@ public class RegisterUserValidator
          * because it's a key in the database. Also it's inappropriate on
          * many other levels.
          */
-        if (userDao.getUser(user.getEmail()) != null) {
+        if (userDao.get(user.getEmail()) != null) {
             errors.rejectValue("email", "exists", "that email already exists");
         }
     }
