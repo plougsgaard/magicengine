@@ -109,8 +109,6 @@ public class DeckEditForm
             return mv;
         }
 
-        logger.info("Deck being edited: [" + deck + "]");
-
         /*
          * Preparing the deck to be saved
          */

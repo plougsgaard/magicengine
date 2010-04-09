@@ -64,24 +64,4 @@ public class DecksController
         return mv;
     }
 
-
-
-
-
-    @RequestMapping(value = "/decks/filterz", method = RequestMethod.POST)
-    public ModelAndView filterHandler(HttpServletRequest request,
-                                      DeckFilter deckFilter, BindingResult bindingResult)
-    {
-        logger.info("[deckFilter: " + deckFilter + "]");
-        logger.info("[bindingResult: " + bindingResult + "]");
-
-        new FilterValidator().validate(deckFilter, bindingResult);
-        if (bindingResult.hasErrors()) {
-            ModelAndView mv = new ModelAndView("/user/login");
-            mv.addObject("bindingResult", bindingResult);
-            return mv;
-        }
-
-        return Views.redirect(request, "/");
-    }
 }

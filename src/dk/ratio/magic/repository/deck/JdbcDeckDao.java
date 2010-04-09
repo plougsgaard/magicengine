@@ -99,7 +99,10 @@ public class JdbcDeckDao implements DeckDao
             return null;
         } else {
             deck.setId(keyHolder.getKey().intValue());
-            logger.info("Added Deck: " + deck + ". Affected rows: " + count);
+            logger.info("Added deck to the database. " +
+                        "[deck: " + deck + "] " +
+                        "[count: " + count + "] " +
+                        "");
         }
         return deck;
     }
@@ -128,10 +131,12 @@ public class JdbcDeckDao implements DeckDao
             return null;
         } else {
             deck.setId(keyHolder.getKey().intValue());
-            logger.info("Added Deck: " + deck + ". Affected rows: " + count);
+            logger.info("Added deck to the database. " +
+                        "[deck: " + deck + "] " +
+                        "[count: " + count + "] " +
+                        "");
         }
         for (Card card : deck.getCards()) {
-            logger.info("Inserting the card: " + card);
             namedParameterJdbcTemplate.update(
                 "INSERT INTO deckcards (deck_id, card_id, count) " +
                 "VALUES (:deck_id, :card_id, :count)",
@@ -141,7 +146,9 @@ public class JdbcDeckDao implements DeckDao
                     .addValue("count", card.getCount())
             );
         }
-        logger.info("Inserted " + deck.getCards().size() + " new rows into `deckcards`.");
+        logger.info("Inserted cards into database. " +
+                        "[deck.getCards().size(): " + deck.getCards().size() + "] " +
+                        "");
         return deck;
     }
 
@@ -289,7 +296,9 @@ public class JdbcDeckDao implements DeckDao
             return null;
         }
         comment.setId(keyHolder.getKey().intValue());
-        logger.info("Inserted a comment into the database with id=" + comment.getId());
+        logger.info("Inserted a comment into the database. " +
+                    "[comment: " + comment + "]" +
+                    "");
         return comment;
     }
 
