@@ -109,8 +109,11 @@
 
 <div class="grid_12">
 <div style="padding:10px 0 10px 0; text-align: center;">
+<#assign cardCount = 0 />
 <#list deck.cards as card>
 <@drawCardImage card />
+<#assign cardCount = cardCount + 1 />
+<#if cardCount % 4 == 0><div class="clear">&nbsp;</div></#if>
 </#list>
 </div>
 </div>

@@ -1,5 +1,6 @@
 package dk.ratio.magic.services.card;
 
+import com.sun.media.jai.codec.JPEGEncodeParam;
 import com.sun.media.jai.codec.SeekableStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,12 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.*;
+import java.net.URL;
 
 import dk.ratio.magic.repository.card.CardDao;
 
@@ -78,7 +83,7 @@ public class ImageController
             logger.info("No cached thumbnail for card. Creating one. " +
                         "[cardId: " + cardId + "]");
             image = resize(cardDao.getImage(cardId));
-            cardDao.setThumbnail(cardId, image);
+            //cardDao.setThumbnail(cardId, image);
         }
 
         response.setContentType("image/jpeg");
@@ -153,42 +158,21 @@ public class ImageController
         return outputStream.toByteArray();
     }
 
-    private byte[] resize(byte[] data)
+    private byte[] resize(byte[] data) throws IOException
     {
-        /*
-            8.3.2 Scaling Transformation
-            Scaling, also known as minification and magnification, enlarges or shrinks an image.
-            An x-value defines the amount of scaling in the x direction, and a y-value defines the
-            amount of scaling in the y direction. The Scale operation both translates and resizes.
+        Image original = ImageIO.read(new ByteArrayInputStream(data));
+        Image scaled = original.getScaledInstance(220, 314, Image.SCALE_SMOOTH);
 
-            Scaling is often used to geometrically register multiple images prior to performing a
-            combination operation, such as image addition, subtraction, division, or compositing.
-            Scaling can also be used to correct geometric distortions introduced in the image
-            acquisition process, although the Affine operation ("Affine Transformation" on page 272)
-            would be more suitable for this.
-
-            xScale          0.705128205 (target 220px)
-            yScale          0.705128205 (target 314px)
-            xTrans          0.0f
-            yTrans          0.0f
-            interpolation   new InterpolationBicubic2()
-         */
-
-        SeekableStream stream = SeekableStream.wrapInputStream(new ByteArrayInputStream(data), true);
-        RenderedOp image = JAI.create("stream", stream);
-
-        ParameterBlock parameters = new ParameterBlock();
-        parameters.addSource(image);
-        parameters.add(0.705128205f);
-        parameters.add(0.705128205f);
-        parameters.add(0.0f);
-        parameters.add(0.0f);
-        parameters.add(new InterpolationBilinear());
-
-        RenderedOp cropOperation = JAI.create("scale", parameters, null);
+        BufferedImage image = new BufferedImage(220, 314, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = (Graphics2D) image.getGraphics();
+        g.drawImage(scaled, 0, 0, null);
+        g.dispose();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        JAI.create("encode", cropOperation.getAsBufferedImage(), outputStream, "JPEG", null);
+        JPEGEncodeParam encodeParameters = new JPEGEncodeParam();
+        encodeParameters.setQuality(0.85f);
+
+        JAI.create("encode", image, outputStream, "JPEG", encodeParameters);
 
         return outputStream.toByteArray();
     }
