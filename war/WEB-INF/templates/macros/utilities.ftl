@@ -39,17 +39,6 @@
 </#switch>
 </#macro>
 
-<#macro drawCardItem card>
-<li>
-    <strong>${card.count}</strong> 
-    <a href="${rc.getContextPath()}/card/${card.id}">
-        ${card.cardName} <@drawSymbolsSmall name=card.manaCost />
-    </a>
-    &ndash;
-    <span class="price">${(card.count * card.price)?string.currency}</span>
-</li>
-</#macro>
-
 <#macro drawPageSelect page prefix>
 <#assign padding = 4 />
 <#assign count = 0 />
@@ -60,7 +49,7 @@
     <#assign offset = (offset - (padding - distLast) ) />
 </#if>
 
-<h4 class="page-select">
+<h3 class="page-select">
 
 <#if page.pageNumber == 1>
 &laquo;
@@ -102,29 +91,6 @@
 <a href="${rc.getContextPath()}${prefix}${page.pageNumber + 1}">&raquo;</a>
 </#if>
 
-</h4>
-
-</#macro>
-
-<#macro drawPageSelect_ page prefix>
-<h3>
-Page &ndash;
-<#if page.pageNumber == 1>
-&laquo;
-<#else >
-<a href="${rc.getContextPath()}${prefix}${page.pageNumber - 1}">&laquo;</a>
-</#if>
-<#list 1..page.pageCount as i>
-<#if i != page.pageNumber>
-<a href="${rc.getContextPath()}${prefix}${i}">${i}</a>
-<#else>
-${i}
-</#if>
-</#list>
-<#if page.pageNumber == page.pageCount>
-&raquo;
-<#else >
-<a href="${rc.getContextPath()}${prefix}${page.pageNumber + 1}">&raquo;</a>
-</#if>
 </h3>
+
 </#macro>

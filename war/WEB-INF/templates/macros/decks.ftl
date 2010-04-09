@@ -4,7 +4,7 @@
 <#list deckPage.items as deck>
 
 <!-- Deck item begin -->
-<div class="grid_8 alpha omega">
+<div class="grid_8 alpha omega" style="margin-bottom:0.5em;">
     <div class="list-image" style="float:left; padding: 0 1em 0 1em;">
         <a href="${rc.getContextPath()}/deck/${deck.id}">
         <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/crop-image/${deck.featureCardId}"/>
@@ -22,6 +22,17 @@
 <div class="clear"></div>
 <!-- Deck item end -->
 </#list>
+</#macro>
+
+<#macro drawCardItem card>
+<li>
+    <strong>${card.count}</strong>
+    <a href="${rc.getContextPath()}/card/${card.id}">
+        ${card.cardName} <@drawSymbolsSmall name=card.manaCost />
+    </a>
+    &ndash;
+    <span class="price">${(card.count * card.price)?string.currency}</span>
+</li>
 </#macro>
 
 <#macro drawFilterForm>

@@ -1,5 +1,6 @@
 package dk.ratio.magic.web.user;
 
+import dk.ratio.magic.repository.deck.DeckDao;
 import dk.ratio.magic.repository.user.UserDao;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
@@ -23,19 +24,24 @@ public class UserController
     private UserDao userDao;
 
     @Autowired
-    private UserManager userManager;
+    private DeckDao deckDao;
 
-    @RequestMapping("/user/home")
-    public ModelAndView homeHandler()
-    {
-        return new ModelAndView("/user/home");
-    }
+    @Autowired
+    private UserManager userManager;
 
     @RequestMapping("/user/{userId}")
     public ModelAndView userHandler(@PathVariable("userId") Integer userId)
     {
+        return pageHandler(userId, 1);
+    }
+
+    @RequestMapping("/user/{userId}/page/{pageNumber}")
+    public ModelAndView pageHandler(@PathVariable("userId") Integer userId,
+                                    @PathVariable("pageNumber") Integer pageNumber)
+    {
         ModelAndView mv = new ModelAndView("/user/show");
         mv.addObject("user", userDao.get(userId));
+        mv.addObject("deckPage", deckDao.getHiddenUserDeckPage(pageNumber, userId));
         return mv;
     }
 

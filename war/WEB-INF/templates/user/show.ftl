@@ -1,4 +1,5 @@
 <#include "../macros/site.ftl">
+<#include "../macros/decks.ftl">
 <#include "../macros/form.ftl">
 
 <@page title="${user.name}">
@@ -24,7 +25,11 @@
         <h2>
             Hidden Decks
         </h2>
-        <p>..</p>
+        <@drawPageSelect deckPage "/user/${user.id}/page/" />
+
+        <@drawPageItems deckPage />
+
+        <@drawPageSelect deckPage "/user/${user.id}/page/" />
         </#if>
 
     </div>
