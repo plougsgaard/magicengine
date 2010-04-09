@@ -35,8 +35,9 @@ public class LoginForm
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView defaultHandler(HttpServletRequest request)
     {
-        if (userManager.getSessionUser(request) != null) {
-            return Views.redirect(request, "/user/home");
+        User user = userManager.getSessionUser(request);
+        if (user != null) {
+            return Views.redirect(request, "/user/" + user.getId());
         }
         return new ModelAndView("/user/login");
     }
@@ -79,6 +80,7 @@ public class LoginForm
             // if a forward url was set not set we default to /user/home
             return Views.redirect(request, "/user/" + user.getId());
         }
+        request.getSession().setAttribute("urlAfterSuccess", null);
         return new ModelAndView(new RedirectView(urlAfterSuccess));
     }
 }
