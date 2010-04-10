@@ -68,7 +68,8 @@ function request_card (card_name, card_name_text, card_image_img, card_price_tex
         return;
     }
 
-    var url = "${rc.getContextPath()}/services/card/by-name/" + card_name;
+    var url = "${rc.getContextPath()}/services/card/by-name/" + encodeURIComponent(card_name);
+    url = url.replace("%C3%86", "Ae"); // HOTFIX :)
 
     var key = card_name.toLowerCase();
 
@@ -88,6 +89,8 @@ function request_card (card_name, card_name_text, card_image_img, card_price_tex
         show_card_proxy (cardHash.get(key));
         return;
     }
+
+    alert("url1: [" + url + "]");
 
     new Ajax.Request(url, {
         method: 'get',
