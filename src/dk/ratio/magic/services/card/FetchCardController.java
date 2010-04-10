@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 
 /**
@@ -37,7 +40,7 @@ public class FetchCardController
     private Crawler cardCrawler;
 
     @RequestMapping("/services/card/by-name/{cardName}")
-    public ModelAndView fetchHandler(@PathVariable("cardName") String cardName)
+    public ModelAndView fetchHandler(@PathVariable("cardName") String cardName) throws UnsupportedEncodingException
     {
         Card card = cardDao.getCard(cardName);
 
