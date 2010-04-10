@@ -136,7 +136,7 @@ function show_card (card, card_name_text, card_image_img, card_price_text, searc
 {
     selectedCard = card;
     var price = parseFloat(card.price);
-    card_image_img.src = "${rc.getContextPath()}/services/card/image?id=" + card.id;
+    card_image_img.src = "${rc.getContextPath()}/services/card/image/" + card.id;
     //card_name_text.update(Builder.node('span', [card.cardName, Builder.node('br'), get_colour_images(card.manaCost)]));
     card_price_text.update(decorate_price(price, "en_GB"));
     search_input.value = card.cardName;

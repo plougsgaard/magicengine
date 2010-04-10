@@ -36,36 +36,6 @@ public class FetchCardController
     @Autowired
     private Crawler cardCrawler;
 
-    /**
-     * TODO: probably not used anymore?!
-     */
-    @RequestMapping("/services/card/fetch")
-    public ModelAndView showHandler(HttpServletRequest request)
-    {
-        String cardName = request.getParameter("card_name");
-
-        if (StringUtils.isBlank(cardName)) {
-            return getFailureView("(no card supplied)");
-        }
-
-        Card card = cardDao.getCard(cardName);
-
-        if (card != null && !StringUtils.isBlank(card.getSetCode())) {
-            // The card is already in the database
-            return getSuccessView(card);
-        }
-        else {
-            // The card is NOT in the database
-            card = cardCrawler.crawlCard(cardName);
-
-            if (card == null) {
-                // Does not exist remotely either (or can't be parsed)
-                return getFailureView(cardName);
-            }
-            return getSuccessView(card);
-        }
-    }
-
     @RequestMapping("/services/card/by-name/{cardName}")
     public ModelAndView fetchHandler(@PathVariable("cardName") String cardName)
     {
