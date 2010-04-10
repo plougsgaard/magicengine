@@ -56,7 +56,7 @@ public class InformationCallable implements Callable<Card>
         }
 
         /*
-        * The beforeRequireLogin-mentioned quirk:
+        * The before-mentioned quirk:
         *
         * Æthermage's Touch -> encode(latin1) -> %C6thermage%27s+Touch
         *
@@ -78,12 +78,126 @@ public class InformationCallable implements Callable<Card>
         }
         html = html.replaceAll("\\s+", " ");
 
+        reader.close();
+
         /*
         * This is the matcher name we will be using to match the different
         * attributes of magic cards henceforth.
         */
         Matcher matcher;
         card = new Card();
+
+        /*
+         * Find expansion & set code
+         */
+        matcher = getCardAttributeMatcher("Expansion:", html);
+        if (matcher.find()) {
+            String expansionHtml = matcher.group(1);
+
+            Pattern setPattern = Pattern.compile("set=(\\w+?)&");
+            matcher = setPattern.matcher(expansionHtml);
+
+            /*
+             * http://gatherer.wizards.com/Pages/Card/
+             *
+             * <a href="Details.aspx?multiverseid=207935">
+             * <img title="Premium Deck Series: Slivers (Land)"
+             * src="../../Handlers/Image.ashx?type=symbol&amp;
+             * set=H09&amp;size=small&amp;rarity=L"
+             * alt="Premium Deck Series: Slivers (Land)"
+             * style="border-width: 0px;" align="absmiddle"></a>
+             */
+
+            matcher.find();
+            String setCode = matcher.group(1);
+
+            if (MagicSet.isMagicSet(setCode)) {
+                /*
+                 * If the expansion is a proper magic set we are done.
+                 */
+                card.setExpansion(trimHtmlTags(expansionHtml));
+                card.setSetCode(MagicSet.mostRecent(setCode).getCode());
+                logger.info("The default site lookup has the right version of the card.");
+            } else {
+                /*
+                 * Figure out if this card exists in an expansion which
+                 * is a proper magic set.
+                 *
+                 * If it's not, we just parse the card normally.
+                 */
+                matcher = getCardAttributeMatcher("Other Sets:", html);
+
+                if (matcher.find()) {
+                    String setsHtml = matcher.group(1);
+                    String sets = "";
+
+                    matcher = setPattern.matcher(setsHtml);
+                    while (matcher.find()) {
+                        sets += matcher.group(1) + ",";
+                    }
+                    logger.info("Looking at these sets for the card: " + sets);
+
+                    MagicSet set = MagicSet.mostRecent(sets);
+
+                    //Pattern p = Pattern.compile("<a href=\"(.*?)\">.+?set=" + set.getCode() + "&.+?</a>");
+                    Pattern p = Pattern.compile("<a href=\"(.+?)\">(.+?)</a>");
+                    matcher = p.matcher(setsHtml);
+                    logger.info("Pattern: " + p.pattern());
+
+                    if (!matcher.matches()) {
+                        /*
+                         * After all this trouble we give up..
+                         */
+                        logger.error("Should have found link to correct expansion. Giving up.");
+                    }
+
+                    while (matcher.find()) {
+                        if (matcher.group(2).contains("set=" + set.getGathererCode())) {
+
+                            logger.info("Found match on " + matcher.group());
+
+                            url = new URL("http://gatherer.wizards.com/Pages/Card/" + matcher.group(1));
+                            inputStream = (InputStream) url.getContent();
+                            reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+
+                            /*
+                            * Read the entire file into a string and kill unnecessary whitespace.
+                            */
+                            html = "";
+                            while ((line = reader.readLine()) != null) {
+                                html += line;
+                            }
+                            html = html.replaceAll("\\s+", " ");
+
+                            logger.info("Found correct expansion for card and loaded corresponding site." +
+                                        "[url: " + url + "] " +
+                                        "[set: " + set + "] " +
+                                        "");
+
+                            card.setExpansion(set.getTitle());
+                            card.setSetCode(set.getCode());
+
+                            break;
+                        }
+                    }
+
+                    //logger.info("setsHtml: " + setsHtml);
+
+
+
+
+                } else {
+                    /*
+                     * This card only exists as a non-proper card. So
+                     * we just add it.
+                     *
+                     * Empty block (purposely).
+                     */
+                    logger.info("Card exists only as a non-proper card. Has no other expansions.");
+                }
+            }
+        }
+
 
         /*
         * Find name
@@ -154,13 +268,7 @@ public class InformationCallable implements Callable<Card>
             card.setCardText(cardText.trim());
         }
 
-        /*
-         * Find expansion
-         */
-        matcher = getCardAttributeMatcher("Expansion:", html);
-        if (matcher.find()) {
-            card.setExpansion(trimHtmlTags(matcher.group(1)));
-        }
+
 
         /*
         * Find rarity
@@ -276,5 +384,115 @@ public class InformationCallable implements Callable<Card>
         compositeCard.setTypes(cardFirst.getTypes());
 
         return compositeCard;
+    }
+
+    public enum MagicSet
+    {
+        al("_1e", "Limited Edition Alpha"),
+        be("_2e", "Limited Edition Beta"),
+        un("_2u", "Unlimited Edition"),
+        an("an", "Arabian Nights"),
+        aq("aq", "Antiquities"),
+        rv("_3e", "Revised Edition"),
+        lg("le", "Legends"),
+        dk("dk", "The Dark"),
+        fe("fe", "Fallen Empires"),
+        _4e("_4e", "Fourth Edition"),
+        hl("hm", "Homelands"),
+        ia("ia", "Ice Age"),
+        ai("al", "Alliances"),
+        mr("mi", "Mirage"),
+        vi("vi", "Visions"),
+        _5e("_5e", "Fifth Edition"),
+        wl("wl", "Weatherlight"),
+        tp("te", "Tempest"),
+        sh("st", "Stronghold"),
+        ex("ex", "Exodus"),
+        us("uz", "Urza's Saga"),
+        ul("ug", "Urza's Legacy"),
+        _6e("_6e", "Classic Sixth Edition"),
+        ud("cg", "Urza's Destiny"),
+        mm("mm", "Mercadian Masques"),
+        ne("ne", "Nemesis"),
+        pr("pr", "Prophecy"),
+        in("in", "Invasion"),
+        ps("ps", "Planeshift"),
+        _7e("_7e", "Seventh Edition"),
+        ap("ap", "Apocalypse"),
+        od("od", "Odyssey"),
+        tr("tor", "Torment"),
+        ju("jud", "Judgment"),
+        on("ons", "Onslaught"),
+        le("lgn", "Legions"),
+        sc("scg", "Scourge"),
+        _8e("_8ed", "Eighth Edition"),
+        mi("mrd", "Mirrodin"),
+        ds("dst", "Darksteel"),
+        _5dn("_5dn", "Fifth Dawn"),
+        chk("chk", "Champions of Kamigawa"),
+        bok("bok", "Betrayers of Kamigawa"),
+        sok("sok", "Saviors of Kamigawa"),
+        _9e("_9ed", "Ninth Edition"),
+        rav("rav", "Ravnica: City of Guilds"),
+        gp("gpt", "Guildpact"),
+        di("dis", "Dissension"),
+        cs("csp", "Coldsnap"),
+        ts("tsp", "Time Spiral"),
+        tsts("tsb", "Time Spiral \"Timeshifted\""),
+        pc("plc", "Planar Chaos"),
+        fut("fut", "Future Sight"),
+        _10e("_10e", "Tenth Edition"),
+        lw("lrw", "Lorwyn"),
+        mt("mor", "Morningtide"),
+        shm("shm", "Shadowmoor"),
+        eve("eve", "Eventide"),
+        ala("ala", "Shards of Alara"),
+        cfx("con", "Conflux"),
+        arb("arb", "Alara Reborn"),
+        m10("m10", "Magic 2010"),
+        zen("zen", "Zendikar"),
+        wwk("wwk", "Worldwake"),
+        roe("roe", "Rise of the Eldrazi"),
+        m11("m11", "Magic 2011");
+
+        private String gathererCode;
+        private String title;
+
+        MagicSet(String gathererCode, String title)
+        {
+            this.gathererCode = gathererCode;
+            this.title = title;
+        }
+
+        public String getCode() {
+            return name().replace("_", "").toLowerCase();
+        }
+
+        public String getGathererCode()
+        {
+            return gathererCode.replace("_", "").toUpperCase();
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public static MagicSet mostRecent(String sets) {
+            for (int i = MagicSet.values().length-1; i >= 0; --i) {
+                MagicSet set = MagicSet.values()[i];
+                if (sets.contains(set.getGathererCode())) {
+                    return set;
+                }
+            }
+            return null;
+        }
+
+        public String translate(String gathererCode) {
+            return MagicSet.valueOf(gathererCode).getCode();
+        }
+
+        public static boolean isMagicSet(String set) {
+            return mostRecent(set) != null;
+        }
     }
 }

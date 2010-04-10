@@ -5,5 +5,4 @@
 CREATE VIEW `magicengine`.`view_prices` AS
 
 SELECT id, card_id, seller_id, date_added, price
-FROM prices
-WHERE price > 0;
+FROM prices;

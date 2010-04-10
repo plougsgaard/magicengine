@@ -5,8 +5,7 @@
 CREATE VIEW `magicengine`.`view_prices` AS
 
 SELECT id, card_id, seller_id, date_added, price
-FROM prices
-WHERE price > 0;
+FROM prices;
 
 /*
  * `magicengine`.`view_maxprices`
@@ -15,8 +14,7 @@ WHERE price > 0;
 CREATE VIEW `magicengine`.`view_maxprices` AS
 
 SELECT card_id, max(date_added) AS most_recent
-FROM
-view_prices
+FROM prices
 GROUP BY card_id, seller_id;
 
 /*

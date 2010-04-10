@@ -28,5 +28,6 @@ public interface CardDao
     public Card addCard(Card card, byte[] image);
     public Card addPrices(Card card, List<Price> prices);
 
+    public Card updateCard(Card card, byte[] image);
     public Card updatePrice(Card card);
 }

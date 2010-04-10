@@ -238,10 +238,10 @@ public class JdbcCardDao implements CardDao
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String insertClause = "INSERT INTO cards " +
                               "(card_name, mana_cost, converted_mana_cost, types, card_text, " +
-                              " expansion, rarity, card_number, artist, image) ";
+                              " expansion, set_code, rarity, card_number, artist, image) ";
         String valuesClause = "VALUES " +
                               "(:card_name, :mana_cost, :converted_mana_cost, :types, :card_text, " +
-                              " :expansion, :rarity, :card_number, :artist, :image)";
+                              " :expansion, :set_code, :rarity, :card_number, :artist, :image)";
         String query = insertClause + valuesClause;
         int cardInsertCount = namedParameterJdbcTemplate.update(
                 query,
@@ -252,6 +252,7 @@ public class JdbcCardDao implements CardDao
                 .addValue("types", card.getTypes())
                 .addValue("card_text", card.getCardText())
                 .addValue("expansion", card.getExpansion())
+                .addValue("set_code", card.getSetCode())
                 .addValue("rarity", card.getRarity())
                 .addValue("card_number", card.getCardNumber())
                 .addValue("artist", card.getArtist())
@@ -315,6 +316,39 @@ public class JdbcCardDao implements CardDao
         return updatePrice(getPrices(card));
     }
 
+    public Card updateCard(Card card, byte[] image)
+    {
+        String query =
+                "UPDATE cards SET " +
+                "card_name = :card_name, mana_cost = :mana_cost, converted_mana_cost = :converted_mana_cost, " +
+                "types = :types, card_text = :card_text, expansion = :expansion, set_code = :set_code, " +
+                "rarity = :rarity, card_number = :card_number, artist = :artist, image = :image " +
+                "WHERE id = :id";
+
+        int count = simpleJdbcTemplate.update(
+                    query,
+                    new MapSqlParameterSource()
+                            .addValue("card_name", card.getCardName())
+                            .addValue("mana_cost", card.getManaCost())
+                            .addValue("converted_mana_cost", card.getConvertedManaCost())
+                            .addValue("types", card.getTypes())
+                            .addValue("card_text", card.getCardText())
+                            .addValue("expansion", card.getExpansion())
+                            .addValue("set_code", card.getSetCode())
+                            .addValue("rarity", card.getRarity())
+                            .addValue("card_number", card.getCardNumber())
+                            .addValue("artist", card.getArtist())
+                            .addValue("image", image)
+                            .addValue("id", card.getId())
+        );
+
+        logger.info("Card successfully updated. " +
+                    "[card: " + card + "] " +
+                    "[count: " + count + "] ");
+
+        return card;
+    }
+
     public Card updatePrice(Card card)
     {
         logger.info("Updating price for card. " +
@@ -357,6 +391,7 @@ public class JdbcCardDao implements CardDao
             card.setTypes(rs.getString("card.types"));
             card.setCardText(rs.getString("card.card_text"));
             card.setExpansion(rs.getString("card.expansion"));
+            card.setSetCode(rs.getString("card.set_code"));
             card.setRarity(rs.getString("card.rarity"));
             card.setCardNumber(rs.getString("card.card_number"));
             card.setArtist(rs.getString("card.artist"));
@@ -373,6 +408,7 @@ public class JdbcCardDao implements CardDao
                 "card.types, " +
                 "card.card_text, " +
                 "card.expansion, " +
+                "card.set_code, " +
                 "card.rarity, " +
                 "card.card_number, " +
                 "card.artist, " +
