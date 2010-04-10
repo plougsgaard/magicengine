@@ -32,7 +32,7 @@ public class InformationCallable implements Callable<Card>
 
     public InformationCallable(String cardName)
     {
-        this.cardName = cardName.replace("Æ", "Ae");
+        this.cardName = cardName;
     }
 
     public Card call() throws Exception
