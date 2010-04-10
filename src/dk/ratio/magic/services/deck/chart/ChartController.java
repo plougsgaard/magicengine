@@ -1,5 +1,6 @@
 package dk.ratio.magic.services.deck.chart;
 
+import dk.ratio.magic.domain.db.deck.Deck;
 import dk.ratio.magic.repository.deck.DeckDao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,7 +22,6 @@ import java.io.OutputStream;
 @Controller
 public class ChartController
 {
-
     private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
@@ -31,42 +31,33 @@ public class ChartController
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response,
                                       @PathVariable("deckId") Integer deckId,
                                       @PathVariable("chartType") String chartType)
-            throws ServletException, IOException {
-
-        ChartBuilder builder = new ChartBuilder(260, 600);
-        BufferedImage image = null;
-
-        if (chartType.equals("creature")) {
-            image = builder.createCreatureManaCurveChart(deckDao.get(deckId));
-        } else if (chartType.equals("spell")) {
-            image = builder.createSpellManaCurveChart(deckDao.get(deckId));
-        } else {
-            // Default to the coalesced chart...
-            image = builder.createCoalescedManaCurveChart(deckDao.get(deckId));
+            throws ServletException, IOException
+    {
+        Deck deck = deckDao.get(deckId);
+        if (deck.getChartCurveAll() == null || deck.getChartCurveAll().length == 0) {
+            ChartBuilder builder = new ChartBuilder(260, 600);
+            deck = deckDao.updateCharts(builder.buildCharts(deck));
         }
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        boolean written = ImageIO.write(image, "png", outputStream);
-
-        if (!written) {
-            logger.warn("Failed to write image!");
-        }
-
-        outputStream.flush();
-        byte[] imageAsBytes = outputStream.toByteArray();
-        outputStream.close();
 
         response.setContentType("image/png");
-        OutputStream responseOutputStream = response.getOutputStream();
-        responseOutputStream.write(imageAsBytes);
-        responseOutputStream.flush();
-        responseOutputStream.close();
+        OutputStream outputStream = response.getOutputStream();
+
+        if ("creature".equals(chartType)) {
+            outputStream.write(deck.getChartCurveCreatures());
+        } else if ("spell".equals(chartType)) {
+            outputStream.write(deck.getChartCurveSpells());
+        }
+        else {
+            outputStream.write(deck.getChartCurveAll());
+        }
+
+        outputStream.close();
 
         /**
          * Returning null tells Spring we have handled response.
          */
         return null;
     }
-    
+
 
 }

@@ -16,6 +16,10 @@ public class Deck
     private List<Card> cards;
     private User author;
 
+    private byte[] chartCurveAll;
+    private byte[] chartCurveCreatures;
+    private byte[] chartCurveSpells;
+
     private int featureCardId;
 
     public int getId()
@@ -98,6 +102,36 @@ public class Deck
         this.author = author;
     }
 
+    public byte[] getChartCurveAll()
+    {
+        return chartCurveAll;
+    }
+
+    public void setChartCurveAll(byte[] chartCurveAll)
+    {
+        this.chartCurveAll = chartCurveAll;
+    }
+
+    public byte[] getChartCurveCreatures()
+    {
+        return chartCurveCreatures;
+    }
+
+    public void setChartCurveCreatures(byte[] chartCurveCreatures)
+    {
+        this.chartCurveCreatures = chartCurveCreatures;
+    }
+
+    public byte[] getChartCurveSpells()
+    {
+        return chartCurveSpells;
+    }
+
+    public void setChartCurveSpells(byte[] chartCurveSpells)
+    {
+        this.chartCurveSpells = chartCurveSpells;
+    }
+
     public int getFeatureCardId()
     {
         return featureCardId;
@@ -120,7 +154,10 @@ public class Deck
                 ", description='" + description + '\'' +
                 ", cards=" + cards +
                 ", author=" + author +
-                ", featureCard=" + featureCardId +
+                ", chartCurveAll=" + chartCurveAll +
+                ", chartCurveCreatures=" + chartCurveCreatures +
+                ", chartCurveSpells=" + chartCurveSpells +
+                ", featureCardId=" + featureCardId +
                 '}';
     }
 }

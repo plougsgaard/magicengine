@@ -357,9 +357,10 @@ public class JdbcCardDao implements CardDao
 
         card = getPrices(card);
 
+        // find the lowest price (not 0d) and set it
         Double current = 0d;
         for (Price price : card.getPrices()) {
-            if (current == 0d || price.getPrice() < current) {
+            if (current == 0d || (price.getPrice() != 0d && price.getPrice() < current)) {
                 current = price.getPrice();
             }
         }
