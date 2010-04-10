@@ -112,14 +112,23 @@ public class JdbcDeckDao implements DeckDao
         Deck deck = get(oldDeckId);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int count = namedParameterJdbcTemplate.update(
-                "INSERT INTO decks (title, format, status, colours, description, author_id, feature_card_id, date_added, date_modified) " +
-                "VALUES (:title, :format, :status, :colours, :description, :author_id, :feature_card_id, :date_added, :date_modified)",
+                "INSERT INTO decks " +
+                        "(title, format, status, colours, description, author_id, " +
+                        "chart_curve_all, chart_curve_creatures, chart_curve_spells, " +
+                        "feature_card_id, date_added, date_modified) " +
+                "VALUES " +
+                        "(:title, :format, :status, :colours, :description, :author_id, " +
+                        ":chart_curve_all, :chart_curve_creatures, :chart_curve_spells, " +
+                        ":feature_card_id, :date_added, :date_modified)",
                 new MapSqlParameterSource()
                         .addValue("title", newTitle)
                         .addValue("format", deck.getFormat())
                         .addValue("status", "Hidden")
                         .addValue("colours", deck.getColours())
                         .addValue("description", deck.getDescription())
+                        .addValue("chart_curve_all", deck.getChartCurveAll())
+                        .addValue("chart_curve_creatures", deck.getChartCurveCreatures())
+                        .addValue("chart_curve_spells", deck.getChartCurveSpells())
                         .addValue("feature_card_id", deck.getFeatureCardId())
                         .addValue("author_id", author.getId())
                         .addValue("date_added", new Timestamp(System.currentTimeMillis()))
@@ -152,6 +161,22 @@ public class JdbcDeckDao implements DeckDao
         return deck;
     }
 
+    public Deck updateCharts(Deck deck)
+    {
+        simpleJdbcTemplate.update(
+                "UPDATE decks SET " +
+                        "chart_curve_all = :chart_curve_all, " +
+                        "chart_curve_creatures = :chart_curve_creatures, " +
+                        "chart_curve_spells = :chart_curve_spells " +
+                        "WHERE id = :id",
+                new MapSqlParameterSource()
+                        .addValue("id", deck.getId())
+                        .addValue("chart_curve_all", deck.getChartCurveAll())
+                        .addValue("chart_curve_creatures", deck.getChartCurveCreatures())
+                        .addValue("chart_curve_spells", deck.getChartCurveSpells()));
+        return deck;
+    }
+
     /**
      * Saves a deck to the database. It follows this seemingly
      * inefficient algorithm:
@@ -165,6 +190,9 @@ public class JdbcDeckDao implements DeckDao
      */
     public void update(Deck deck)
     {
+        if (deck.getCards() == null) {
+            throw new IllegalArgumentException("Deck to be updated must include card list.");
+        }
         int deleteCount = namedParameterJdbcTemplate.update(
             "DELETE FROM deckcards WHERE deck_id = :id",
             new MapSqlParameterSource()
@@ -181,9 +209,18 @@ public class JdbcDeckDao implements DeckDao
             );
         }
         int updateCount = namedParameterJdbcTemplate.update(
-            "UPDATE decks SET title = :title, format = :format, status = :status, " +
-            "colours = :colours, description = :description, feature_card_id = :feature_card_id, " +
-            "date_modified = :date_modified WHERE id = :id",
+                    "UPDATE decks SET " +
+                    "title = :title, " +
+                    "format = :format, " +
+                    "status = :status, " +
+                    "colours = :colours, " +
+                    "description = :description, " +
+                    "chart_curve_all = :chart_curve_all, " +
+                    "chart_curve_creatures = :chart_curve_creatures, " +
+                    "chart_curve_spells = :chart_curve_spells, " +
+                    "feature_card_id = :feature_card_id, " +
+                    "date_modified = :date_modified " +
+                    "WHERE id = :id",
             new MapSqlParameterSource()
                 .addValue("id", deck.getId())
                 .addValue("title", deck.getTitle())
@@ -191,6 +228,9 @@ public class JdbcDeckDao implements DeckDao
                 .addValue("status", deck.getStatus())
                 .addValue("colours", deck.getColours())
                 .addValue("description", deck.getDescription())
+                .addValue("chart_curve_all", deck.getChartCurveAll())
+                .addValue("chart_curve_creatures", deck.getChartCurveCreatures())
+                .addValue("chart_curve_spells", deck.getChartCurveSpells())
                 .addValue("feature_card_id", deck.getFeatureCardId())
                 .addValue("date_modified", new Timestamp(System.currentTimeMillis()))
         );
@@ -319,6 +359,11 @@ public class JdbcDeckDao implements DeckDao
             deck.setStatus(rs.getString("deck.status"));
             deck.setColours(rs.getString("deck.colours"));
             deck.setDescription(rs.getString("deck.description"));
+
+            deck.setChartCurveAll(rs.getBytes("deck.chart_curve_all"));
+            deck.setChartCurveCreatures(rs.getBytes("deck.chart_curve_creatures"));
+            deck.setChartCurveSpells(rs.getBytes("deck.chart_curve_spells"));
+
             deck.setFeatureCardId(rs.getInt("deck.feature_card_id"));
 
             User author = new User();
@@ -340,6 +385,9 @@ public class JdbcDeckDao implements DeckDao
                 "deck.colours, " +
                 "deck.description, " +
                 "deck.author_id, " +
+                "deck.chart_curve_all, " +
+                "deck.chart_curve_creatures, " +
+                "deck.chart_curve_spells, " +
                 "deck.feature_card_id, " +
                 "author.id, " +
                 "author.email, " +

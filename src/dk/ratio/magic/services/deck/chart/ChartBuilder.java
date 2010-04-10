@@ -5,7 +5,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.JFreeChart;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class ChartBuilder {
 
@@ -55,4 +58,40 @@ public class ChartBuilder {
         ManaCurveChart manaCurveChart = new ManaCurveChart(deck);
         return imageFromChart(manaCurveChart.getSpellCurveChart());
     }
+
+    public Deck buildCharts(Deck deck) throws IOException
+    {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        boolean written = ImageIO.write(
+                createCreatureManaCurveChart(deck), "png", outputStream);
+        if (!written) {
+            logger.warn("Failed to write creature chart!");
+        }
+        outputStream.flush();
+        deck.setChartCurveCreatures(outputStream.toByteArray());
+        outputStream.reset();
+
+        written = ImageIO.write(
+                createSpellManaCurveChart(deck), "png", outputStream);
+        if (!written) {
+            logger.warn("Failed to write spell chart!");
+        }
+        outputStream.flush();
+        deck.setChartCurveSpells(outputStream.toByteArray());
+        outputStream.reset();
+
+        written = ImageIO.write(
+                createCoalescedManaCurveChart(deck), "png", outputStream);
+        if (!written) {
+            logger.warn("Failed to write creature chart!");
+        }
+        outputStream.flush();
+        deck.setChartCurveAll(outputStream.toByteArray());
+
+        outputStream.close();
+
+        return deck;
+    }
+
 }

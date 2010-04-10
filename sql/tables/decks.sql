@@ -10,6 +10,9 @@ CREATE TABLE  `magicengine`.`decks` (
   `date_added` datetime NOT NULL,
   `date_modified` datetime NOT NULL,
   `feature_card_id` int(10) unsigned NOT NULL DEFAULT '1',
+  `chart_curve_all` mediumblob,
+  `chart_curve_creatures` mediumblob,
+  `chart_curve_spells` mediumblob,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

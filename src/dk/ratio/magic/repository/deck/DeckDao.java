@@ -15,6 +15,8 @@ public interface DeckDao
     public void update(Deck deck);
     public void delete(Integer deckId);
 
+    public Deck updateCharts(Deck deck);
+
     public Page<Deck> getPublicDeckPage(Integer pageNumber);
     public Page<Deck> getHiddenUserDeckPage(Integer pageNumber, Integer userId);
     public Page<Deck> getPublicUserDeckPage(Integer pageNumber, Integer userId);

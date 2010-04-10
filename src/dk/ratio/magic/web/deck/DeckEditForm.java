@@ -6,6 +6,7 @@ import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.repository.deck.DeckDao;
 import dk.ratio.magic.repository.user.UserDao;
+import dk.ratio.magic.services.deck.chart.ChartBuilder;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
 import dk.ratio.magic.validation.deck.EditDeckValidator;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,9 +125,6 @@ public class DeckEditForm
         }
         deck.setColours(colours);
 
-
-
-
         // Cards
         List<Card> cards = new ArrayList<Card>();
 
@@ -152,6 +151,14 @@ public class DeckEditForm
 
         // Save the deck
         deck.setCards(cards);
+
+        ChartBuilder builder = new ChartBuilder(260, 600);
+        try {
+            deck = builder.buildCharts(deck);
+        } catch (IOException _) {
+            logger.warn("Could not build charts for deck.");
+        }
+
         deckDao.update(deck);
 
         // Redirect to the edit site to avoid the POST-reload irritation element
