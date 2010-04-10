@@ -81,9 +81,9 @@ class BoosterPacksPriceCallable implements Callable<Price>
             } catch (IOException e) {
                 logger.error("Problem parsing the price.");
             }
-        }
 
-        price.setPrice(RATE * price.getPrice());
+            price.setPrice(RATE * price.getPrice());
+        }
 
         return price;
     }
