@@ -78,7 +78,7 @@
             </p>
             <p>
             <form action="${rc.getContextPath()}/card/${card.id}/update" method="post">
-                <input type="submit" value="Update Card & Price" alt="Update Card (blocking operation).." />
+                <input type="submit" value="Update Card" alt="Update Card (blocking operation).." />
             </form>
             </p>
             </#if>

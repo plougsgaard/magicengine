@@ -43,9 +43,6 @@ public class Crawler
             // we need the image a bit later
             Future<byte[]> imageFuture = taskExecutor.submit(new ImageCallable(card));
 
-            // we submit the prices to be crawled at some point -
-            taskExecutor.submit(new PriceCallable(cardDao, taskExecutor, card, UPDATE.AUTO));
-
             byte[] image = imageFuture.get();
 
             if (image == null) {
@@ -73,7 +70,11 @@ public class Crawler
                         "[card: " + card +"] " +
                         "[image: " + image +"] " +
                         "");
-            return cardDao.addCard(card, image);
+
+            // we submit the prices to be crawled at some point -
+            card = cardDao.addCard(card, image);
+            taskExecutor.submit(new PriceCallable(cardDao, taskExecutor, card, UPDATE.AUTO));
+            return card;
         }
         catch (InterruptedException e) {
             logger.warn("Crawling could not be completed. " +

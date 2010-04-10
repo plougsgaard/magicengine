@@ -52,11 +52,14 @@ public class PriceCallable implements Callable<List<Price>>
         List<Price> prices = new ArrayList<Price>(futures.size());
 
         for (Future<Price> future : futures) {
-            prices.add(future.get());
-        }
-
-        for (Price price : prices) {
+            Price price = future.get();
             price.setCard(card);
+            prices.add(price);
+
+            logger.info("Adding price to card. " +
+                        "[card.getId(): "+ card.getId() +"] " +
+                        "[price.getPrice(): "+ price.getPrice() +"] " +
+                        "");
         }
 
         if (update == UPDATE.AUTO) {
