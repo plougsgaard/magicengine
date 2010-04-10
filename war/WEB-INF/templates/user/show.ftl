@@ -8,7 +8,10 @@
 <div id="content-pane" class="grid_9 alpha">
     <div id="content-header" class="content">
         <h1><a href="${rc.getContextPath()}/users">Users</a> | ${user.name}</h1>
+        <#if Session.userSession?? && Session.userSession.id == user.id>
+        <#else>
         <p>This page is most interesting for ${user.name} and less for others.</p>
+        </#if>
     </div> <!-- end content-header -->
 </div> <!-- end content-pane -->
 
@@ -32,7 +35,7 @@
 
         <#if Session.userSession?? && Session.userSession.id == user.id>
         <h3>
-            Your hidden decks
+            Your decks
         </h3>
         <@drawPageSelect deckPage "/user/${user.id}/page/" />
 
@@ -54,7 +57,7 @@
             </h4>
             </#if>
             <h4>
-            <a href="${rc.getContextPath()}/user/${user.id}/edit">
+            <a href="${rc.getContextPath()}/decks/user/${user.id}">
                 Public Decks
             </a>
             </h4>
