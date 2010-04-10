@@ -36,6 +36,9 @@ public class FetchCardController
     @Autowired
     private Crawler cardCrawler;
 
+    /**
+     * TODO: probably not used anymore?!
+     */
     @RequestMapping("/services/card/fetch")
     public ModelAndView showHandler(HttpServletRequest request)
     {
@@ -47,7 +50,7 @@ public class FetchCardController
 
         Card card = cardDao.getCard(cardName);
 
-        if (card != null) {
+        if (card != null && !StringUtils.isBlank(card.getSetCode())) {
             // The card is already in the database
             return getSuccessView(card);
         }
@@ -68,7 +71,7 @@ public class FetchCardController
     {
         Card card = cardDao.getCard(cardName);
 
-        if (card != null) {
+        if (card != null && !StringUtils.isBlank(card.getSetCode())) {
             // The card is already in the database
             return getSuccessView(card);
         }

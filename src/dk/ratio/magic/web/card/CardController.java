@@ -105,4 +105,31 @@ public class CardController
         cardCrawler.updatePrice(card);
         return mv;
     }
+
+    @RequestMapping(value = "/card/{cardId}/update", method = RequestMethod.POST)
+    public ModelAndView updateCardHandler(HttpServletRequest request,
+                                          @PathVariable("cardId") Integer cardId)
+    {
+        ModelAndView mv = Views.redirect(request, "/card/" + cardId);
+
+        User sessionUser = userManager.getSessionUser(request);
+        if (sessionUser == null) {
+            ModelAndView errorModel =
+                    new ModelAndView("/errors/disallow");
+            errorModel.addObject("message", "You must be logged in to do that.");
+            return errorModel;
+        }
+
+        Card card = cardDao.getCard(cardId);
+
+        if (card == null) {
+             ModelAndView errorModel =
+                    new ModelAndView("/errors/disallow");
+            errorModel.addObject("message", "Card does not exist.");
+            return errorModel;
+        }
+
+        cardCrawler.crawlCard(card.getCardName());
+        return mv;
+    }
 }

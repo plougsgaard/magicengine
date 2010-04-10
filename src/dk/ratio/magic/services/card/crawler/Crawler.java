@@ -57,7 +57,17 @@ public class Crawler
                 return null;
             }
 
-            // Prices take too long to process. Will be added at some point, though.
+            Card existingCard = cardDao.getCard(card.getCardName());
+            if (existingCard != null) {
+                card.setId(existingCard.getId());
+                logger.info("Updated card in the database. " +
+                            "[cardName: " + cardName +"] " +
+                            "[card: " + card +"] " +
+                            "[image: " + image +"] " +
+                            "");
+                return cardDao.updateCard(card, image);
+            }
+
             logger.info("Added card to database. " +
                         "[cardName: " + cardName +"] " +
                         "[card: " + card +"] " +

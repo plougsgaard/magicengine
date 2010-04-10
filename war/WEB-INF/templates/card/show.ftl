@@ -23,7 +23,7 @@
             <p><strong>Types</strong>: ${card.types?replace("�", "&ndash;")}</p>
             <p><strong>Rarity</strong>: ${card.rarity}</p>
             <p><strong>CMC</strong>: ${card.convertedManaCost}</p>
-            <p><strong>Expansion</strong>: ${card.expansion}</p>
+            <p><strong>Expansion</strong>: ${card.expansion} <#if card.setCode??>(${card.setCode})</#if></p>
             <p><strong>Artist</strong>: ${card.artist}</p>
             <p><strong>Rules text</strong>:</p> ${card.cardText}
         </div> <!-- end content -->
@@ -31,16 +31,57 @@
 
     <div class="grid_9 alpha omega">
         <div class="content">
-       <h2>Sellers</h2>
+        <h2>Sellers</h2>
+
+
+        </div> <!-- end content -->
+    </div>
+
+    <div class="grid_9 alpha omega">
         <#list card.prices as price>
-        <p style="margin:0.8em 0;"><@getSellerName price.seller.id />: <strong>${price.price?string.currency}</strong>
-           <span style="font-size: small;">${price.dateAdded?datetime?string.short}</span></p>
+
+            <div class="grid_3 alpha">
+                <div style="padding-left: 1em;">
+                    <p><@getSellerName price.seller.id /></p>
+                </div>
+            </div>
+
+
+            <div class="grid_1">
+                <#if (price.price > 0)>
+                    <span style="
+                    <#if (card.price == price.price)>
+                    color: #006600; font-weight: bold;
+                    </#if>
+                    ">${price.price?string.currency}</span>
+
+                <#else>
+                    N/A
+                </#if>
+            </div>
+
+            <div class="grid_5 omega">
+                ${price.dateAdded?datetime?string.short}
+            </div>
+
+            <div class="clear">&nbsp;</div>
         </#list>
-        <#if sessionUser??>
-        <form action="${rc.getContextPath()}/card/${card.id}/price/update" method="post">
-            <input type="submit" value="Update Price" alt="Update Price (blocking operation).." />
-        </form>
-        </#if>
+    </div>
+
+    <div class="grid_9 alpha omega">
+        <div class="content">
+            <#if sessionUser??>
+            <p>
+            <form action="${rc.getContextPath()}/card/${card.id}/price/update" method="post">
+                <input type="submit" value="Update Price" alt="Update Price (blocking operation).." />
+            </form>
+            </p>
+            <p>
+            <form action="${rc.getContextPath()}/card/${card.id}/update" method="post">
+                <input type="submit" value="Update Card & Price" alt="Update Card (blocking operation).." />
+            </form>
+            </p>
+            </#if>
         </div> <!-- end content -->
     </div>
 

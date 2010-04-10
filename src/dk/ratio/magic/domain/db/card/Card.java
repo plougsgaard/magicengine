@@ -18,6 +18,7 @@ public class Card implements Comparable<Card>
     private String types = "";
     private String cardText = "";
     private String expansion = "";
+    private String setCode = "";
     private String rarity = "";
     private String cardNumber = "";
     private String artist = "";
@@ -100,6 +101,16 @@ public class Card implements Comparable<Card>
         this.expansion = expansion;
     }
 
+    public String getSetCode()
+    {
+        return setCode;
+    }
+
+    public void setSetCode(String setCode)
+    {
+        this.setCode = setCode;
+    }
+
     public String getRarity()
     {
         return rarity;
@@ -160,23 +171,25 @@ public class Card implements Comparable<Card>
         this.count = count;
     }
 
+    @Override
     public String toString()
     {
         return "Card{" +
-               "id=" + id +
-               ", cardName='" + cardName + '\'' +
-               ", manaCost='" + manaCost + '\'' +
-               ", convertedManaCost='" + convertedManaCost + '\'' +
-               ", types='" + types + '\'' +
-               ", cardText='" + cardText + '\'' +
-               ", expansion='" + expansion + '\'' +
-               ", rarity='" + rarity + '\'' +
-               ", cardNumber='" + cardNumber + '\'' +
-               ", artist='" + artist + '\'' +
-               ", price=" + price +
-               ", prices=" + prices +
-               ", count=" + count +
-               '}';
+                "id=" + id +
+                ", cardName='" + cardName + '\'' +
+                ", manaCost='" + manaCost + '\'' +
+                ", convertedManaCost='" + convertedManaCost + '\'' +
+                ", types='" + types + '\'' +
+                ", cardText='" + cardText + '\'' +
+                ", expansion='" + expansion + '\'' +
+                ", setCode='" + setCode + '\'' +
+                ", rarity='" + rarity + '\'' +
+                ", cardNumber='" + cardNumber + '\'' +
+                ", artist='" + artist + '\'' +
+                ", price=" + price +
+                ", prices=" + prices +
+                ", count=" + count +
+                '}';
     }
 
     /**

@@ -66,7 +66,9 @@ class BoosterPacksPriceCallable implements Callable<Price>
                 // the square brackets groups them together. + means 1 or more.
                 // this is the greedy version (will eat as much as it can)
                 // though it has to guarantee the 'kr.' on the left side
-                Pattern p = Pattern.compile("kr.([\\d\\.]+)<");
+                Pattern p = Pattern.compile(
+                        "<h3><a.*?>\\s*" + card.getCardName() + "\\s*</a>.*?kr.([\\d\\.]+)<",
+                        Pattern.CASE_INSENSITIVE);
                 Matcher matcher = p.matcher(html);
 
                 while (matcher.find()) {
