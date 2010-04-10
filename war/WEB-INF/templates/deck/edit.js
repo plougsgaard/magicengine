@@ -89,9 +89,7 @@ function request_card (card_name, card_name_text, card_image_img, card_price_tex
         show_card_proxy (cardHash.get(key));
         return;
     }
-
-    alert("url1: [" + url + "]");
-
+    
     new Ajax.Request(url, {
         method: 'get',
         onCreate: function() {
