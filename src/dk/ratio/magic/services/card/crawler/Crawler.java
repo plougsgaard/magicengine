@@ -57,6 +57,7 @@ public class Crawler
             Card existingCard = cardDao.getCard(card.getCardName());
             if (existingCard != null) {
                 card.setId(existingCard.getId());
+                card.setPrice(existingCard.getPrice());
                 logger.info("Updated card in the database. " +
                             "[cardName: " + cardName +"] " +
                             "[card: " + card +"] " +
