@@ -83,10 +83,11 @@ public class JdbcDeckDao implements DeckDao
     {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int count = namedParameterJdbcTemplate.update(
-            "INSERT INTO decks (title, description, author_id, date_added, date_modified, feature_card_id) " +
-            "VALUES (:title, :description, :author_id, :date_added, :date_modified, :feature_card_id)",
+            "INSERT INTO decks (title, colours, description, author_id, date_added, date_modified, feature_card_id) " +
+            "VALUES (:title, :colours, :description, :author_id, :date_added, :date_modified, :feature_card_id)",
             new MapSqlParameterSource()
                 .addValue("title", deck.getTitle())
+                .addValue("colours", "")
                 .addValue("description", "")
                 .addValue("author_id", author.getId())
                 .addValue("date_added", new Timestamp(System.currentTimeMillis()))
