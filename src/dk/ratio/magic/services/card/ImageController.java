@@ -83,7 +83,7 @@ public class ImageController
             logger.info("No cached thumbnail for card. Creating one. " +
                         "[cardId: " + cardId + "]");
             image = resize(cardDao.getImage(cardId));
-            //cardDao.setThumbnail(cardId, image);
+            cardDao.setThumbnail(cardId, image);
         }
 
         response.setContentType("image/jpeg");
