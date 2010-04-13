@@ -102,7 +102,7 @@ public class CardController
             return errorModel;
         }
 
-        cardCrawler.updatePrice(card);
+        cardCrawler.updateAll(card);
         return mv;
     }
 

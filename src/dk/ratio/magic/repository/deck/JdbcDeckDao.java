@@ -406,7 +406,7 @@ public class JdbcDeckDao implements DeckDao
                 "ORDER BY " +
                 "deck.date_added, " +
                 "deck.date_modified, " +
-                "deck.id " +
+                "author.id " +
                 "DESC ";
     }
 

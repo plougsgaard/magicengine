@@ -274,6 +274,14 @@ public class JdbcCardDao implements CardDao
         return card;
     }
 
+    public Price addPrice(Card card, Price price)
+    {
+        ArrayList<Price> prices = new ArrayList<Price>(1);
+        prices.add(price);
+        addPrices(card, prices);
+        return price;
+    }
+
     /**
      * Adds the new prices to the database.
      *
