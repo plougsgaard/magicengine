@@ -238,4 +238,13 @@ public class Card implements Comparable<Card>
         }
         return cmc <= cmcOther ? -1 : 1;
     }
+
+    public boolean equals(Object other) {
+        return (other instanceof Card) && id == ((Card) other).getId();
+    }
+
+    public int hashCode()
+    {
+        return id * 11 + id * 13;
+    }
 }

@@ -21,25 +21,25 @@ import java.util.ArrayList;
  * A chart representing the mana curve of a deck. It presents two categories; the mana curve for creatures, and the
  * mana curve for other spells.
  */
-public class ManaCurveChart implements Chart {
+public class ManaCurveChart implements Chart
+{
     private final Log logger = LogFactory.getLog(getClass());
 
     JFreeChart creatureCurveChart;
     JFreeChart spellCurveChart;
     JFreeChart coalescedCurveChart;
     DeckStatistics stats;
-    Deck deck;
 
-    public ManaCurveChart(Deck deck) {
-        this.deck = deck;
-
+    public ManaCurveChart(Deck deck)
+    {
         stats = new DeckStatistics(deck);
         creatureCurveChart = makeCreatureChart();
         spellCurveChart = makeSpellsChart();
         coalescedCurveChart = makeCoalescedChart();
     }
 
-    private JFreeChart makeCreatureChart() {
+    private JFreeChart makeCreatureChart()
+    {
         JFreeChart chart = ChartFactory.createXYBarChart(
                 null,
                 "Converted Mana Cost",
@@ -57,7 +57,8 @@ public class ManaCurveChart implements Chart {
         return chart;
     }
 
-    private JFreeChart makeSpellsChart() {
+    private JFreeChart makeSpellsChart()
+    {
         JFreeChart chart = ChartFactory.createXYBarChart(
                 null,
                 "Converted Mana Cost",
@@ -75,7 +76,8 @@ public class ManaCurveChart implements Chart {
         return chart;
     }
 
-    private JFreeChart makeCoalescedChart() {
+    private JFreeChart makeCoalescedChart()
+    {
         JFreeChart chart = ChartFactory.createXYBarChart(
                 null,
                 "Converted Mana Cost",
@@ -93,7 +95,8 @@ public class ManaCurveChart implements Chart {
         return chart;
     }
 
-    private XYIntervalSeriesCollection makeDataSet(ArrayList<Pair<Integer, Integer>> list) {
+    private XYIntervalSeriesCollection makeDataSet(ArrayList<Pair<Integer, Integer>> list)
+    {
         XYIntervalSeriesCollection dataSet = new XYIntervalSeriesCollection();
 
         for (Pair<Integer, Integer> pair : list) {
@@ -105,7 +108,8 @@ public class ManaCurveChart implements Chart {
         return dataSet;
     }
 
-    private void setStyle(JFreeChart chart) {
+    private void setStyle(JFreeChart chart)
+    {
         XYPlot plot = chart.getXYPlot();
 
         chart.setAntiAlias(true);
@@ -166,7 +170,9 @@ public class ManaCurveChart implements Chart {
         xyRenderer.setBarPainter(new StandardXYBarPainter());
     }
 
-    private void addToSeriesWithXInterval(XYIntervalSeries series, double interval, int xVal, int yVal) {
+    private void addToSeriesWithXInterval(XYIntervalSeries series, double interval,
+                                          int xVal, int yVal)
+    {
         series.add(xVal, xVal - interval, xVal + interval, yVal, yVal, yVal);
     }
 
@@ -175,7 +181,8 @@ public class ManaCurveChart implements Chart {
      *
      * @return the mana curve for creatures as a chart.
      */
-    public JFreeChart getCreatureCurveChart() {
+    public JFreeChart getCreatureCurveChart()
+    {
         return creatureCurveChart;
     }
 
@@ -184,7 +191,8 @@ public class ManaCurveChart implements Chart {
      *
      * @return the mana curve for non-creature spells as a chart.
      */
-    public JFreeChart getSpellCurveChart() {
+    public JFreeChart getSpellCurveChart()
+    {
         return spellCurveChart;
     }
 
@@ -193,7 +201,8 @@ public class ManaCurveChart implements Chart {
      *
      * @return the mana curve for all spells.
      */
-    public JFreeChart getCoalescedCurveChart() {
+    public JFreeChart getCoalescedCurveChart()
+    {
         return coalescedCurveChart;
     }
 
@@ -202,7 +211,8 @@ public class ManaCurveChart implements Chart {
      *
      * @return the coalesced mana curve chart.
      */
-    public JFreeChart getChart() {
+    public JFreeChart getChart()
+    {
         return getCoalescedCurveChart();
     }
 }

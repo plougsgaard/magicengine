@@ -291,10 +291,6 @@ public class JdbcCardDao implements CardDao
      */
     public Card addPrices(Card card, List<Price> prices)
     {
-        logger.info("Adding prices for card. " +
-                    "[card.getCardName(): " + card.getCardName() + "] " +
-                    "[prices.size(): " + prices.size() + "] " +
-                    "");
         for (Price price : prices) {
             String insertClause = "INSERT INTO prices " +
                                   "(card_id, price, seller_id, date_added) ";

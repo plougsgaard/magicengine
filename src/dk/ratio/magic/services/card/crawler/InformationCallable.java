@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -40,6 +41,29 @@ public class InformationCallable implements Callable<Card>
         return getCard(cardName);
     }
 
+    private String getHtml(String url)
+    {
+        try {
+            URL u = new URL(url);
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader((InputStream) u.getContent(), "UTF-8"));
+
+            StringBuffer sb = new StringBuffer();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+
+            reader.close();
+
+            // eat all unnecessary whitespace
+            return sb.toString().replaceAll("\\s+", " ");
+        } catch (IOException e) {
+            logger.warn("Failed to read HTML from request.", e);
+        }
+        return null;
+    }
+
     private Card getCard(String cardName) throws Exception
     {
         Card card;
@@ -55,30 +79,7 @@ public class InformationCallable implements Callable<Card>
             return getMultiPartCard(cardName);
         }
 
-        /*
-        * The before-mentioned quirk:
-        *
-        * Æthermage's Touch -> encode(latin1) -> %C6thermage%27s+Touch
-        *
-        * The Gatherer expects:                  %u00C6thermage%u0027+Touch
-        *
-        * So replaceAll("%", "%u00")
-        */
-        URL url = new URL(PATH + URLEncoder.encode(cardName, "latin1").replaceAll("%", "%u00"));
-
-        InputStream inputStream = (InputStream) url.getContent();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-
-        /*
-        * Read the entire file into a string and kill unnecessary whitespace.
-        */
-        String line, html = "";
-        while ((line = reader.readLine()) != null) {
-            html += line;
-        }
-        html = html.replaceAll("\\s+", " ");
-
-        reader.close();
+        String html = getHtml(PATH + URLEncoder.encode(cardName, "latin1").replaceAll("%", "%u00"));
 
         /*
         * This is the matcher name we will be using to match the different
@@ -117,7 +118,6 @@ public class InformationCallable implements Callable<Card>
                  */
                 card.setExpansion(trimHtmlTags(expansionHtml));
                 card.setSetCode(MagicSet.mostRecent(setCode).getCode());
-                logger.info("The default site lookup has the right version of the card.");
             } else {
                 /*
                  * Figure out if this card exists in an expansion which
@@ -129,48 +129,25 @@ public class InformationCallable implements Callable<Card>
 
                 if (matcher.find()) {
                     String setsHtml = matcher.group(1);
-                    String sets = "";
+                    StringBuilder sb = new StringBuilder();
 
                     matcher = setPattern.matcher(setsHtml);
                     while (matcher.find()) {
-                        sets += matcher.group(1) + ",";
+                        sb.append(matcher.group(1));
+                        sb.append(",");
                     }
-                    logger.info("Looking at these sets for the card: " + sets);
 
-                    MagicSet set = MagicSet.mostRecent(sets);
+                    MagicSet set = MagicSet.mostRecent(sb.toString());
 
-                    //Pattern p = Pattern.compile("<a href=\"(.*?)\">.+?set=" + set.getCode() + "&.+?</a>");
                     Pattern p = Pattern.compile("<a href=\"(.+?)\">(.+?)</a>");
                     matcher = p.matcher(setsHtml);
-                    logger.info("Pattern: " + p.pattern());
-
-                    if (!matcher.matches()) {
-                        /*
-                         * After all this trouble we give up..
-                         */
-                        logger.error("Should have found link to correct expansion. Giving up.");
-                    }
 
                     while (matcher.find()) {
                         if (matcher.group(2).contains("set=" + set.getGathererCode())) {
 
-                            logger.info("Found match on " + matcher.group());
-
-                            url = new URL("http://gatherer.wizards.com/Pages/Card/" + matcher.group(1));
-                            inputStream = (InputStream) url.getContent();
-                            reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-
-                            /*
-                            * Read the entire file into a string and kill unnecessary whitespace.
-                            */
-                            html = "";
-                            while ((line = reader.readLine()) != null) {
-                                html += line;
-                            }
-                            html = html.replaceAll("\\s+", " ");
+                            html = getHtml("http://gatherer.wizards.com/Pages/Card/" + matcher.group(1));
 
                             logger.info("Found correct expansion for card and loaded corresponding site." +
-                                        "[url: " + url + "] " +
                                         "[set: " + set + "] " +
                                         "");
 
@@ -180,12 +157,6 @@ public class InformationCallable implements Callable<Card>
                             break;
                         }
                     }
-
-                    //logger.info("setsHtml: " + setsHtml);
-
-
-
-
                 } else {
                     /*
                      * This card only exists as a non-proper card. So
@@ -214,11 +185,11 @@ public class InformationCallable implements Callable<Card>
         if (matcher.find()) {
             String rawManaCost = matcher.group(1);
             matcher = Pattern.compile("&amp;name=(.+?)&amp;t").matcher(rawManaCost);
-            String manaCost = "";
+            StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
-                manaCost += matcher.group(1) + ",";
+                sb.append(matcher.group(1) + ",");
             }
-            card.setManaCost(manaCost);
+            card.setManaCost(sb.toString());
         } else {
             // Mana cost is allowed to be nothing (example: land)
             card.setManaCost("");

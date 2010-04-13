@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -37,9 +35,9 @@ public class Crawler
             Card card = informationFuture.get();
 
             if (card == null) {
-                logger.warn("Crawling could not be completed. " +
+                logger.warn("Failed crawling card. Card null. " +
                             "[cardName: " + cardName +"] " +
-                            "[card: " + card +"] " +
+                            "[card: null] " +
                             "");
                 return null;
             }
@@ -50,10 +48,10 @@ public class Crawler
             byte[] image = imageFuture.get();
 
             if (image == null) {
-                logger.warn("Crawling could not be completed. " +
+                logger.warn("Failed crawling card. Image null. " +
                             "[cardName: " + cardName +"] " +
                             "[card: " + card +"] " +
-                            "[image: " + image +"] " +
+                            "[image: null] " +
                             "");
                 return null;
             }
@@ -65,7 +63,7 @@ public class Crawler
                 logger.info("Updated card in the database. " +
                             "[cardName: " + cardName +"] " +
                             "[card: " + card +"] " +
-                            "[image: " + image +"] " +
+                            "[image: not null] " +
                             "");
                 return cardDao.updateCard(card, image);
             }
@@ -73,12 +71,13 @@ public class Crawler
             logger.info("Added card to database. " +
                         "[cardName: " + cardName +"] " +
                         "[card: " + card +"] " +
-                        "[image: " + image +"] " +
+                        "[image: not null] " +
                         "");
 
-            // we submit the prices to be crawled at some point -
+            // persist card, then update prices asynchronously
             card = cardDao.addCard(card, image);
             updateAll(card);
+
             return card;
         }
         catch (InterruptedException e) {
@@ -99,18 +98,14 @@ public class Crawler
     public void updateAll(Card card)
     {
         try {
-            List<Future<Price>> futures = new ArrayList<Future<Price>>
-                    (PriceCallable.CALLABLES.length);
-
             for (Class callable : PriceCallable.CALLABLES) {
                 Constructor<Callable<Price>> c = callable.getConstructor(
                         CardDao.class, Card.class);
-                futures.add(taskExecutor.submit(c.newInstance(cardDao, card)));
+                taskExecutor.submit(c.newInstance(cardDao, card));
             }
         }
         catch (Exception e) {
-            logger.warn("Problem occured on updating prices. " +
-                        "[Interrupted] " +
+            logger.warn("Problem occurred while updating prices. " +
                         "[card.getCardName(): " + card.getCardName() +"].", e);
         }
     }

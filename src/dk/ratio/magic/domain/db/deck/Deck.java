@@ -154,9 +154,9 @@ public class Deck
                 ", description='" + description + '\'' +
                 ", cards=" + cards +
                 ", author=" + author +
-                ", chartCurveAll=" + chartCurveAll +
-                ", chartCurveCreatures=" + chartCurveCreatures +
-                ", chartCurveSpells=" + chartCurveSpells +
+                ", chartCurveAll=" + ((chartCurveAll == null) ? "null" : "not null") +
+                ", chartCurveCreatures=" + ((chartCurveCreatures == null) ? "null" : "not null") +
+                ", chartCurveSpells=" + ((chartCurveSpells == null) ? "null" : "not null") +
                 ", featureCardId=" + featureCardId +
                 '}';
     }

@@ -72,6 +72,8 @@ public class PriceCallable
                 sb.append(line);
             }
 
+            reader.close();
+
             // eat all unnecessary whitespace
             return sb.toString().replaceAll("\\s+", " ");
         } catch (IOException e) {

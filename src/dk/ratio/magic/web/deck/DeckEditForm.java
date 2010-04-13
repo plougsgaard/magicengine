@@ -117,13 +117,14 @@ public class DeckEditForm
         deck.setAuthor(author);
 
         // Colours
-        String colours = "";
+        StringBuilder sb = new StringBuilder();
         if (request.getParameterValues("colours") != null) {
             for (String s : request.getParameterValues("colours")) {
-                colours += s + ",";
+                sb.append(s);
+                sb.append(",");
             }
         }
-        deck.setColours(colours);
+        deck.setColours(sb.toString());
 
         // Cards
         List<Card> cards = new ArrayList<Card>();
