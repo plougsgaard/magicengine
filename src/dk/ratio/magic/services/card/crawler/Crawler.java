@@ -4,13 +4,15 @@ import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.card.Price;
 import dk.ratio.magic.services.card.crawler.price.PriceCallable;
-import dk.ratio.magic.services.card.crawler.price.PriceCallable.UPDATE;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -26,6 +28,8 @@ public class Crawler
 
     public Card crawlCard(String cardName)
     {
+        cardName = cardName.replaceAll("Æ", "Ae").trim();
+
         Future<Card> informationFuture = taskExecutor.submit(
                 new InformationCallable(cardName));
 
@@ -74,7 +78,7 @@ public class Crawler
 
             // we submit the prices to be crawled at some point -
             card = cardDao.addCard(card, image);
-            taskExecutor.submit(new PriceCallable(cardDao, taskExecutor, card, UPDATE.AUTO));
+            updateAll(card);
             return card;
         }
         catch (InterruptedException e) {
@@ -91,33 +95,23 @@ public class Crawler
         return null;
     }
 
-    public Card updatePrice(Card card)
+    @SuppressWarnings("unchecked")
+    public void updateAll(Card card)
     {
-        Future<List<Price>> pricesFuture = taskExecutor.submit(
-                new PriceCallable(cardDao, taskExecutor, card, UPDATE.NO)
-        );
-
         try {
-            List<Price> prices = pricesFuture.get();
+            List<Future<Price>> futures = new ArrayList<Future<Price>>
+                    (PriceCallable.CALLABLES.length);
 
-            if (prices.size() == 0) {
-                logger.error("Found no (new) prices.");
-                return null;
+            for (Class callable : PriceCallable.CALLABLES) {
+                Constructor<Callable<Price>> c = callable.getConstructor(
+                        CardDao.class, Card.class);
+                futures.add(taskExecutor.submit(c.newInstance(cardDao, card)));
             }
-
-            return cardDao.addPrices(card, prices);
         }
-        catch (InterruptedException e) {
-            logger.warn("Crawling could not be completed. " +
+        catch (Exception e) {
+            logger.warn("Problem occured on updating prices. " +
                         "[Interrupted] " +
                         "[card.getCardName(): " + card.getCardName() +"].", e);
         }
-        catch (ExecutionException e) {
-            logger.warn("Crawling could not be completed. " +
-                        "[Execution] " +
-                        "[card.getCardName(): " + card.getCardName() +"].", e);
-        }
-        return null;
     }
-
 }

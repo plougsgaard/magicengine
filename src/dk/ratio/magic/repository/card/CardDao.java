@@ -26,6 +26,7 @@ public interface CardDao
     public Page<Card> getCardPage(Integer pageNumber);
 
     public Card addCard(Card card, byte[] image);
+    public Price addPrice(Card card, Price price);
     public Card addPrices(Card card, List<Price> prices);
 
     public Card updateCard(Card card, byte[] image);

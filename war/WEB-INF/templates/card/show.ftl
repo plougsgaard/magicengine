@@ -73,13 +73,16 @@
             <#if sessionUser??>
             <p>
             <form action="${rc.getContextPath()}/card/${card.id}/price/update" method="post">
-                <input type="submit" value="Update Price" alt="Update Price (blocking operation).." />
+                <input type="submit" value="Update Price" />
             </form>
             </p>
             <p>
             <form action="${rc.getContextPath()}/card/${card.id}/update" method="post">
-                <input type="submit" value="Update Card" alt="Update Card (blocking operation).." />
+                <input type="submit" value="Update Card" />
             </form>
+            </p>
+            <p style="margin-top:0.7em; color:lightslategray;">
+                <em>Note: Asynchronous operations. Reload site to see changes.</em>
             </p>
             </#if>
         </div> <!-- end content -->
