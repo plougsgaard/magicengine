@@ -69,4 +69,14 @@ public class Price implements Comparable<Price>
         }
         return 0;
     }
+
+    public boolean equals(Object other)
+    {
+        return (other instanceof Price) && price.equals(((Price) other).getPrice());
+    }
+
+    public int hashCode()
+    {
+        return price.intValue() * 11 + price.intValue() * 13;
+    }
 }
