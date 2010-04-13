@@ -11,7 +11,8 @@
 <div class="content" style="float:right;">
                 <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/image/${deck.featureCardId}/cutout"/>
             </div>
-            <h2 style="margin:0 0 1em 0;">by ${deck.author.name}</h2>
+            <h2 style="margin:0 0 1em 0;">
+                by <a href="${rc.getContextPath()}/decks/user/${deck.author.id}">${deck.author.name}</a></h2>
 
             <p>
                 <strong>Format: </strong>${deck.format}
