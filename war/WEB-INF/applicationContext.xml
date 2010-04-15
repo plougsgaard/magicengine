@@ -21,6 +21,8 @@
         *********************
 		   ANNOTATIONS SCAN
 		*********************
+
+		@repository   must be included in this file
      -->
     <context:component-scan base-package="dk.ratio.magic.repository" />
     
@@ -29,7 +31,7 @@
 		      DAO SERVICES
 		************************
 
-		Define the data access object beans. These are used throughout the
+		The data access object beans are used largely throughout the
 		entire application.
 	-->
     <bean id="cardDao" class="dk.ratio.magic.repository.card.JdbcCardDao" />
@@ -38,26 +40,27 @@
 
     <!--
 		************************
-		     CUSTOM SERVICES
+		        UTILITIES
 		************************
 
+		@cardCrawler     used for updating cards and prices
+		@userSession     utility object for handling user sessions, logins etc.
+		@secureRandom    for added security the random object is created once
 	-->
-    <!-- The card crawler crawls information, images and prices for cards. -->
     <bean id="cardCrawler" class="dk.ratio.magic.services.card.crawler.Crawler" />
-
-    <!-- A manager for getting, storing and purging user login sessions. -->
     <bean id="userSession" class="dk.ratio.magic.services.user.UserManager" />
+    <bean id="secureRandom" class="java.security.SecureRandom" />
 
     <!--
 		************************
 		      TASKS
 		************************
-	-->
 
-    <!-- Enables the use of annotations for task scheduling -->
+		@annotation-driven    enables the use of annotations for task scheduling
+		@taskExecutor         configuration for task executor
+	-->
     <task:annotation-driven />
 
-    <!-- Pretty standard definition of the task executor. Used globally. -->
     <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
          <property name="corePoolSize" value="5" />
          <property name="maxPoolSize" value="10" />
@@ -68,16 +71,16 @@
 		************************
 		   EXCEPTION MAPPING
 		************************
-	-->
 
+		@warnLogCategory    makes sure exceptions thrown get logged
+	-->
     <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="warnLogCategory" value="WARN" />
         <property name="exceptionMappings">
             <map>
-                <!-- Database probably down. -->
                 <entry key="CannotGetJdbcConnectionException" value="/error/db" />
             </map>
         </property>
-        <!-- Errors not caught in map. -->
         <property name="defaultErrorView" value="/error/default" />
     </bean>
 
@@ -98,6 +101,9 @@
 		and give the configuration a validation query to test with. One could
 		also try toying around with timeouts and such, but I feel this is (so far)
 		the most optimal solution.
+
+		@dataSource          the data source used by the templates defined below
+		@propertyConfigurer  configuration location for the data source
 	-->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driver}" />
@@ -113,16 +119,6 @@
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <!--
-                    Database properties.
-
-                    Example:
-
-                    jdbc.driver=com.mysql.jdbc.Driver
-                    jdbc.url=jdbc:mysql://localhost:3306/mtgengine
-                    jdbc.username=root
-                    jdbc.password=hest123
-                -->
                 <value>/WEB-INF/jdbc.properties</value>
             </list>
         </property>
@@ -132,20 +128,17 @@
 		************************
 		     JDBC TEMPLATES
 		************************
-	-->
 
-    <!--
-        Instantiation of a simple jdbc template that enables data access objects to
-        use this cool tool without the need of inefficient subclassing.
-    -->
+		@simpleJdbcTemplate          simple template, uses the dataSource defined above
+		@namedParameterJdbcTemplate  a bit more advanced template
+
+		Using these templates can alleviate the user of having to access data
+		through tedious subclassing.
+	-->
     <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
         <constructor-arg ref="dataSource" />
     </bean>
 
-    <!--
-        Instantiation of a parameter-based jdbc template that enables data access objects to
-        use this tool without the need of inefficient subclassing.
-    -->
     <bean id="namedParameterJdbcTemplate"
           class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
         <constructor-arg ref="dataSource" />

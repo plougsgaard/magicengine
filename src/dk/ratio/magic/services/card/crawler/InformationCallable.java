@@ -27,7 +27,7 @@ public class InformationCallable implements Callable<Card>
 {
     private final Log logger = LogFactory.getLog(getClass());
 
-    private final String PATH = "http://gatherer.wizards.com/Pages/Card/Details.aspx?name=";
+    private static final String PATH = "http://gatherer.wizards.com/Pages/Card/Details.aspx?name=";
 
     private String cardName;
 

@@ -17,6 +17,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.security.SecureRandom;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -31,6 +32,9 @@ public class JdbcUserDao implements UserDao
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Autowired
+    private SecureRandom secureRandom;
 
     public User get(int id)
     {
@@ -88,7 +92,7 @@ public class JdbcUserDao implements UserDao
          * it might not. We don't really care.
          */
         String passwordSalt = String.valueOf(
-                System.currentTimeMillis() * new Random().nextGaussian()
+                System.currentTimeMillis() * secureRandom.nextGaussian()
         );
         user.setPasswordSalt(passwordSalt);
 

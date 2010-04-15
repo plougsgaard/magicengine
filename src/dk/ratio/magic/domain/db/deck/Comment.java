@@ -43,11 +43,11 @@ public class Comment
 
     public Date getDateAdded()
     {
-        return dateAdded;
+        return (Date) dateAdded.clone();
     }
 
     public void setDateAdded(Date dateAdded)
     {
-        this.dateAdded = dateAdded;
+        this.dateAdded = (Date) dateAdded.clone();
     }
 }

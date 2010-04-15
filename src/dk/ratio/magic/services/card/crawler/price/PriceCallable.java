@@ -19,12 +19,6 @@ public class PriceCallable
 {
     private static final Log logger = LogFactory.getLog(PriceCallable.class);
 
-    public static final Class[] CALLABLES = {
-            ManaleakPriceCallable.class,
-            MagicMadhousePriceCallable.class,
-            BoosterPacksPriceCallable.class
-    };
-
     private static Price initPrice(int sellerId)
     {
         Price price = new Price();

@@ -327,7 +327,7 @@ public class JdbcCardDao implements CardDao
                 "card_name = :card_name, mana_cost = :mana_cost, converted_mana_cost = :converted_mana_cost, " +
                 "types = :types, card_text = :card_text, expansion = :expansion, set_code = :set_code, " +
                 "rarity = :rarity, card_number = :card_number, artist = :artist, price = :price, " +
-                "image = :image, thumbnail = :thumbnail " +
+                "image = :image, thumbnail = :thumbnail, cutout = :cutout " +
                 "WHERE id = :id";
 
         int count = simpleJdbcTemplate.update(
@@ -346,6 +346,7 @@ public class JdbcCardDao implements CardDao
                             .addValue("price", card.getPrice())
                             .addValue("image", image)
                             .addValue("thumbnail", null)
+                            .addValue("cutout", null)
                             .addValue("id", card.getId())
         );
 
