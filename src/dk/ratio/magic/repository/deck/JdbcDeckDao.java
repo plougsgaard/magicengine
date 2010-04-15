@@ -271,7 +271,7 @@ public class JdbcDeckDao implements DeckDao
         String fromWhereClause =
                 DeckMapper.FROM +
                 "WHERE LOWER(deck.status) = 'public' " +
-                "ORDER BY deck.id DESC ";
+                DeckMapper.ORDER_BY;
         return new Pagination<Deck>().fetchPage(
                 pageNumber, simpleJdbcTemplate, DeckMapper.SELECT, fromWhereClause,
                 new MapSqlParameterSource(),
@@ -284,7 +284,7 @@ public class JdbcDeckDao implements DeckDao
         String fromWhereClause =
                 DeckMapper.FROM +
                 "WHERE author.id = :user_id " +
-                "ORDER BY deck.id DESC ";
+                DeckMapper.ORDER_BY;
         return new Pagination<Deck>().fetchPage(
                 pageNumber, simpleJdbcTemplate, DeckMapper.SELECT, fromWhereClause,
                 new MapSqlParameterSource().addValue("user_id", userId),
@@ -298,7 +298,7 @@ public class JdbcDeckDao implements DeckDao
                 DeckMapper.FROM +
                 "WHERE author.id = :user_id " +
                 "AND LOWER(deck.status) = 'public' " +
-                "ORDER BY deck.id DESC ";
+                DeckMapper.ORDER_BY;
         return new Pagination<Deck>().fetchPage(
                 pageNumber, simpleJdbcTemplate, DeckMapper.SELECT, fromWhereClause,
                 new MapSqlParameterSource().addValue("user_id", userId),
@@ -311,7 +311,7 @@ public class JdbcDeckDao implements DeckDao
         return simpleJdbcTemplate.query(
                         CommentMapper.SELECT_FROM +
                         "WHERE comment.deck_id = :deckId " +
-                        "ORDER BY comment.date_added ASC",
+                        CommentMapper.ORDER_BY,
                 new CommentMapper(),
                 new MapSqlParameterSource()
                         .addValue("deckId", deckId));
