@@ -3,6 +3,9 @@ package dk.ratio.magic.services.card.crawler;
 import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.card.Price;
+import dk.ratio.magic.services.card.crawler.price.BoosterPacksPriceCallable;
+import dk.ratio.magic.services.card.crawler.price.MagicMadhousePriceCallable;
+import dk.ratio.magic.services.card.crawler.price.ManaleakPriceCallable;
 import dk.ratio.magic.services.card.crawler.price.PriceCallable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -97,8 +100,13 @@ public class Crawler
     @SuppressWarnings("unchecked")
     public void updateAll(Card card)
     {
+        final Class[] classes = {
+            ManaleakPriceCallable.class,
+            MagicMadhousePriceCallable.class,
+            BoosterPacksPriceCallable.class
+        };
         try {
-            for (Class callable : PriceCallable.CALLABLES) {
+            for (Class callable : classes) {
                 Constructor<Callable<Price>> c = callable.getConstructor(
                         CardDao.class, Card.class);
                 taskExecutor.submit(c.newInstance(cardDao, card));

@@ -30,12 +30,12 @@ public class DeckFilter
 
     public String[] getColours()
     {
-        return colours;
+        return colours == null ? null : colours.clone();
     }
 
     public void setColours(String[] colours)
     {
-        this.colours = colours;
+        this.colours = colours == null ? null : colours.clone();
     }
 
     @Override

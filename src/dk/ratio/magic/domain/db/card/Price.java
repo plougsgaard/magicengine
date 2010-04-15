@@ -52,12 +52,12 @@ public class Price implements Comparable<Price>
 
     public Date getDateAdded()
     {
-        return dateAdded;
+        return (Date) dateAdded.clone();
     }
 
     public void setDateAdded(Date dateAdded)
     {
-        this.dateAdded = dateAdded;
+        this.dateAdded = (Date) dateAdded.clone();
     }
 
     public int compareTo(Price other)

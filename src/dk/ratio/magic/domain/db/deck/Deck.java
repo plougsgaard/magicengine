@@ -104,32 +104,32 @@ public class Deck
 
     public byte[] getChartCurveAll()
     {
-        return chartCurveAll;
+        return chartCurveAll == null ? null : chartCurveAll.clone();
     }
 
     public void setChartCurveAll(byte[] chartCurveAll)
     {
-        this.chartCurveAll = chartCurveAll;
+        this.chartCurveAll = chartCurveAll == null ? null : chartCurveAll.clone();
     }
 
     public byte[] getChartCurveCreatures()
     {
-        return chartCurveCreatures;
+        return chartCurveCreatures == null ? null : chartCurveCreatures.clone();
     }
 
     public void setChartCurveCreatures(byte[] chartCurveCreatures)
     {
-        this.chartCurveCreatures = chartCurveCreatures;
+        this.chartCurveCreatures = chartCurveCreatures == null ? null : chartCurveCreatures.clone();
     }
 
     public byte[] getChartCurveSpells()
     {
-        return chartCurveSpells;
+        return chartCurveSpells == null ? null : chartCurveSpells.clone();
     }
 
     public void setChartCurveSpells(byte[] chartCurveSpells)
     {
-        this.chartCurveSpells = chartCurveSpells;
+        this.chartCurveSpells = chartCurveSpells == null ? null : chartCurveSpells.clone();
     }
 
     public int getFeatureCardId()

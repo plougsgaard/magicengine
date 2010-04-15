@@ -22,7 +22,7 @@ public class UserManager
     public static final String USER_COOKIE_SECRET = "userCookieSecret";
     public static final String USER_COOKIE_ID = "userCookieId";
 
-    private final int DAYS = 24 * 60 * 60;
+    private static final int DAYS = 24 * 60 * 60;
 
     public void createSessionUser(HttpServletRequest request, HttpServletResponse response, User user)
     {

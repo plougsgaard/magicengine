@@ -30,9 +30,6 @@ public class DeckDeleteForm
     private DeckDao deckDao;
 
     @Autowired
-    private CardDao cardDao;
-
-    @Autowired
     private UserDao userDao;
 
     @Autowired
