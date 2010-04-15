@@ -404,10 +404,9 @@ public class JdbcDeckDao implements DeckDao
 
         public static final String ORDER_BY =
                 "ORDER BY " +
-                "deck.date_added, " +
-                "deck.date_modified, " +
-                "author.id " +
-                "DESC ";
+                "deck.date_added DESC, " +
+                "deck.date_modified DESC, " +
+                "author.id ASC";
     }
 
     private static class CommentMapper implements RowMapper<Comment>
