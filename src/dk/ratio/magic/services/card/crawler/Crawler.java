@@ -1,5 +1,6 @@
 package dk.ratio.magic.services.card.crawler;
 
+import dk.ratio.magic.domain.db.card.QueueItem;
 import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.card.Price;
@@ -114,6 +115,26 @@ public class Crawler
         }
         catch (Exception e) {
             logger.warn("Problem occurred while updating prices. " +
+                        "[card.getCardName(): " + card.getCardName() +"].", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void updatePrice(QueueItem firstInQueue)
+    {
+        final Class[] classes = {
+            ManaleakPriceCallable.class,
+            MagicMadhousePriceCallable.class,
+            BoosterPacksPriceCallable.class
+        };
+        final Class priceClass = classes[firstInQueue.getSellerId() - 1];
+        Card card = cardDao.getCard(firstInQueue.getCardId());
+        try {
+            Constructor<Callable<Price>> c = priceClass.getConstructor(CardDao.class, Card.class);
+            taskExecutor.submit(c.newInstance(cardDao, card));
+        }
+        catch (Exception e) {
+            logger.warn("Problem occurred while updating price. " +
                         "[card.getCardName(): " + card.getCardName() +"].", e);
         }
     }

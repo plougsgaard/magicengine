@@ -1,4 +1,5 @@
-<#include "../macros/site.ftl">
+<#include "../../macros/site.ftl">
+<#include "../../macros/cards/queue.ftl">
 
 <@page title="Card Queue">
 <div class="grid_9 omega">
@@ -9,9 +10,11 @@
 
         <h1><a href="${rc.getContextPath()}/decks">Cards</a> | Queue</h1>
 
-        <h3>
-            To be implemented.
-        </h3>
+        <@drawPageSelect cardPage "/cards/queue/page/" />
+
+        <@drawPageItems cardPage />
+
+        <@drawPageSelect cardPage "/cards/queue/page/" />
 
     </div> <!-- end content-header -->
 

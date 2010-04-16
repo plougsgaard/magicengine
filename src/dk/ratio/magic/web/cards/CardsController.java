@@ -35,6 +35,14 @@ public class CardsController
     @RequestMapping("/cards/queue")
     public ModelAndView queueHandler()
     {
-        return new ModelAndView("/cards/queue");
+        return queuePageHandler(1);
+    }
+
+    @RequestMapping("/cards/queue/page/{pageNumber}")
+    public ModelAndView queuePageHandler(@PathVariable("pageNumber") Integer pageNumber)
+    {
+        ModelAndView mv = new ModelAndView("/cards/queue/list");
+        mv.addObject("cardPage", cardDao.getQueuePage(pageNumber));
+        return mv;
     }
 }

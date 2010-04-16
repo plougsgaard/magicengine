@@ -2,6 +2,7 @@ package dk.ratio.magic.repository.card;
 
 import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.card.Price;
+import dk.ratio.magic.domain.db.card.QueueItem;
 import dk.ratio.magic.util.repository.Page;
 
 import java.util.List;
@@ -31,4 +32,7 @@ public interface CardDao
 
     public Card updateCard(Card card, byte[] image);
     public Card updatePrice(Card card);
+
+    public QueueItem getFirstInQueue();
+    public Page<QueueItem> getQueuePage(Integer pageNumber);
 }
