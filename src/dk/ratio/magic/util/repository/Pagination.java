@@ -12,8 +12,17 @@ public class Pagination<T>
                              String selectClause, String fromWhereClause,
                              MapSqlParameterSource arguments, RowMapper<T> rowMapper)
     {
+        return fetchPage(pageNumber, template, selectClause, fromWhereClause,
+                         arguments, rowMapper, 10);
+    }
+
+    public Page<T> fetchPage(Integer pageNumber, SimpleJdbcTemplate template,
+                             String selectClause, String fromWhereClause,
+                             MapSqlParameterSource arguments, RowMapper<T> rowMapper,
+                             int pageSize)
+    {
         Integer resultCount = template.queryForInt("SELECT COUNT(*) " + fromWhereClause, arguments);
-        Page<T> page = new PageFactory<T>().createNormalPage(pageNumber, resultCount);
+        Page<T> page = new Page<T>(pageSize, pageNumber, resultCount);
 
         Integer offset = (pageNumber - 1) * page.getPageSize();
         Integer limit = page.getPageSize();

@@ -23,8 +23,14 @@
 		*********************
 
 		@repository   must be included in this file
+		@tasks        must be included in this file
      -->
     <context:component-scan base-package="dk.ratio.magic.repository" />
+    <context:component-scan base-package="dk.ratio.magic.tasks" />
+
+    <task:scheduled-tasks>
+        <task:scheduled ref="priceTask" method="update" cron="5 * * * * ?"/>
+    </task:scheduled-tasks>
     
     <!--
 		************************

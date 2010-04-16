@@ -1,5 +1,6 @@
 package dk.ratio.magic.repository.card;
 
+import dk.ratio.magic.domain.db.card.QueueItem;
 import dk.ratio.magic.domain.db.card.Seller;
 import dk.ratio.magic.util.repository.Page;
 import dk.ratio.magic.util.repository.Pagination;
@@ -108,6 +109,16 @@ public class JdbcCardDao implements CardDao
             result.add(card);
         }
         return result;
+    }
+
+    public Page<QueueItem> getQueuePage(Integer pageNumber)
+    {
+        return new Pagination<QueueItem>().fetchPage(
+                pageNumber, simpleJdbcTemplate, QueueItemMapper.SELECT, QueueItemMapper.FROM,
+                new MapSqlParameterSource(),
+                new QueueItemMapper(),
+                QueueItemMapper.PAGE_SIZE
+        );
     }
 
     public Card getPrices(Card card)
@@ -359,10 +370,6 @@ public class JdbcCardDao implements CardDao
 
     public Card updatePrice(Card card)
     {
-        logger.info("Updating price for card. " +
-                    "[card.getCardName(): " + card.getCardName() + "] " +
-                    "");
-
         card = getPrices(card);
 
         // find the lowest price (not 0d) and set it
@@ -374,10 +381,6 @@ public class JdbcCardDao implements CardDao
         }
         card.setPrice(current);
 
-        logger.info("Computed the price to update the card with. " +
-                    "[card.getPrice(): " + card.getPrice() + "] " +
-                    "");
-
         simpleJdbcTemplate.update(
                 "UPDATE cards SET price = :price WHERE id = :id",
                 new MapSqlParameterSource()
@@ -385,6 +388,14 @@ public class JdbcCardDao implements CardDao
                         .addValue("price", card.getPrice()));
 
         return card;
+    }
+
+    public QueueItem getFirstInQueue()
+    {
+        List<QueueItem> items = simpleJdbcTemplate.query(
+                QueueItemMapper.SELECT + QueueItemMapper.FROM + " LIMIT 1",
+                new QueueItemMapper());
+        return items.get(0);
     }
 
     private static class CardMapper implements RowMapper<Card>
@@ -424,6 +435,7 @@ public class JdbcCardDao implements CardDao
                 "card.price ";
         public static final String FROM =
                 "FROM cards card ";
+        public static final int PAGE_SIZE = 10;
     }
 
     private static class PriceMapper implements RowMapper<Price>
@@ -445,5 +457,39 @@ public class JdbcCardDao implements CardDao
             price.setSeller(seller);
             return price;
         }
+    }
+
+    /*
+
+        * private int cardId;
+    private int sellerId;
+    private Date dateAdded;
+    private Double price;
+     */
+    private static class QueueItemMapper implements RowMapper<QueueItem>
+    {
+        public QueueItem mapRow(ResultSet rs, int rowNum) throws SQLException
+        {
+            QueueItem queueItem = new QueueItem();
+
+            queueItem.setCardId(rs.getInt("queue.card_id"));
+            queueItem.setSellerId(rs.getInt("queue.seller_id"));
+            queueItem.setDateAdded(rs.getTimestamp("queue.date_added"));
+            queueItem.setPrice(rs.getDouble("queue.price"));
+            queueItem.setCardName(rs.getString("queue.card_name"));
+
+            return queueItem;
+        }
+
+        public static final String SELECT =
+                "SELECT " +
+                "queue.card_id, " +
+                "queue.seller_id, " +
+                "queue.date_added, " +
+                "queue.card_name, " +
+                "queue.price  ";
+        public static final String FROM =
+                "FROM view_pricequeue queue ";
+        public static final int PAGE_SIZE = 20;
     }
 }
