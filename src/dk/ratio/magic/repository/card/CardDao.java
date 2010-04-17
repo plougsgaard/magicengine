@@ -33,6 +33,6 @@ public interface CardDao
     public Card updateCard(Card card, byte[] image);
     public Card updatePrice(Card card);
 
-    public QueueItem getFirstInQueue();
+    public List<QueueItem> getFirstInQueue();
     public Page<QueueItem> getQueuePage(Integer pageNumber);
 }

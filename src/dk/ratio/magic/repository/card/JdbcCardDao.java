@@ -390,12 +390,20 @@ public class JdbcCardDao implements CardDao
         return card;
     }
 
-    public QueueItem getFirstInQueue()
+    public List<QueueItem> getFirstInQueue()
     {
-        List<QueueItem> items = simpleJdbcTemplate.query(
-                QueueItemMapper.SELECT + QueueItemMapper.FROM + " LIMIT 1",
-                new QueueItemMapper());
-        return items.get(0);
+        List<QueueItem> result = new ArrayList<QueueItem>(3);
+
+        for (int i = 1; i <= 3; ++i) {
+            String query = QueueItemMapper.SELECT_FROM +
+                           " WHERE queue.seller_id = :sellerId";
+            List<QueueItem> items = simpleJdbcTemplate.query(
+                    query,
+                    new QueueItemMapper(),
+                    new MapSqlParameterSource().addValue("sellerId", i));
+            result.add(items.get(0));
+        }
+        return result;
     }
 
     private static class CardMapper implements RowMapper<Card>
@@ -459,13 +467,6 @@ public class JdbcCardDao implements CardDao
         }
     }
 
-    /*
-
-        * private int cardId;
-    private int sellerId;
-    private Date dateAdded;
-    private Double price;
-     */
     private static class QueueItemMapper implements RowMapper<QueueItem>
     {
         public QueueItem mapRow(ResultSet rs, int rowNum) throws SQLException
@@ -480,6 +481,24 @@ public class JdbcCardDao implements CardDao
 
             return queueItem;
         }
+
+        public static final String SELECT_FROM =
+                "SELECT queue.card_id, queue.seller_id, queue.date_added, queue.card_name, " +
+                        "queue.price FROM ( " +
+                "SELECT latestprices.id AS price_id, cardssellers.id as card_id, " +
+                "cardssellers.seller_id as seller_id, " +
+                "latestprices.date_added, latestprices.price, cardssellers.card_name " +
+                "FROM " +
+                "view_cardssellers AS cardssellers " +
+                "left join `view_latestprices` latestprices " +
+                "ON cardssellers.seller_id = latestprices.seller_id " +
+                        "AND cardssellers.id = latestprices.card_id " +
+                "ORDER BY " +
+                "price IS NOT NULL ASC, " +
+                "date_added ASC, " +
+                "price DESC, " +
+                "card_id DESC, " +
+                "latestprices.seller_id DESC ) AS queue ";
 
         public static final String SELECT =
                 "SELECT " +
