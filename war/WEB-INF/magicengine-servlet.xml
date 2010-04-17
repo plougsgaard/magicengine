@@ -3,11 +3,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
     <!--
         *********************
@@ -16,9 +17,36 @@
 
 		@web       must be included in this file
 		@services  must be included in this file
+		@tasks        must be included in this file
      -->
-    <context:component-scan base-package="dk.ratio.magic.web" />
-    <context:component-scan base-package="dk.ratio.magic.services" />
+    <context:component-scan base-package="dk.ratio.magic.web"/>
+    <context:component-scan base-package="dk.ratio.magic.tasks"/>
+    <context:component-scan base-package="dk.ratio.magic.services"/>
+
+    <!--
+        *********************
+		     PROPERTIES
+		*********************
+
+		@localProperties    properties file for local options
+
+		Example of '/WEB-INF/local.properties':
+
+		engine.debug=true
+    -->
+    <util:properties id="localProperties" location="/WEB-INF/local.properties"/>
+
+    <!--
+        *********************
+		        TASKS
+		*********************
+
+		@priceTask   update the price which is first in the update queue
+		             runs update() every 5 minutes - * */5 * * * ?
+    -->
+    <task:scheduled-tasks>
+        <task:scheduled ref="priceTask" method="update" cron="* */5 * * * ?"/>
+    </task:scheduled-tasks>
 
     <!--
 		*********************
@@ -29,7 +57,7 @@
 		@AnnotationMethodHandlerAdapter    enables the use of annotated methods in interceptors
 	-->
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"
-    	p:order="0" >
+          p:order="0">
         <property name="interceptors">
             <list>
                 <bean class="dk.ratio.magic.services.user.UserInterceptor"/>
@@ -62,25 +90,25 @@
 
     <bean id="freemarkerConfig"
           class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-        <property name="templateLoaderPath" value="/WEB-INF/templates/" />
+        <property name="templateLoaderPath" value="/WEB-INF/templates/"/>
     </bean>
 
     <bean id="jsonViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
-        <property name="order" value="1" />
-        <property name="location" value="/WEB-INF/views.xml" />
+        <property name="order" value="1"/>
+        <property name="location" value="/WEB-INF/views.xml"/>
     </bean>
 
     <bean id="freemarkerViewResolver"
           class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
-        <property name="order" value="2" />
+        <property name="order" value="2"/>
 
-        <property name="cache" value="true" />
-        <property name="prefix" value="" />
-        <property name="suffix" value=".ftl" />
+        <property name="cache" value="true"/>
+        <property name="prefix" value=""/>
+        <property name="suffix" value=".ftl"/>
 
-        <property name="exposeSpringMacroHelpers" value="true" />
-        <property name="exposeSessionAttributes" value="true" />
-        <property name="requestContextAttribute" value="rc" />
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="requestContextAttribute" value="rc"/>
         <property name="contentType" value="text/html;charset=UTF-8"/>
     </bean>
 

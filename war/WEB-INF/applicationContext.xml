@@ -5,7 +5,7 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:task="http://www.springframework.org/schema/task" xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
            http://www.springframework.org/schema/aop 
@@ -15,7 +15,7 @@
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context.xsd
            http://www.springframework.org/schema/task
-           http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+           http://www.springframework.org/schema/task/spring-task-3.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <!--
         *********************
@@ -23,15 +23,9 @@
 		*********************
 
 		@repository   must be included in this file
-		@tasks        must be included in this file
      -->
-    <context:component-scan base-package="dk.ratio.magic.repository" />
-    <context:component-scan base-package="dk.ratio.magic.tasks" />
+    <context:component-scan base-package="dk.ratio.magic.repository"/>
 
-    <task:scheduled-tasks>
-        <task:scheduled ref="priceTask" method="update" cron="5 * * * * ?"/>
-    </task:scheduled-tasks>
-    
     <!--
 		************************
 		      DAO SERVICES
@@ -40,9 +34,9 @@
 		The data access object beans are used largely throughout the
 		entire application.
 	-->
-    <bean id="cardDao" class="dk.ratio.magic.repository.card.JdbcCardDao" />
-    <bean id="deckDao" class="dk.ratio.magic.repository.deck.JdbcDeckDao" />
-    <bean id="userDao" class="dk.ratio.magic.repository.user.JdbcUserDao" />
+    <bean id="cardDao" class="dk.ratio.magic.repository.card.JdbcCardDao"/>
+    <bean id="deckDao" class="dk.ratio.magic.repository.deck.JdbcDeckDao"/>
+    <bean id="userDao" class="dk.ratio.magic.repository.user.JdbcUserDao"/>
 
     <!--
 		************************
@@ -52,10 +46,11 @@
 		@cardCrawler     used for updating cards and prices
 		@userSession     utility object for handling user sessions, logins etc.
 		@secureRandom    for added security the random object is created once
+    <bean id="configBean" class="dk.ratio.magic.services.config.ConfigBean" />
 	-->
-    <bean id="cardCrawler" class="dk.ratio.magic.services.card.crawler.Crawler" />
-    <bean id="userSession" class="dk.ratio.magic.services.user.UserManager" />
-    <bean id="secureRandom" class="java.security.SecureRandom" />
+    <bean id="cardCrawler" class="dk.ratio.magic.services.card.crawler.Crawler"/>
+    <bean id="userSession" class="dk.ratio.magic.services.user.UserManager"/>
+    <bean id="secureRandom" class="java.security.SecureRandom"/>
 
     <!--
 		************************
@@ -65,12 +60,12 @@
 		@annotation-driven    enables the use of annotations for task scheduling
 		@taskExecutor         configuration for task executor
 	-->
-    <task:annotation-driven />
+    <task:annotation-driven/>
 
     <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-         <property name="corePoolSize" value="5" />
-         <property name="maxPoolSize" value="10" />
-         <property name="queueCapacity" value="25" />
+        <property name="corePoolSize" value="5"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="queueCapacity" value="25"/>
     </bean>
 
     <!--
@@ -81,13 +76,13 @@
 		@warnLogCategory    makes sure exceptions thrown get logged
 	-->
     <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-        <property name="warnLogCategory" value="WARN" />
+        <property name="warnLogCategory" value="WARN"/>
         <property name="exceptionMappings">
             <map>
-                <entry key="CannotGetJdbcConnectionException" value="/error/db" />
+                <entry key="CannotGetJdbcConnectionException" value="/error/db"/>
             </map>
         </property>
-        <property name="defaultErrorView" value="/error/default" />
+        <property name="defaultErrorView" value="/error/default"/>
     </bean>
 
     <!--
@@ -112,23 +107,25 @@
 		@propertyConfigurer  configuration location for the data source
 	-->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="${jdbc.driver}" />
-        <property name="url" value="${jdbc.url}" />
-        <property name="username" value="${jdbc.username}" />
-        <property name="password" value="${jdbc.password}" />
-        <property name="validationQuery" value="SELECT 1" />
-        <property name="testOnBorrow" value="true" />
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="validationQuery" value="SELECT 1"/>
+        <property name="testOnBorrow" value="true"/>
     </bean>
 
     <!-- Tell the configuration reader to look for properties in these locations -->
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreResourceNotFound" value="true"/>
         <property name="locations">
             <list>
                 <value>/WEB-INF/jdbc.properties</value>
             </list>
         </property>
     </bean>
+
 
     <!--
 		************************
@@ -142,12 +139,12 @@
 		through tedious subclassing.
 	-->
     <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
-        <constructor-arg ref="dataSource" />
+        <constructor-arg ref="dataSource"/>
     </bean>
 
     <bean id="namedParameterJdbcTemplate"
           class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
-        <constructor-arg ref="dataSource" />
+        <constructor-arg ref="dataSource"/>
     </bean>
 
 </beans>

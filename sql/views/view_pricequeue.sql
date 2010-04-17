@@ -3,14 +3,16 @@
  */
 
 CREATE VIEW `view_pricequeue` AS
-SELECT v.id AS price_id, c.id as card_id, c.seller_id, v.date_added, v.price, c.card_name
+SELECT latestprices.id AS price_id, cardssellers.id as card_id,
+cardssellers.seller_id as seller_id,
+latestprices.date_added, latestprices.price, cardssellers.card_name
 FROM
-view_cardssellers AS c
-left join `view_latestprices` v
-ON c.seller_id = v.seller_id AND c.id = v.card_id
+view_cardssellers AS cardssellers
+left join `view_latestprices` latestprices
+ON cardssellers.seller_id = latestprices.seller_id AND cardssellers.id = latestprices.card_id
 ORDER BY
 price IS NOT NULL ASC,
 date_added ASC,
 price DESC,
 card_id DESC,
-v.seller_id DESC;
+latestprices.seller_id DESC;

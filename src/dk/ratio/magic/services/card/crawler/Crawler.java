@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -136,6 +137,28 @@ public class Crawler
         catch (Exception e) {
             logger.warn("Problem occurred while updating price. " +
                         "[card.getCardName(): " + card.getCardName() +"].", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void updatePrice(List<QueueItem> firstInQueue)
+    {
+        final Class[] classes = {
+            ManaleakPriceCallable.class,
+            MagicMadhousePriceCallable.class,
+            BoosterPacksPriceCallable.class
+        };
+        for (QueueItem item : firstInQueue) {
+            final Class priceClass = classes[item.getSellerId() - 1];
+            Card card = cardDao.getCard(item.getCardId());
+            try {
+                Constructor<Callable<Price>> c = priceClass.getConstructor(CardDao.class, Card.class);
+                taskExecutor.submit(c.newInstance(cardDao, card));
+            }
+            catch (Exception e) {
+                logger.warn("Problem occurred while updating price. " +
+                            "[card.getCardName(): " + card.getCardName() +"].", e);
+            }
         }
     }
 }

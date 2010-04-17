@@ -55,7 +55,7 @@ public class JdbcDeckDao implements DeckDao
         }
         Deck result = results.get(0);
         List<Card> shallowCards = simpleJdbcTemplate.query(
-                "SELECT " +
+                        "SELECT " +
                         "card.id, " +
                         "card.deck_id, " +
                         "card.count " +
