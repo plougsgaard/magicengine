@@ -3,17 +3,18 @@ package dk.ratio.magic.tasks;
 import dk.ratio.magic.domain.db.card.QueueItem;
 import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.services.card.crawler.Crawler;
-import dk.ratio.magic.services.config.ConfigBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.util.List;
 
-@Component
+@Service
+@Configuration
 public class PriceTask
 {
     protected final Log logger = LogFactory.getLog(getClass());
@@ -24,19 +25,19 @@ public class PriceTask
     @Autowired
     private Crawler crawler;
 
-    @Autowired
-    private ConfigBean configBean;
+    @Value("${pricetask.enabled}")
+    private boolean enabled;
+    
+    private int count = 0;
 
-    @Autowired
-    private SecureRandom secureRandom;
-
-    public void update() throws InterruptedException
+    @Scheduled(cron = "${pricetask.cron}")
+    public void update()
     {
-        if (configBean.isPriceTaskEnabled()) {
+        logger.info("Tick #" + count++);
+
+        if (enabled) {
             List<QueueItem> firstInQueue = cardDao.getFirstInQueue();
             crawler.updatePrice(firstInQueue);
-        } else {
-            logger.info("(Tick!) -- price task disabled");
         }
     }
 }

@@ -16,37 +16,8 @@
 		*********************
 
 		@web       must be included in this file
-		@services  must be included in this file
-		@tasks        must be included in this file
      -->
     <context:component-scan base-package="dk.ratio.magic.web"/>
-    <context:component-scan base-package="dk.ratio.magic.tasks"/>
-    <context:component-scan base-package="dk.ratio.magic.services"/>
-
-    <!--
-        *********************
-		     PROPERTIES
-		*********************
-
-		@localProperties    properties file for local options
-
-		Example of '/WEB-INF/local.properties':
-
-		engine.debug=true
-    -->
-    <util:properties id="localProperties" location="/WEB-INF/local.properties"/>
-
-    <!--
-        *********************
-		        TASKS
-		*********************
-
-		@priceTask   update the price which is first in the update queue
-		             runs update() every 5 minutes - * */5 * * * ?
-    -->
-    <task:scheduled-tasks>
-        <task:scheduled ref="priceTask" method="update" cron="0 */1 * * * ?"/>
-    </task:scheduled-tasks>
 
     <!--
 		*********************

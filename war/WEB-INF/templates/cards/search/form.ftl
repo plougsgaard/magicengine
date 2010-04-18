@@ -8,7 +8,7 @@
 
     <div id="content-header" class="content">
 
-        <h1><a href="${rc.getContextPath()}/decks">Cards</a> | Search</h1>
+        <h1><a href="${rc.getContextPath()}/cards">Cards</a> | Search</h1>
 
         <h3>
             To be implemented.
