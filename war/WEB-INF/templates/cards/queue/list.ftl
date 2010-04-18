@@ -8,7 +8,7 @@
 
     <div id="content-header" class="content">
 
-        <h1><a href="${rc.getContextPath()}/decks">Cards</a> | Queue</h1>
+        <h1><a href="${rc.getContextPath()}/cards">Cards</a> | Queue</h1>
 
         <@drawPageSelect cardPage "/cards/queue/page/" />
 

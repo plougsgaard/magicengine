@@ -8,7 +8,7 @@
 
     <div id="content-header" class="content">
 
-        <h1><a href="${rc.getContextPath()}/decks">Cards</a></h1>
+        <h1><a href="${rc.getContextPath()}/cards">Cards</a></h1>
 
         <form id="search-form" action="${rc.getContextPath()}/card/search" method="post">
         <h3>Card Search</h3>

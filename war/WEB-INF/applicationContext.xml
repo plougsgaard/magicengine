@@ -17,13 +17,78 @@
            http://www.springframework.org/schema/task
            http://www.springframework.org/schema/task/spring-task-3.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+
     <!--
         *********************
-		   ANNOTATIONS SCAN
+             PROPERTIES
+        *********************
+
+        @localProperties    properties file for local options
+
+        Example of '/WEB-INF/local.properties':
+
+        debug.enabled=true
+        pricetask.enabled=false
+        pricetask.cron=*/13 * * * * ?
+    -->
+
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
+            <list>
+                <value>/WEB-INF/jdbc.properties</value>
+                <value>/WEB-INF/local.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <context:annotation-config />
+
+
+
+
+    <!--
+        *********************
+		        TASKS
+		*********************
+
+        @annotation-driven    enables the use of annotations for task scheduling
+		@taskExecutor         configuration for task executor
+		@priceTask            update the price which is first in the update queue
+		                      runs update() every 5 minutes: 0 */5 * * * ?
+		                      TODO ^^
+    -->
+    <context:component-scan base-package="dk.ratio.magic.tasks"/>
+
+    <task:scheduler id="taskScheduler"/>
+    
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="5"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="queueCapacity" value="25"/>
+    </bean>
+
+    <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
+
+
+    <!--
+        *********************
+		      SERVICES
+		*********************
+
+		@services     must be included in this file
+     -->
+    <context:component-scan base-package="dk.ratio.magic.services"/>
+
+    <!--
+        *********************
+		      REPOSITORY
 		*********************
 
 		@repository   must be included in this file
      -->
+
     <context:component-scan base-package="dk.ratio.magic.repository"/>
 
     <!--
@@ -51,22 +116,6 @@
     <bean id="cardCrawler" class="dk.ratio.magic.services.card.crawler.Crawler"/>
     <bean id="userSession" class="dk.ratio.magic.services.user.UserManager"/>
     <bean id="secureRandom" class="java.security.SecureRandom"/>
-
-    <!--
-		************************
-		      TASKS
-		************************
-
-		@annotation-driven    enables the use of annotations for task scheduling
-		@taskExecutor         configuration for task executor
-	-->
-    <task:annotation-driven/>
-
-    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-        <property name="corePoolSize" value="5"/>
-        <property name="maxPoolSize" value="10"/>
-        <property name="queueCapacity" value="25"/>
-    </bean>
 
     <!--
 		************************
@@ -114,18 +163,6 @@
         <property name="validationQuery" value="SELECT 1"/>
         <property name="testOnBorrow" value="true"/>
     </bean>
-
-    <!-- Tell the configuration reader to look for properties in these locations -->
-    <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="ignoreResourceNotFound" value="true"/>
-        <property name="locations">
-            <list>
-                <value>/WEB-INF/jdbc.properties</value>
-            </list>
-        </property>
-    </bean>
-
 
     <!--
 		************************

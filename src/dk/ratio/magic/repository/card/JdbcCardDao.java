@@ -4,6 +4,7 @@ import dk.ratio.magic.domain.db.card.QueueItem;
 import dk.ratio.magic.domain.db.card.Seller;
 import dk.ratio.magic.util.repository.Page;
 import dk.ratio.magic.util.repository.Pagination;
+import org.apache.commons.dbcp.DelegatingResultSet;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -390,13 +391,14 @@ public class JdbcCardDao implements CardDao
         return card;
     }
 
+    
     public List<QueueItem> getFirstInQueue()
     {
         List<QueueItem> result = new ArrayList<QueueItem>(3);
 
         for (int i = 1; i <= 3; ++i) {
-            String query = QueueItemMapper.SELECT_FROM +
-                           " WHERE queue.seller_id = :sellerId";
+            String query = QueueItemMapper.SELECT + QueueItemMapper.FROM
+                    + " WHERE seller_id = :sellerId LIMIT 1";
             List<QueueItem> items = simpleJdbcTemplate.query(
                     query,
                     new QueueItemMapper(),
@@ -469,46 +471,29 @@ public class JdbcCardDao implements CardDao
 
     private static class QueueItemMapper implements RowMapper<QueueItem>
     {
+        private final Log logger = LogFactory.getLog(getClass());
         public QueueItem mapRow(ResultSet rs, int rowNum) throws SQLException
         {
             QueueItem queueItem = new QueueItem();
 
-            queueItem.setCardId(rs.getInt("queue.card_id"));
-            queueItem.setSellerId(rs.getInt("queue.seller_id"));
-            queueItem.setDateAdded(rs.getTimestamp("queue.date_added"));
-            queueItem.setPrice(rs.getDouble("queue.price"));
-            queueItem.setCardName(rs.getString("queue.card_name"));
+            queueItem.setSellerId(rs.getInt("seller_id"));
+            queueItem.setCardId(rs.getInt("card_id"));
+            queueItem.setDateAdded(rs.getTimestamp("date_added"));
+            queueItem.setPrice(rs.getDouble("price"));
+            queueItem.setCardName(rs.getString("card_name"));
 
             return queueItem;
         }
 
-        public static final String SELECT_FROM =
-                "SELECT queue.card_id, queue.seller_id, queue.date_added, queue.card_name, " +
-                        "queue.price FROM ( " +
-                "SELECT latestprices.id AS price_id, cardssellers.id as card_id, " +
-                "cardssellers.seller_id as seller_id, " +
-                "latestprices.date_added, latestprices.price, cardssellers.card_name " +
-                "FROM " +
-                "view_cardssellers AS cardssellers " +
-                "left join `view_latestprices` latestprices " +
-                "ON cardssellers.seller_id = latestprices.seller_id " +
-                        "AND cardssellers.id = latestprices.card_id " +
-                "ORDER BY " +
-                "price IS NOT NULL ASC, " +
-                "date_added ASC, " +
-                "price DESC, " +
-                "card_id DESC, " +
-                "latestprices.seller_id DESC ) AS queue ";
-
         public static final String SELECT =
                 "SELECT " +
-                "queue.card_id, " +
-                "queue.seller_id, " +
-                "queue.date_added, " +
-                "queue.card_name, " +
-                "queue.price  ";
+                "seller_id, " +
+                "card_id, " +
+                "date_added, " +
+                "price, " +
+                "card_name ";
         public static final String FROM =
-                "FROM view_pricequeue queue ";
+                "FROM view_pricequeue ";
         public static final int PAGE_SIZE = 20;
     }
 }
