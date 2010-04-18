@@ -45,7 +45,7 @@
 		             runs update() every 5 minutes - * */5 * * * ?
     -->
     <task:scheduled-tasks>
-        <task:scheduled ref="priceTask" method="update" cron="* */5 * * * ?"/>
+        <task:scheduled ref="priceTask" method="update" cron="0 */1 * * * ?"/>
     </task:scheduled-tasks>
 
     <!--
