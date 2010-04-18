@@ -15,8 +15,10 @@
 		   ANNOTATIONS SCAN
 		*********************
 
-		@web       must be included in this file
+		@web        must be included in this file
+		@services   must be included in this file
      -->
+    <context:component-scan base-package="dk.ratio.magic.services"/>
     <context:component-scan base-package="dk.ratio.magic.web"/>
 
     <!--
