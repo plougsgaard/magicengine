@@ -49,7 +49,7 @@ public class CardController
     }
 
     @RequestMapping(value = "/card/search", method = RequestMethod.POST)
-    public ModelAndView postHandler(HttpServletRequest request)
+    public ModelAndView searchHandler(HttpServletRequest request)
     {
         String cardName = request.getParameter("search-input");
 

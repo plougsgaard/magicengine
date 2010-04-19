@@ -11,6 +11,7 @@ public interface CardDao
 {
     public Card getCard(String cardName);
     public Card getCard(int cardId);
+    public List<Price> getPrices();
     public Card getPrices(Card card);
 
     public List<Card> getCards();
@@ -35,4 +36,6 @@ public interface CardDao
 
     public List<QueueItem> getFirstInQueue();
     public Page<QueueItem> getQueuePage(Integer pageNumber);
+
+    public void updatePrices(List<Price> prices);
 }

@@ -45,20 +45,20 @@
 
         <div class="grid_4 alpha">
             <div class="content">
-                <h3>Lands</h3>
+                <h3>Lands (${landsCount})</h3>
                 <div class="card-list">
                 <ul class="deck">
-                <#list deck.cards as card>
-                <#if card.types?contains("Land")><@drawCardItem card /></#if>
+                <#list lands as card>
+                <@drawCardItem card />
                 </#list>
                 </ul>
                 </div>
 
-                <h3>Spells</h3>
+                <h3 style="margin-top:1em;">Spells (${spellsCount})</h3>
                 <div class="card-list">
                 <ul class="deck">
-                <#list deck.cards as card>
-                <#if !card.types?contains("Land") && !card.types?contains("Creature")><@drawCardItem card /></#if>
+                <#list spells as card>
+                <@drawCardItem card />
                 </#list>
                 </ul>
                 </div>
@@ -67,11 +67,11 @@
 
         <div class="grid_5 omega">
             <div class="content">
-                <h3>Creatures</h3>
+                <h3>Creatures (${creaturesCount})</h3>
                 <div class="card-list">
                 <ul class="deck">
-                <#list deck.cards as card>
-                <#if card.types?contains("Creature")><@drawCardItem card /></#if>
+                <#list creatures as card>
+                <@drawCardItem card />
                 </#list>
                 </ul>
                 </div>

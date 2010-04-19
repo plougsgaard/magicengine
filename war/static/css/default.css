@@ -267,3 +267,19 @@ h1.center, h2.center, h3.center, h4.center, h5.center, p.center, div.center {
 .page-select {
     margin: 1em 0;
 }
+
+div#qTip {
+    /*
+ padding: 3px;
+ border: 1px solid #666;
+ border-right-width: 2px;
+ border-bottom-width: 2px;
+ display: none;
+ background: transparent;
+ color: #FFF;
+ font: bold 9px Verdana, Arial, sans-serif;
+ */
+ text-align: left;
+ position: absolute;
+ z-index: 1000;
+}
