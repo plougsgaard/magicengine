@@ -27,7 +27,8 @@
 <#macro drawCardItem card>
 <li>
     <strong>${card.count}</strong>
-    <a href="${rc.getContextPath()}/card/${card.id}">
+    <a href="${rc.getContextPath()}/card/${card.id}"
+            title="<img src='${rc.getContextPath()}/services/card/image/${card.id}/thumbnail' width='220' />">
         ${card.cardName} <@drawSymbolsSmall name=card.manaCost />
     </a>
     &ndash;

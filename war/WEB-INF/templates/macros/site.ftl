@@ -20,6 +20,7 @@
 
     <script src="${rc.getContextPath()}/static/javascript/lib/prototype.js" type="text/javascript"></script>
     <script src="${rc.getContextPath()}/static/javascript/src/scriptaculous.js" type="text/javascript"></script>
+    <script src="${rc.getContextPath()}/static/javascript/qTip.js" type="text/javascript"></script>
     
     <#list scripts as script>
     <script type="text/javascript">

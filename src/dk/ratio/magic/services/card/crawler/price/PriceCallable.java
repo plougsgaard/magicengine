@@ -12,6 +12,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +51,17 @@ public class PriceCallable
             }
         }
 
-        price.setPrice(rate * price.getPrice());
+        final double rawPrice = rate * price.getPrice();
+        try {
+            // truncate unnecessary precision
+            DecimalFormat df = new DecimalFormat("#.##",
+                    DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+            price.setPrice(Double.valueOf(df.format(rawPrice)));
+        } catch (NumberFormatException e) {
+            logger.warn("Could not parse the double, " +
+                        "Giving up truncation. Setting non-truncated price.");
+            price.setPrice(rawPrice);
+        }
 
         return price;
     }

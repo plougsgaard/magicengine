@@ -122,6 +122,18 @@ public class JdbcCardDao implements CardDao
         );
     }
 
+    public List<Price> getPrices()
+    {
+        String query = "SELECT " +
+                       "price.id, " +
+                       "price.price, " +
+                       "price.seller_id, " +
+                       "price.card_id," +
+                       "price.date_added " +
+                       "FROM prices price ";
+        return simpleJdbcTemplate.query(query, new PriceMapper());
+    }
+
     public Card getPrices(Card card)
     {
         String query = "SELECT " +
@@ -391,7 +403,16 @@ public class JdbcCardDao implements CardDao
         return card;
     }
 
-    
+    public void updatePrices(List<Price> prices)
+    {
+        for (Price price : prices) {
+            simpleJdbcTemplate.update("UPDATE prices SET price = :price WHERE id = :id",
+                    new MapSqlParameterSource()
+            .addValue("id", price.getId())
+            .addValue("price", price.getPrice()));
+        }
+    }
+
     public List<QueueItem> getFirstInQueue()
     {
         List<QueueItem> result = new ArrayList<QueueItem>(3);
