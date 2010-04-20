@@ -55,7 +55,7 @@
             <ul>
                 <li><strong><a href="${rc.getContextPath()}/users">Users</a></strong></li>
                 <#if Session.userSession??>
-                <li><a href="${rc.getContextPath()}/user/${Session.userSession.id}">Profile</a></li>
+                <li><a href="${rc.getContextPath()}/user/${Session.userSession.id?c}">Profile</a></li>
                 <li><a href="${rc.getContextPath()}/user/logout">Logout</a></li>
                 <#else >
                 <li><a href="${rc.getContextPath()}/user/login">Login</a></li>

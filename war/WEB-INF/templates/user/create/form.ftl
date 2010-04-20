@@ -13,7 +13,7 @@
 <div class="grid_3 alpha">
     <div class="content">
         <form action="" method="post">
-        <input type="hidden" name="id" value="${user.id}">
+        <input type="hidden" name="id" value="${user.id?c}">
         <p>
             Name:
             <@createInputText "user.name" />

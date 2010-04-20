@@ -13,7 +13,7 @@
 <div class="grid_3 alpha">
 <div class="content">
     <form action="" method="post">
-        <input type="hidden" name="id" value="${profileEdit.id}">
+        <input type="hidden" name="id" value="${profileEdit.id?c}">
         <p>
             Name:
             <@createInputText "profileEdit.name" />
@@ -30,7 +30,7 @@
 
 <div class="grid_6 omega">
     <div class="content">
-        <a href="${rc.getContextPath()}/user/${profileEdit.id}"></a>
+        <a href="${rc.getContextPath()}/user/${profileEdit.id?c}"></a>
     </div>
 </div>
 </div>

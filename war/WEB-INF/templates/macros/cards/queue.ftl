@@ -6,7 +6,7 @@
 <!-- User item begin -->
     <li style="margin:0.2em 0 0 0; list-style-type:none;">
     <@getSellerName queueItem.sellerId /> &rarr;
-        <a href="${rc.getContextPath()}/card/${queueItem.cardId}">
+        <a href="${rc.getContextPath()}/card/${queueItem.cardId?c}">
         ${queueItem.cardName}
         </a> &ndash;
         <#if queueItem.price?? && !(queueItem.price == 0)>

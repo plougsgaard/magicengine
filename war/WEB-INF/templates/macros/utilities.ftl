@@ -26,7 +26,7 @@
 
 <#macro drawCardImage card>
     <div style="display:inline; float:left; margin: 7px 7px 14px 7px;">
-        <a href="${rc.getContextPath()}/card/${card.id}"><img alt="Mana Symbol" src="${rc.getContextPath()}/services/card/image/${card.id}/thumbnail" width="220" /></a><br />
+        <a href="${rc.getContextPath()}/card/${card.id?c}"><img alt="Mana Symbol" src="${rc.getContextPath()}/services/card/image/${card.id?c}/thumbnail" width="220" /></a><br />
         <strong>${card.count}</strong>x &ndash; ${(card.count * card.price)?string.currency}
     </div>
 </#macro>

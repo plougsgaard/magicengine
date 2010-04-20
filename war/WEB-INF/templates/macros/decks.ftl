@@ -6,15 +6,15 @@
 <!-- Deck item begin -->
 <div class="grid_8 alpha omega" style="margin-bottom:0.5em;">
     <div class="list-image" style="float:left; padding: 0 1em 0 1em;">
-        <a href="${rc.getContextPath()}/deck/${deck.id}">
-        <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/image/${deck.featureCardId}/cutout"/>
+        <a href="${rc.getContextPath()}/deck/${deck.id?c}">
+        <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/image/${deck.featureCardId?c}/cutout"/>
         </a>
     </div>
     <div class="list-deck" style="margin: 0 0 0 0.5em;">
-        <h3><a href="${rc.getContextPath()}/deck/${deck.id}">${deck.title} <@drawSymbols deck.colours /></a>
+        <h3><a href="${rc.getContextPath()}/deck/${deck.id?c}">${deck.title} <@drawSymbols deck.colours /></a>
         </h3>
         <p>
-            by <a href="${rc.getContextPath()}/decks/user/${deck.author.id}">${deck.author.name}</a>
+            by <a href="${rc.getContextPath()}/decks/user/${deck.author.id?c}">${deck.author.name}</a>
         </p>
     </div>
 </div>
@@ -27,8 +27,8 @@
 <#macro drawCardItem card>
 <li>
     <strong>${card.count}</strong>
-    <a href="${rc.getContextPath()}/card/${card.id}"
-            title="<img src='${rc.getContextPath()}/services/card/image/${card.id}/thumbnail' width='220' />">
+    <a href="${rc.getContextPath()}/card/${card.id?c}"
+            title="<img src='${rc.getContextPath()}/services/card/image/${card.id?c}/thumbnail' width='220' />">
         ${card.cardName} <@drawSymbolsSmall name=card.manaCost />
     </a>
     &ndash;

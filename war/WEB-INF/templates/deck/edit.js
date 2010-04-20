@@ -302,7 +302,7 @@ document.observe('dom:loaded', function()
     /**
      * Populate the lists with cards already in the deck.
      */
-    new Ajax.Request("${rc.getContextPath()}/services/deck/fetch/${deck.id}/key/${deckKey}", {
+    new Ajax.Request("${rc.getContextPath()}/services/deck/fetch/${deck.id?c}/key/${deckKey}", {
         method: 'get',
         onCreate: function() {
         },
