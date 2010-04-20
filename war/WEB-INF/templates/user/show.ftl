@@ -37,11 +37,11 @@
         <h3>
             Your decks
         </h3>
-        <@drawPageSelect deckPage "/user/${user.id}/page/" />
+        <@drawPageSelect deckPage "/user/${user.id?c}/page/" />
 
         <@drawPageItems deckPage />
 
-        <@drawPageSelect deckPage "/user/${user.id}/page/" />
+        <@drawPageSelect deckPage "/user/${user.id?c}/page/" />
         </#if>
     </div>
 </div>
@@ -51,13 +51,13 @@
         <h2>Options</h2>
             <#if Session.userSession?? && Session.userSession.id == user.id>
             <h4>
-            <a href="${rc.getContextPath()}/user/${user.id}/edit">
+            <a href="${rc.getContextPath()}/user/${user.id?c}/edit">
                 Edit Profile
             </a>
             </h4>
             </#if>
             <h4>
-            <a href="${rc.getContextPath()}/decks/user/${user.id}">
+            <a href="${rc.getContextPath()}/decks/user/${user.id?c}">
                 Public Decks
             </a>
             </h4>

@@ -28,11 +28,11 @@
         <div class="content">
             <h4>&nbsp;</h4>
             <p>
-                <a href="${rc.getContextPath()}/deck/${deck.id}" style="text-decoration: none;" title="View or Preview Deck">
+                <a href="${rc.getContextPath()}/deck/${deck.id?c}" style="text-decoration: none;" title="View or Preview Deck">
                     <img src="${rc.getContextPath()}/static/images/site/view.gif" style="vertical-align:middle;"/></a>
-                <a href="${rc.getContextPath()}/deck/${deck.id}/copy" style="text-decoration: none;" title="Duplicate Deck">
+                <a href="${rc.getContextPath()}/deck/${deck.id?c}/copy" style="text-decoration: none;" title="Duplicate Deck">
                     <img src="${rc.getContextPath()}/static/images/site/duplicate.gif" style="vertical-align:middle;"/></a>
-                <a href="${rc.getContextPath()}/deck/${deck.id}/delete" style="text-decoration: none;" title="Delete Deck">
+                <a href="${rc.getContextPath()}/deck/${deck.id?c}/delete" style="text-decoration: none;" title="Delete Deck">
                     <img src="${rc.getContextPath()}/static/images/site/delete.gif" style="vertical-align:middle;"/></a>
             </p>
         </div>
@@ -152,7 +152,7 @@
             <p>
                 <select name="featureCardId" class="text">
                     <#list deck.cards as card>
-                        <option value="${card.id}" 
+                        <option value="${card.id?c}"
                                 <#if (card.id == deck.featureCardId)>
                                 selected="selected"
                                 </#if>

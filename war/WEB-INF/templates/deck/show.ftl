@@ -12,7 +12,7 @@
                 <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/image/${deck.featureCardId}/cutout"/>
             </div>
             <h2 style="margin:0 0 1em 0;">
-                by <a href="${rc.getContextPath()}/decks/user/${deck.author.id}">${deck.author.name}</a></h2>
+                by <a href="${rc.getContextPath()}/decks/user/${deck.author.id?c}">${deck.author.name}</a></h2>
 
             <p>
                 <strong>Format: </strong>${deck.format}
@@ -34,7 +34,7 @@
                 </#if>
             </p>
             <p>
-                <a href="${rc.getContextPath()}/deck/${deck.id}/edit">Edit</a>
+                <a href="${rc.getContextPath()}/deck/${deck.id?c}/edit">Edit</a>
             </p>
         </div> <!-- end content -->
     </div>
@@ -84,14 +84,14 @@
         <div class="content">
             <h3>Mana Curve <a name="charts"> </a> <a id="expand-extra-charts" href="#charts">+</a></h3>
 
-            <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/coalesced"/>
+            <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id?c}/chart/coalesced"/>
 
             <div id="extra-charts" style="display:none;">
                 <h3>Mana Curve (creatures)</h3>
-                <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/creature"/>
+                <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id?c}/chart/creature"/>
 
                 <h3>Mana Curve (other spells)</h3>
-                <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id}/chart/spell"/>
+                <img alt="Mana Curve" src="${rc.getContextPath()}/services/deck/${deck.id?c}/chart/spell"/>
             </div>
 
             <h3>Pictures <a name="pictures"> </a> <a id="expand-card-pictures" href="#pictures">+</a></h3>

@@ -12,7 +12,7 @@
         <p>Listing decks that are created by <strong>${user.name}</strong> ordered by <strong>date</strong> of creation.</p>
 
         <h3>
-            <@drawPageSelect deckPage "/decks/user/${user.id}/page/" />
+            <@drawPageSelect deckPage "/decks/user/${user.id?c}/page/" />
         </h3>
 
     </div> <!-- end content-header -->
@@ -21,7 +21,7 @@
 
     <div class="content">
         <h3>
-            <@drawPageSelect deckPage "/decks/user/${user.id}/page/" />
+            <@drawPageSelect deckPage "/decks/user/${user.id?c}/page/" />
         </h3>
     </div>
 
