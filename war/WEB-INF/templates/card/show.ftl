@@ -12,7 +12,7 @@
 
     <div class="grid_4 alpha">
         <div style="padding: 0 1em 0 0; text-align: center;">
-            <img alt="Card Image" src="${rc.getContextPath()}/services/card/image/${card.id}" />
+            <img alt="Card Image" src="${rc.getContextPath()}/services/card/image/${card.id?c}" />
             <br /><h3>${card.price?string.currency}</h3>
         </div> <!-- end content -->
     </div> <!-- end content-pane -->
@@ -42,7 +42,7 @@
 
             <div class="grid_3 alpha">
                 <div style="padding-left: 1em;">
-                    <p><@getSellerName price.seller.id /></p>
+                    <p><@getSellerName price.seller.id?c /></p>
                 </div>
             </div>
 
@@ -72,12 +72,12 @@
         <div class="content">
             <#if sessionUser??>
             <p>
-            <form action="${rc.getContextPath()}/card/${card.id}/price/update" method="post">
+            <form action="${rc.getContextPath()}/card/${card.id?c}/price/update" method="post">
                 <input type="submit" value="Update Price" />
             </form>
             </p>
             <p>
-            <form action="${rc.getContextPath()}/card/${card.id}/update" method="post">
+            <form action="${rc.getContextPath()}/card/${card.id?c}/update" method="post">
                 <input type="submit" value="Update Card" />
             </form>
             </p>
