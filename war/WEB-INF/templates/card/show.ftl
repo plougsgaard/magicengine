@@ -42,7 +42,7 @@
 
             <div class="grid_3 alpha">
                 <div style="padding-left: 1em;">
-                    <p><@getSellerName price.seller.id?c /></p>
+                    <p><@getSellerName price.seller.id /></p>
                 </div>
             </div>
 
