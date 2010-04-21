@@ -9,7 +9,7 @@
 
             <h1><a href="${rc.getContextPath()}/decks">Decks</a> | ${deck.title}</h1>
 <div class="content" style="float:right;">
-                <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/image/${deck.featureCardId}/cutout"/>
+                <img alt="Image Thumbnail" src="${rc.getContextPath()}/services/card/image/${deck.featureCardId?c}/cutout"/>
             </div>
             <h2 style="margin:0 0 1em 0;">
                 by <a href="${rc.getContextPath()}/decks/user/${deck.author.id?c}">${deck.author.name}</a></h2>
