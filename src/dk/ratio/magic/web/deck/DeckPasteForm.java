@@ -9,6 +9,7 @@ import dk.ratio.magic.repository.deck.DeckDao;
 import dk.ratio.magic.repository.user.UserDao;
 import dk.ratio.magic.services.card.crawler.Crawler;
 import dk.ratio.magic.services.deck.chart.ChartBuilder;
+import dk.ratio.magic.services.deck.chart.Pair;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
 import dk.ratio.magic.validation.deck.EditDeckValidator;
@@ -83,14 +84,17 @@ public class DeckPasteForm
 
         final ModelAndView mv = new ModelAndView("/deck/paste");
 
-        mv.addObject("pasteBean", pasteBean);
+        Pair<List<Card>, String> pair = parseCards(pasteBean.getCards());
+
+        List<Card> cards = pair.getFirst();
+        pasteBean.setCards(pair.getSecond());
 
         Deck deck = new Deck();
-        List<Card> cards = parseCards(pasteBean.getCards());
         Collections.sort(cards);
         deck.setCards(cards);
 
         mv.addObject("deck", deck);
+        mv.addObject("pasteBean", pasteBean);
 
         int landsCount = 0, creaturesCount = 0, spellsCount = 0;
         ArrayList<Card> lands = new ArrayList<Card>();
@@ -119,9 +123,10 @@ public class DeckPasteForm
         return mv;
     }
 
-    private List<Card> parseCards(String cardString) throws IOException
+    private Pair<List<Card>, String> parseCards(String cardString) throws IOException
     {
         ArrayList<Card> cards = new ArrayList<Card>();
+        StringBuilder sb = new StringBuilder();
 
         Pattern pattern = Pattern.compile(
                 "\\s*(\\d+)[\\sx]*([\\w\\s,'\\-\\\\!/]+)");
@@ -144,6 +149,8 @@ public class DeckPasteForm
                 if (card != null) {
                     card.setCount(count);
                     cards.add(card);
+                    sb.append(line);
+                    sb.append("\n");
                     continue;
                 }
 
@@ -152,6 +159,8 @@ public class DeckPasteForm
                 if (card != null) {
                     card.setCount(count);
                     cards.add(card);
+                    sb.append(line);
+                    sb.append("\n");
                     continue;
                 }
 
@@ -159,6 +168,6 @@ public class DeckPasteForm
             }
         }
 
-        return cards;
+        return new Pair<List<Card>, String>(cards, sb.toString());
     }
 }
