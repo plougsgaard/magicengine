@@ -11,6 +11,16 @@
 </#list>
 </#macro>
 
+<#macro createInputTextArea field rows>
+<@spring.bind field />
+<textarea
+name="${spring.status.expression}" class="text" rows="${rows}">
+${spring.status.value?default("")}</textarea><br />
+<#list spring.status.errorMessages as error>
+<b>Error:</b> ${error}<br />
+</#list>
+</#macro>
+
 <!--
 
 TODO: Replace the use of these with the proper ones...

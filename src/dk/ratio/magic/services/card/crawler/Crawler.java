@@ -31,8 +31,6 @@ public class Crawler
 
     public Card crawlCard(String cardName)
     {
-        cardName = cardName.replaceAll("Æ", "Ae").trim();
-
         Future<Card> informationFuture = taskExecutor.submit(
                 new InformationCallable(cardName));
 

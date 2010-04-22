@@ -1,6 +1,8 @@
 package dk.ratio.magic.services.card.crawler;
 
 import dk.ratio.magic.domain.db.card.Card;
+import freemarker.template.utility.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -66,7 +68,12 @@ public class InformationCallable implements Callable<Card>
 
     private Card getCard(String cardName) throws Exception
     {
-        Card card;
+        if (StringUtils.isBlank(cardName)) {
+            return null;
+        }
+
+        cardName = cardName.replaceAll("Æ", "Ae").trim();
+
 
         /*
          * First we check if it's a multi-card.
@@ -82,16 +89,14 @@ public class InformationCallable implements Callable<Card>
         String html = getHtml(PATH + URLEncoder.encode(cardName, "latin1").replaceAll("%", "%u00"));
 
         /*
-        * This is the matcher name we will be using to match the different
-        * attributes of magic cards henceforth.
-        */
-        Matcher matcher;
-        card = new Card();
+         * Ready card
+         */
+        Card card = new Card();
 
         /*
          * Find expansion & set code
          */
-        matcher = getCardAttributeMatcher("Expansion:", html);
+        Matcher matcher = getCardAttributeMatcher("Expansion:", html);
         if (matcher.find()) {
             String expansionHtml = matcher.group(1);
 
@@ -169,13 +174,14 @@ public class InformationCallable implements Callable<Card>
             }
         }
 
-
         /*
         * Find name
         */
         matcher = getCardAttributeMatcher("Card Name:", html);
         if (matcher.find()) {
             card.setCardName(trimHtmlTags(matcher.group(1)));
+        } else {
+            return null;
         }
 
         /*
@@ -187,7 +193,8 @@ public class InformationCallable implements Callable<Card>
             matcher = Pattern.compile("&amp;name=(.+?)&amp;t").matcher(rawManaCost);
             StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
-                sb.append(matcher.group(1) + ",");
+                sb.append(matcher.group(1));
+                sb.append(",");
             }
             card.setManaCost(sb.toString());
         } else {
@@ -238,8 +245,6 @@ public class InformationCallable implements Callable<Card>
 
             card.setCardText(cardText.trim());
         }
-
-
 
         /*
         * Find rarity
