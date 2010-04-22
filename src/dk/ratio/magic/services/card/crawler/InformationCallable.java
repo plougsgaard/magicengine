@@ -169,6 +169,7 @@ public class InformationCallable implements Callable<Card>
                      *
                      * Empty block (purposely).
                      */
+                    card.setExpansion(trimHtmlTags(expansionHtml));
                     logger.info("Card exists only as a non-proper card. Has no other expansions.");
                 }
             }
