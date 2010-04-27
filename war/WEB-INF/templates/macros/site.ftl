@@ -51,7 +51,7 @@
             <ul>
                 <li><strong><a href="${rc.getContextPath()}/cards">Cards</a></strong></li>
                 <!--li><a href="${rc.getContextPath()}/cards/search">Advanced Search</a></li-->
-                <li><a href="${rc.getContextPath()}/cards/queue">Queue</a></li>
+                <!--li><a href="${rc.getContextPath()}/cards/queue">Queue</a></li-->
             </ul>
             <ul>
                 <li><strong><a href="${rc.getContextPath()}/users">Users</a></strong></li>

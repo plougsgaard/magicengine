@@ -1,9 +1,15 @@
 package dk.ratio.magic.web.cards;
 
+import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.card.Price;
+import dk.ratio.magic.domain.db.card.QueueItem;
 import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.repository.card.CardDao;
+import dk.ratio.magic.security.web.RestrictAccess;
 import dk.ratio.magic.services.user.UserManager;
+import dk.ratio.magic.util.repository.Page;
+import dk.ratio.magic.util.web._404Exception;
+import dk.ratio.magic.web.error.ErrorController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +46,12 @@ public class CardsController
     @RequestMapping("/cards/page/{pageNumber}")
     public ModelAndView pageHandler(@PathVariable("pageNumber") Integer pageNumber)
     {
+        final Page<Card> page = cardDao.getCardPage(pageNumber);
+        if (page.getPageCount() < pageNumber) {
+            throw new _404Exception();
+        }
         ModelAndView mv = new ModelAndView("/cards/list");
-        mv.addObject("cardPage", cardDao.getCardPage(pageNumber));
+        mv.addObject("cardPage", page);
         return mv;
     }
 
@@ -54,11 +64,16 @@ public class CardsController
     @RequestMapping("/cards/queue/page/{pageNumber}")
     public ModelAndView queuePageHandler(@PathVariable("pageNumber") Integer pageNumber)
     {
+        final Page<QueueItem> queueItemPage = cardDao.getQueuePage(pageNumber);
+        if (queueItemPage.getPageCount() < pageNumber) {
+            throw new _404Exception();
+        }
         ModelAndView mv = new ModelAndView("/cards/queue/list");
-        mv.addObject("cardPage", cardDao.getQueuePage(pageNumber));
+        mv.addObject("cardPage", queueItemPage);
         return mv;
     }
 
+    @RestrictAccess
     @RequestMapping(value = "/cards/prices/consolidate", method = RequestMethod.GET)
     public ModelAndView consolidatePrices(HttpServletRequest request)
     {
@@ -72,6 +87,7 @@ public class CardsController
         return mv;
     }
 
+    @RestrictAccess
     @RequestMapping(value = "cards/prices/consolidate", method = RequestMethod.POST)
     public ModelAndView consolidatePricesPost(HttpServletRequest request)
     {

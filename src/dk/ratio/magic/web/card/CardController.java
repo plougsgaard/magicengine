@@ -3,6 +3,7 @@ package dk.ratio.magic.web.card;
 import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.repository.card.CardDao;
+import dk.ratio.magic.security.web.RestrictAccess;
 import dk.ratio.magic.services.card.crawler.Crawler;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
@@ -48,6 +49,7 @@ public class CardController
         return mv;
     }
 
+    @RestrictAccess
     @RequestMapping(value = "/card/search", method = RequestMethod.POST)
     public ModelAndView searchHandler(HttpServletRequest request)
     {
@@ -75,6 +77,7 @@ public class CardController
         return Views.redirect(request, "/card/" + card.getId());
     }
 
+    @RestrictAccess
     @RequestMapping(value = "/card/{cardId}/price/update", method = RequestMethod.POST)
     public ModelAndView updatePriceHandler(HttpServletRequest request,
                                     @PathVariable("cardId") Integer cardId)
@@ -106,6 +109,7 @@ public class CardController
         return mv;
     }
 
+    @RestrictAccess
     @RequestMapping(value = "/card/{cardId}/update", method = RequestMethod.POST)
     public ModelAndView updateCardHandler(HttpServletRequest request,
                                           @PathVariable("cardId") Integer cardId)

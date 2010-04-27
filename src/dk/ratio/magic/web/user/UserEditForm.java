@@ -2,6 +2,8 @@ package dk.ratio.magic.web.user;
 
 import dk.ratio.magic.domain.web.user.ProfileEdit;
 import dk.ratio.magic.repository.user.UserDao;
+import dk.ratio.magic.security.web.Policy;
+import dk.ratio.magic.security.web.RestrictAccess;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
 import dk.ratio.magic.validation.user.UserEditValidator;
@@ -30,34 +32,21 @@ public class UserEditForm
     @Autowired
     private UserManager userManager;
 
+    @RestrictAccess(Policy.PRIVATE)
     @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView defaultHandler(@PathVariable("userId") Integer userId,
-                                       HttpServletRequest request)
+    public ModelAndView defaultHandler(HttpServletRequest request, @PathVariable("userId") Integer userId)
     {
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-        if (userId != userManager.getSessionUser(request).getId()) {
-            return Views.disallow("You can only edit your own profile.");
-        }
-
         ModelAndView mv = new ModelAndView("/user/edit/form");
         mv.addObject("profileEdit", new ProfileEdit(userDao.get(userId)));
         return mv;
     }
 
+    @RestrictAccess(Policy.PRIVATE)
     @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView submitHandler(@PathVariable("userId") Integer userId,
+    public ModelAndView submitHandler(HttpServletRequest request, @PathVariable("userId") Integer userId,
                                       ProfileEdit profileEdit, BindingResult bindingResult,
-                                      HttpServletRequest request, HttpServletResponse response)
+                                      HttpServletResponse response)
     {
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-        if (userId != userManager.getSessionUser(request).getId()) {
-            return Views.disallow("You can only edit your own profile.");
-        }
-
         ModelAndView mv = new ModelAndView("/user/edit/form");
 
         new UserEditValidator().validate(userManager, userDao, profileEdit, bindingResult);
@@ -80,4 +69,8 @@ public class UserEditForm
         
         return mv;
     }
+
+    public final static String RESTRICT_ACCESS_PRIVATE =
+            "You tried to edit a profile that is not yours!<br /><br /> " +
+            "Only the owner of the profile should edit it.<br /><br /> :)";
 }

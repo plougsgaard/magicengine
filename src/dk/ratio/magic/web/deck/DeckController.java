@@ -2,7 +2,10 @@ package dk.ratio.magic.web.deck;
 
 import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.deck.Deck;
+import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.repository.deck.DeckDao;
+import dk.ratio.magic.services.user.UserManager;
+import dk.ratio.magic.util.web.Views;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +27,22 @@ public class DeckController
     @Autowired
     private DeckDao deckDao;
 
+    @Autowired
+    private UserManager userManager;
+
     @RequestMapping("/deck/{deckId}")
     public ModelAndView showHandler(HttpServletRequest request, @PathVariable("deckId") int deckId)
     {
-        ModelAndView mv = new ModelAndView("/deck/show");
         Deck deck = deckDao.get(deckId);
+
+        if ("hidden".equalsIgnoreCase(deck.getStatus())) {
+            User sessionUser = userManager.getSessionUser(request);
+            if (sessionUser.getId() != deck.getAuthor().getId()) {
+                return Views.disallow("Deck is hidden, sorry.");
+            }
+        }
+
+        ModelAndView mv = new ModelAndView("/deck/show");
         final List<Card> cards = deck.getCards();
         Collections.sort(cards);
         mv.addObject("deck", deck);

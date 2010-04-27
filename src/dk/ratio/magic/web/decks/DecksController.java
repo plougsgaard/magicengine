@@ -1,10 +1,13 @@
 package dk.ratio.magic.web.decks;
 
+import dk.ratio.magic.domain.db.deck.Deck;
 import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.domain.web.decks.DeckFilter;
 import dk.ratio.magic.repository.deck.DeckDao;
 import dk.ratio.magic.repository.user.UserDao;
+import dk.ratio.magic.util.repository.Page;
 import dk.ratio.magic.util.web.Views;
+import dk.ratio.magic.util.web._404Exception;
 import dk.ratio.magic.validation.decks.FilterValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,8 +42,12 @@ public class DecksController
     @RequestMapping("/decks/page/{pageNumber}")
     public ModelAndView pageHandler(@PathVariable("pageNumber") Integer pageNumber)
     {
+        final Page<Deck> deckPage = deckDao.getPublicDeckPage(pageNumber);
+        if (deckPage.getPageCount() < pageNumber) {
+            throw new _404Exception();
+        }
         ModelAndView mv = new ModelAndView("/decks/list");
-        mv.addObject("deckPage", deckDao.getPublicDeckPage(pageNumber));
+        mv.addObject("deckPage", deckPage);
         return mv;
     }
 
@@ -55,9 +62,12 @@ public class DecksController
     public ModelAndView userPageHandler(@PathVariable("pageNumber") Integer pageNumber,
                                           @PathVariable("userId") Integer userId)
     {
+        final Page<Deck> deckPage = deckDao.getPublicUserDeckPage(pageNumber, userId);
+        if (deckPage.getPageCount() < pageNumber) {
+            throw new _404Exception();            
+        }
         ModelAndView mv = new ModelAndView("/decks/user/list");
-        mv.addObject("deckPage", deckDao.getPublicUserDeckPage(
-                pageNumber, userId));
+        mv.addObject("deckPage", deckPage);
         User user = userDao.get(userId);
         mv.addObject("user", user);
 

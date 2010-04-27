@@ -1,7 +1,10 @@
 package dk.ratio.magic.web.users;
 
+import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.repository.deck.DeckDao;
 import dk.ratio.magic.repository.user.UserDao;
+import dk.ratio.magic.util.repository.Page;
+import dk.ratio.magic.util.web._404Exception;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +31,12 @@ public class UsersController
     @RequestMapping("/users/page/{pageNumber}")
     public ModelAndView pageHandler(@PathVariable("pageNumber") Integer pageNumber)
     {
+        final Page<User> userPage = userDao.getUserPage(pageNumber);
+        if (userPage.getPageCount() < pageNumber) {
+            throw new _404Exception();
+        }
         ModelAndView mv = new ModelAndView("/users/list");
-        mv.addObject("userPage", userDao.getUserPage(pageNumber));
+        mv.addObject("userPage", userPage);
         return mv;
     }
 }

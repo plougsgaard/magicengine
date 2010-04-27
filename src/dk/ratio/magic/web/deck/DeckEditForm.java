@@ -2,10 +2,11 @@ package dk.ratio.magic.web.deck;
 
 import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.deck.Deck;
-import dk.ratio.magic.domain.db.user.User;
 import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.repository.deck.DeckDao;
 import dk.ratio.magic.repository.user.UserDao;
+import dk.ratio.magic.security.web.Policy;
+import dk.ratio.magic.security.web.RestrictAccess;
 import dk.ratio.magic.services.deck.chart.ChartBuilder;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
@@ -44,23 +45,10 @@ public class DeckEditForm
     @Autowired
     private UserDao userDao;
 
+    @RestrictAccess(Policy.PRIVATE)
     @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView showHandler(@PathVariable("deckId") Integer deckId, HttpServletRequest request)
+    public ModelAndView showHandler(HttpServletRequest request, @PathVariable("deckId") Integer deckId)
     {
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-
-        Deck originalDeck = deckDao.get(deckId);
-        User author = originalDeck.getAuthor();
-        User sessionUser = userManager.getSessionUser(request);
-
-        if (sessionUser == null || sessionUser.getId() != author.getId()) {
-            ModelAndView errorModel = new ModelAndView("/error/disallow");
-            errorModel.addObject("message", "You must be the owner of the deck to edit it.");
-            return errorModel;
-        }
-
         ModelAndView mv = new ModelAndView("/deck/edit");
         mv.addObject("deck", deckDao.get(deckId));
 
@@ -75,27 +63,11 @@ public class DeckEditForm
         return mv;
     }
 
+    @RestrictAccess(Policy.PRIVATE)
     @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView submitHandler(@PathVariable("deckId") Integer deckId, HttpServletRequest request,
+    public ModelAndView submitHandler(HttpServletRequest request, @PathVariable("deckId") Integer deckId,
                                       Deck deck, BindingResult bindingResult)
     {
-        /*
-         * Authentication block
-         */
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-
-        Deck originalDeck = deckDao.get(deckId);
-        User author = originalDeck.getAuthor();
-        User sessionUser = userManager.getSessionUser(request);
-
-        if (sessionUser == null || sessionUser.getId() != author.getId()) {
-            ModelAndView errorModel = new ModelAndView("/error/disallow");
-            errorModel.addObject("message", "You must be the owner of the deck to edit it.");
-            return errorModel;
-        }
-
         /*
          * Validation block
          */
@@ -114,7 +86,7 @@ public class DeckEditForm
         /*
          * Preparing the deck to be saved
          */
-        deck.setAuthor(author);
+        deck.setAuthor(deckDao.get(deckId).getAuthor());
 
         // Colours
         StringBuilder sb = new StringBuilder();
@@ -165,4 +137,11 @@ public class DeckEditForm
         // Redirect to the edit site to avoid the POST-reload irritation element
         return Views.redirect(request, "/deck/" + deckId + "/edit");
     }
+
+    public final static String RESTRICT_ACCESS_PRIVATE = 
+            "You tried to edit a deck, but you are not the author!<br /><br /> " +
+            "Only the author of a deck is allowed to edit it. That " +
+            "is because the author of the deck is the one who created " +
+            "the deck, and therefore also the one who should decide " +
+            "whether it should be edited or not.<br /><br /> :)";
 }

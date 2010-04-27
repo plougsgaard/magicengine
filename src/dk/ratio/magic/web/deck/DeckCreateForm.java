@@ -2,6 +2,7 @@ package dk.ratio.magic.web.deck;
 
 import dk.ratio.magic.domain.db.deck.Deck;
 import dk.ratio.magic.repository.deck.DeckDao;
+import dk.ratio.magic.security.web.RestrictAccess;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
 import dk.ratio.magic.validation.deck.NewDeckValidator;
@@ -29,22 +30,17 @@ public class DeckCreateForm
     @Autowired
     private UserManager userManager;
 
+    @RestrictAccess
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView showHandler(HttpServletRequest request)
     {
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
         return new ModelAndView("/deck/create");
     }
 
+    @RestrictAccess
     @RequestMapping(method = RequestMethod.POST)
     public ModelAndView submitHandler(HttpServletRequest request, Deck deck, BindingResult bindingResult)
     {
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-
         ModelAndView mv = new ModelAndView("/deck/create");
         new NewDeckValidator().validate(deckDao, deck, bindingResult);
 
