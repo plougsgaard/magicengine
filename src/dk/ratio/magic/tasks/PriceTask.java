@@ -13,8 +13,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Notice: This is a `howto` class that has been left in, just in case
+ * we ever need this kind of behaviour again - which is quite probable.
+ */
 @Service
-@Configuration
+//@Configuration
 public class PriceTask
 {
     protected final Log logger = LogFactory.getLog(getClass());
@@ -25,16 +29,14 @@ public class PriceTask
     @Autowired
     private Crawler crawler;
 
-    @Value("${pricetask.enabled}")
+    //@Value("${pricetask.enabled}")
     private boolean enabled;
     
     private int count = 0;
 
-    @Scheduled(cron = "${pricetask.cron}")
+    //@Scheduled(cron = "${pricetask.cron}")
     public void update()
     {
-        logger.info("Tick #" + count++);
-
         if (enabled) {
             List<QueueItem> firstInQueue = cardDao.getFirstInQueue();
             crawler.updatePrice(firstInQueue);
