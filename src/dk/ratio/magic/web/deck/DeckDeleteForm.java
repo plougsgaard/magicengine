@@ -5,6 +5,8 @@ import dk.ratio.magic.domain.web.user.Credentials;
 import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.repository.deck.DeckDao;
 import dk.ratio.magic.repository.user.UserDao;
+import dk.ratio.magic.security.web.Policy;
+import dk.ratio.magic.security.web.RestrictAccess;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
 import dk.ratio.magic.validation.user.UserLoginValidator;
@@ -35,40 +37,20 @@ public class DeckDeleteForm
     @Autowired
     private UserManager userManager;
 
+    @RestrictAccess(Policy.PRIVATE)
     @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView showHandler(@PathVariable("deckId") Integer deckId, HttpServletRequest request)
+    public ModelAndView showHandler(HttpServletRequest request, @PathVariable("deckId") Integer deckId)
     {
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-        if (userManager.getSessionUser(request).getId() != deckDao.get(deckId).getAuthor().getId()) {
-            return Views.disallow("You tried to delete a deck, but you are not the author! " +
-                                  "Only the author of a deck is allowed to delete it. That " +
-                                  "is because the author of the deck is the one who created " +
-                                  "the deck, and therefore also the one who should decide " +
-                                  "whether it should be deleted or not.");
-        }
-
         ModelAndView mv = new ModelAndView("/deck/delete/form");
         mv.addObject("credentials", new Credentials());
         return mv;
     }
 
+    @RestrictAccess(Policy.PRIVATE)
     @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView submitHandler(@PathVariable("deckId") Integer deckId, HttpServletRequest request,
+    public ModelAndView submitHandler(HttpServletRequest request, @PathVariable("deckId") Integer deckId,
                                       Credentials credentials, BindingResult bindingResult)
     {
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-        if (userManager.getSessionUser(request).getId() != deckDao.get(deckId).getAuthor().getId()) {
-            return Views.disallow("You tried to delete a deck, but you are not the author! " +
-                                  "Only the author of a deck is allowed to delete it. That " +
-                                  "is because the author of the deck is the one who created " +
-                                  "the deck, and therefore also the one who should decide " +
-                                  "whether it should be deleted or not.");
-        }
-
         // implicit authentication
         new UserLoginValidator().validate(userManager, userDao, credentials, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -85,4 +67,11 @@ public class DeckDeleteForm
 
         return Views.redirect(request, "/");
     }
+
+    public final static String RESTRICT_ACCESS_PRIVATE =
+            "You tried to delete a deck, but you are not the author!<br /><br /> " +
+            "Only the author of a deck is allowed to delete it. That " +
+            "is because the author of the deck is the one who created " +
+            "the deck, and therefore also the one who should decide " +
+            "whether it should be deleted or not.<br /><br /> :)";
 }

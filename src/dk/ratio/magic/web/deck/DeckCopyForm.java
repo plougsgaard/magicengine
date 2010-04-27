@@ -2,6 +2,8 @@ package dk.ratio.magic.web.deck;
 
 import dk.ratio.magic.domain.db.deck.Deck;
 import dk.ratio.magic.repository.deck.DeckDao;
+import dk.ratio.magic.security.web.Policy;
+import dk.ratio.magic.security.web.RestrictAccess;
 import dk.ratio.magic.services.user.UserManager;
 import dk.ratio.magic.util.web.Views;
 import dk.ratio.magic.validation.deck.NewDeckValidator;
@@ -30,40 +32,20 @@ public class DeckCopyForm
     @Autowired
     private UserManager userManager;
 
+    @RestrictAccess(Policy.PRIVATE)
     @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView showHandler(@PathVariable("deckId") Integer deckId, HttpServletRequest request)
+    public ModelAndView showHandler(HttpServletRequest request, @PathVariable("deckId") Integer deckId)
     {
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-        if (userManager.getSessionUser(request).getId() != deckDao.get(deckId).getAuthor().getId()) {
-            return Views.disallow("You tried to duplicate a deck, but you are not the author! " +
-                                  "Only the author of a deck is allowed to duplicate it. That " +
-                                  "is because the author of the deck is the one who created " +
-                                  "the deck, and therefore also the one who should decide " +
-                                  "whether it should be duplicated or not.");
-        }
-
         ModelAndView mv = new ModelAndView("/deck/copy/form");
         mv.addObject("deck", new Deck());
         return mv;
     }
 
+    @RestrictAccess(Policy.PRIVATE)
     @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView submitHandler(@PathVariable("deckId") Integer deckId, HttpServletRequest request,
+    public ModelAndView submitHandler(HttpServletRequest request, @PathVariable("deckId") Integer deckId,
                                       Deck deck, BindingResult bindingResult)
     {
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-        if (userManager.getSessionUser(request).getId() != deckDao.get(deckId).getAuthor().getId()) {
-            return Views.disallow("You tried to duplicate a deck, but you are not the author! " +
-                                  "Only the author of a deck is allowed to duplicate it. That " +
-                                  "is because the author of the deck is the one who created " +
-                                  "the deck, and therefore also the one who should decide " +
-                                  "whether it should be duplicated or not.");
-        }
-
         ModelAndView mv = new ModelAndView("/deck/copy/form");
         new NewDeckValidator().validate(deckDao, deck, bindingResult);
 
@@ -83,4 +65,11 @@ public class DeckCopyForm
 
         return Views.redirect(request, "/deck/" + deck.getId() + "/edit");
     }
+
+    public final static String RESTRICT_ACCESS_PRIVATE = 
+            "You tried to copy a deck, but you are not the author!<br /><br /> " +
+            "Only the author of a deck is allowed to copy it. That " +
+            "is because the author of the deck is the one who created " +
+            "the deck, and therefore also the one who should decide " +
+            "whether it should be copied or not. <br /><br /> :)";
 }

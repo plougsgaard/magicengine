@@ -7,6 +7,8 @@ import dk.ratio.magic.domain.web.deck.PasteBean;
 import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.repository.deck.DeckDao;
 import dk.ratio.magic.repository.user.UserDao;
+import dk.ratio.magic.security.web.Policy;
+import dk.ratio.magic.security.web.RestrictAccess;
 import dk.ratio.magic.services.card.crawler.Crawler;
 import dk.ratio.magic.services.deck.chart.ChartBuilder;
 import dk.ratio.magic.services.deck.chart.Pair;
@@ -56,32 +58,20 @@ public class DeckPasteForm
     @Autowired
     private UserDao userDao;
 
+    @RestrictAccess
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView showHandler(HttpServletRequest request)
     {
-        /*
-         * Authentication block
-         */
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-
         final ModelAndView mv = new ModelAndView("/deck/paste");
         mv.addObject("pasteBean", new PasteBean());
         return mv;
     }
 
+    @RestrictAccess
     @RequestMapping(method = RequestMethod.POST)
     public ModelAndView submitHandler(HttpServletRequest request,
                                       PasteBean pasteBean, BindingResult bindingResult) throws IOException
     {
-        /*
-         * Authentication block
-         */
-        if (!userManager.isLoggedIn(request)) {
-            return Views.loginRedirect(request);
-        }
-
         final ModelAndView mv = new ModelAndView("/deck/paste");
 
         Pair<List<Card>, String> pair = parseCards(pasteBean.getCards());

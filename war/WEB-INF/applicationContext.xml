@@ -45,9 +45,6 @@
 
     <context:annotation-config />
 
-
-
-
     <!--
         *********************
 		        TASKS
@@ -129,6 +126,8 @@
         <property name="exceptionMappings">
             <map>
                 <entry key="CannotGetJdbcConnectionException" value="/error/db"/>
+                <entry key="TypeMismatchException" value="/error/404"/>
+                <entry key="_404Exception" value="/error/404"/>
             </map>
         </property>
         <property name="defaultErrorView" value="/error/default"/>
