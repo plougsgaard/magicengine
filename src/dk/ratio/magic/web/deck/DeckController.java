@@ -37,7 +37,7 @@ public class DeckController
 
         if ("hidden".equalsIgnoreCase(deck.getStatus())) {
             User sessionUser = userManager.getSessionUser(request);
-            if (sessionUser.getId() != deck.getAuthor().getId()) {
+            if (sessionUser == null || sessionUser.getId() != deck.getAuthor().getId()) {
                 return Views.disallow("Deck is hidden, sorry.");
             }
         }

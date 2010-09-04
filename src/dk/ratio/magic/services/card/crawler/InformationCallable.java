@@ -74,7 +74,6 @@ public class InformationCallable implements Callable<Card>
 
         cardName = cardName.replaceAll("Æ", "Ae").trim();
 
-
         /*
          * First we check if it's a multi-card.
          *
@@ -87,6 +86,10 @@ public class InformationCallable implements Callable<Card>
         }
 
         String html = getHtml(PATH + URLEncoder.encode(cardName, "latin1").replaceAll("%", "%u00"));
+
+        if (html == null) {
+            return null;
+        }
 
         /*
          * Ready card
