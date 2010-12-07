@@ -433,7 +433,8 @@ public class InformationCallable implements Callable<Card>
         zen("zen", "Zendikar"),
         wwk("wwk", "Worldwake"),
         roe("roe", "Rise of the Eldrazi"),
-        m11("m11", "Magic 2011");
+        m11("m11", "Magic 2011"),
+		som("som", "Scars of Mirrodin");
 
         private String gathererCode;
         private String title;
