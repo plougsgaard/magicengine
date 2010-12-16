@@ -30,11 +30,14 @@ public class BoosterPacksPriceCallable implements Callable<Price>
 
     public Price call()
     {
-        Pattern p = Pattern.compile(
-                        "<h3><a.*?>\\s*" + card.getCardName() +
-                        "\\s*</a>.*?kr.([\\d\\.]+)<",
-                        Pattern.CASE_INSENSITIVE);
-        Price price = PriceCallable.getPrice(PATH, card, ENCODING, p, SELLER_ID, RATE);
-        return cardDao.addPrice(card, price);
+        return cardDao.addPrice(card, getPrice());
     }
+
+	public Price getPrice() {
+		Pattern p = Pattern.compile(
+                        "<h3><a.*?>\\s*" + card.getCardName() +
+                        "\\s*</a>.*?kr.([\\d,]+)<",
+                        Pattern.CASE_INSENSITIVE);
+        return PriceCallable.getPrice(PATH, card, ENCODING, p, SELLER_ID, RATE);
+	}
 }

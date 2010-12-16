@@ -45,7 +45,7 @@ public class PriceCallable
         Matcher matcher = p.matcher(getHtml(path, card, encoding));
 
         while (matcher.find()) {
-            Double candidatePrice = Double.parseDouble(matcher.group(1));
+            Double candidatePrice = Double.parseDouble(matcher.group(1).replace(",", "."));
             if (price.getPrice() == 0d || candidatePrice < price.getPrice()) {
                 price.setPrice(candidatePrice);
             }
