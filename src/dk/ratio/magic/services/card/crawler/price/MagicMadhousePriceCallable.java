@@ -29,14 +29,17 @@ public class MagicMadhousePriceCallable implements Callable<Price>
         this.card = card;
     }
 
-    public Price call()
+	public Price call()
     {
-        Pattern p = Pattern.compile(
+        return cardDao.addPrice(card, getPrice());
+    }
+
+	protected Price getPrice() {
+		Pattern p = Pattern.compile(
                         "<tr class=\"productListing.*?" +
                         ">\\s*(?:FOIL)?\\s*" + card.getCardName() + "\\s*<.*?" +
                         "([\\d]+\\.[\\d]+)&nbsp;" +
                         ".*?</tr>");
-        Price price = PriceCallable.getPrice(PATH, card, ENCODING, p, SELLER_ID, RATE);
-        return cardDao.addPrice(card, price);
-    }
+        return PriceCallable.getPrice(PATH, card, ENCODING, p, SELLER_ID, RATE);
+	}
 }
