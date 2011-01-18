@@ -29,11 +29,14 @@ public class ManaleakPriceCallable implements Callable<Price>
         this.card = card;
     }
 
-    public Price call()
+	public Price call()
     {
-        Pattern p = Pattern.compile(
-                "&nbsp;\\u00A3([\\d\\.]+)p&nbsp;");
-        Price price = PriceCallable.getPrice(PATH, card, ENCODING, p, SELLER_ID, RATE);
-        return cardDao.addPrice(card, price);
+        return cardDao.addPrice(card, getPrice());
     }
+
+	protected Price getPrice() {
+		Pattern p = Pattern.compile(
+                "&nbsp;\\u00A3([\\d\\.]+)p&nbsp;");
+        return PriceCallable.getPrice(PATH, card, ENCODING, p, SELLER_ID, RATE);
+	}
 }

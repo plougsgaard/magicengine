@@ -33,7 +33,7 @@ public class BoosterPacksPriceCallable implements Callable<Price>
         return cardDao.addPrice(card, getPrice());
     }
 
-	public Price getPrice() {
+	protected Price getPrice() {
 		Pattern p = Pattern.compile(
                         "<h3><a.*?>\\s*" + card.getCardName() +
                         "\\s*</a>.*?kr.([\\d,]+)<",
