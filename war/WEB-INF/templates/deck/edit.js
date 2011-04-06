@@ -6,8 +6,15 @@
 var cardHash = new Hash();
 var selectedCard = undefined;
 
-function SimpleCard(id, cardName, manaCost, convertedManaCost, types, price, count)
-{
+/*
+ * GLOBAL VARIABLES
+ */
+
+var cols = new Array();
+var highlighted = { x: undefined, y: undefined };
+var selected = { x: undefined, y: undefined };
+
+function SimpleCard(id, cardName, manaCost, convertedManaCost, types, price, count) {
     this.id = id;
     this.cardName = cardName;
     this.manaCost = manaCost;
@@ -15,25 +22,25 @@ function SimpleCard(id, cardName, manaCost, convertedManaCost, types, price, cou
     this.types = types;
     this.price = parseFloat(price);
     this.count = parseInt(count);
+    this.image = new Image();
+    this.image.src = "${rc.getContextPath()}/services/card/image/" + id + "/thumbnail";
 }
 
-function get_colour_images (mana_cost)
-{
+function get_colour_images(mana_cost) {
     var span = Builder.node('span');
     var mana_array = mana_cost.split(",");
 
     mana_array.each(function(symbol) {
         if (!symbol.isUndefined && symbol.length > 0) {
             span.appendChild(Builder.node('img',
-                {src: "${rc.getContextPath()}/static/images/symbols/" + symbol + ".gif" }));
+            {src: "${rc.getContextPath()}/static/images/symbols/" + symbol + ".gif" }));
         }
     });
 
     return span;
 }
 
-function decorate_price (price, locale)
-{
+function decorate_price(price, locale) {
     var result = price.toFixed(2);
     if (locale == "da_DK") {
         result = result.split(".")[0] + "," + result.split(".")[1];
@@ -48,18 +55,15 @@ function decorate_price (price, locale)
 
 var pendingCard = "";
 
-function request_card_proxy (card_name)
-{
-    request_card (card_name, $('card-name'), $('card-image'), $('card-price'), undefined, $('card-search-status'));
+function request_card_proxy(card_name) {
+    request_card(card_name, $('card-name'), $('card-image'), $('card-price'), undefined, $('card-search-status'));
 }
 
-function request_card_proxy_no_increment (card_name)
-{
-    request_card (card_name, $('card-name'), $('card-image'), $('card-price'), "true", $('card-search-status'));
+function request_card_proxy_no_increment(card_name) {
+    request_card(card_name, $('card-name'), $('card-image'), $('card-price'), "true", $('card-search-status'));
 }
 
-function request_card (card_name, card_name_text, card_image_img, card_price_text, do_not_increment, card_search_status)
-{
+function request_card(card_name, card_name_text, card_image_img, card_price_text, do_not_increment, card_search_status) {
     // trim leading and trailing whitespace
     card_name = card_name.replace(/^\s+|\s+$/g, '');
 
@@ -73,23 +77,22 @@ function request_card (card_name, card_name_text, card_image_img, card_price_tex
 
     var key = card_name.toLowerCase();
 
-    if (cardHash.get(key) != undefined)
-    {
+    if (cardHash.get(key) != undefined) {
         // no need to request it, we already have it
         selectedCard = cardHash.get(key);
         if (do_not_increment == undefined) {
             // we were not asked to avoid incrementing, so let's do it
-            increment_card_count (selectedCard);
+            increment_card_count(selectedCard);
         } else {
             // instead of incrementing we just showHandler the card (also a side-effect of inc)
-            show_card_proxy (cardHash.get(key));
+            show_card_proxy(cardHash.get(key));
         }
 
         // no need to request it, we already have it
-        show_card_proxy (cardHash.get(key));
+        show_card_proxy(cardHash.get(key));
         return;
     }
-    
+
     new Ajax.Request(url, {
         method: 'get',
         onCreate: function() {
@@ -102,8 +105,7 @@ function request_card (card_name, card_name_text, card_image_img, card_price_tex
             if (card.cardName.toLowerCase() != pendingCard.toLowerCase()) {
                 return;
             }
-            if (card.exists != "true")
-            {
+            if (card.exists != "true") {
                 card_search_status.update("Could not find <b>" + card.cardName + "</b>.");
                 return;
             }
@@ -111,8 +113,7 @@ function request_card (card_name, card_name_text, card_image_img, card_price_tex
             card_search_status.update("&nbsp;");
 
             // Add an entry for the card so we don't overwrite
-            if (cardHash.get(key) == undefined)
-            {
+            if (cardHash.get(key) == undefined) {
                 cardHash.set(key, new SimpleCard(
                         card.id,
                         card.cardName,
@@ -121,20 +122,18 @@ function request_card (card_name, card_name_text, card_image_img, card_price_tex
                         card.types,
                         card.price,
                         0
-                ));
+                        ));
             }
-            show_card_proxy (cardHash.get(key));
+            show_card_proxy(cardHash.get(key));
         }
     });
 }
 
-function show_card_proxy (card)
-{
-    show_card (card, $('card-name'), $('card-image'), $('card-price'), $('search-input'));
+function show_card_proxy(card) {
+    show_card(card, $('card-name'), $('card-image'), $('card-price'), $('search-input'));
 }
 
-function show_card (card, card_name_text, card_image_img, card_price_text, search_input)
-{
+function show_card(card, card_name_text, card_image_img, card_price_text, search_input) {
     selectedCard = card;
     var price = parseFloat(card.price);
     card_image_img.src = "${rc.getContextPath()}/services/card/image/" + card.id;
@@ -143,24 +142,18 @@ function show_card (card, card_name_text, card_image_img, card_price_text, searc
     search_input.value = card.cardName;
 }
 
-function update_card (card)
-{
-    add_to_list_proxy (card);
+function update_card(card) {
+    add_to_list_proxy(card);
 }
 
-function add_to_list_proxy (card)
-{
-    add_to_list (card, $('cards-count'),
-                 $('creatures-count'), $('creatures-ul'),
-                 $('lands-count'), $('lands-ul'),
-                 $('spells-count'), $('spells-ul'));
+function add_to_list_proxy(card) {
+    add_to_list(card, $('cards-count'),
+            $('creatures-count'), $('creatures-ul'),
+            $('lands-count'), $('lands-ul'),
+            $('spells-count'), $('spells-ul'));
 }
 
-function add_to_list (card, cards_count_box,
-                      creatures_count_box, creatures_list_box,
-                      lands_count_box, lands_list_box,
-                      spells_count_box, spells_list_box)
-{
+function add_to_list(card, cards_count_box, creatures_count_box, creatures_list_box, lands_count_box, lands_list_box, spells_count_box, spells_list_box) {
     var types = card.types.toLowerCase();
     if (types.indexOf("creature") != -1) {
         add_to_list_helper(card, creatures_count_box, creatures_list_box);
@@ -169,39 +162,35 @@ function add_to_list (card, cards_count_box,
     } else {
         add_to_list_helper(card, spells_count_box, spells_list_box);
     }
-    cards_count_box.update(get_card_count() +" cards");
+    cards_count_box.update(get_card_count() + " cards");
     //$('card_' + card.id).update(decorate_price(card.count * card.price, "en_GB"));
 }
 
-function get_card_count()
-{
+function get_card_count() {
     var result = 0;
-    cardHash.each ( function (pair) {
+    cardHash.each(function (pair) {
         result += pair.value.count;
     });
     return result;
 }
 
-function form_input_is_int(input)
-{
-    return !isNaN(input) && parseInt(input)==input;
+function form_input_is_int(input) {
+    return !isNaN(input) && parseInt(input) == input;
 }
 
-function build_element_card_name (card) {
-    var element = Builder.node('a', { href: '' }, card.cardName );
-    element.observe('click', function(e)
-    {
+function build_element_card_name(card) {
+    var element = Builder.node('a', { href: '' }, card.cardName);
+    element.observe('click', function(e) {
         e.stop();
         show_card_proxy(card);
     });
     return element;
 }
 
-function build_element_count (card) {
+function build_element_count(card) {
     var element = Builder.node('input',
-        { id: 'card_' + card.id, name: 'card_' + card.id, value: card.count });
-    element.observe('change', function(e)
-    {
+    { id: 'card_' + card.id, name: 'card_' + card.id, value: card.count });
+    element.observe('change', function(e) {
         if (form_input_is_int(element.value)) {
             card.count = parseInt(element.value);
             update_card(card);
@@ -212,7 +201,7 @@ function build_element_count (card) {
     return element;
 }
 
-function build_element_price (card) {
+function build_element_price(card) {
     // TODO: can't display pound tag...
     return Builder.node('span', {id: 'price_' + card.id, class: 'price'}, [
         decorate_price(card.count * card.price, "").unescapeHTML()]);
@@ -225,12 +214,10 @@ function build_element_price (card) {
  * @param count_box
  * @param list_box
  */
-function add_to_list_helper (card, count_box, list_box)
-{
+function add_to_list_helper(card, count_box, list_box) {
     var cardElement = $('card_' + card.cardName);
 
-    if (cardElement == undefined)
-    {
+    if (cardElement == undefined) {
         /*
          * New card is about to be added.
          */
@@ -251,8 +238,7 @@ function add_to_list_helper (card, count_box, list_box)
         // Add the element
         list_box.insert({ top: cardElementDiv });
     }
-    else
-    {
+    else {
         /*
          * Update the existing card.
          *
@@ -273,32 +259,194 @@ function add_to_list_helper (card, count_box, list_box)
     }
 }
 
-function alter_card_count_proxy (card, count)
-{
-    alter_card_count (card, count);
+/*
+ * CONSTANTS
+ */
+
+/* 220x314 */
+var sourceWidth = 220, sourceHeight = 314;
+var sx = 4, sy = 4, width = sourceWidth - 2 * sx, height = sourceHeight - 2 * sy;
+var horizontalPadding = 19, verticalPadding = 27;
+
+function get_position(e) {
+    var obj = e.target;
+    var curleft = curtop = 0;
+
+    if (obj.offsetParent) {
+        do {
+            curleft += obj.offsetLeft;
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+    }
+
+    var pos = [curleft, curtop];
+
+    return { x: (e.pageX - pos[0]), y: (e.pageY - pos[1]) };
 }
 
-function increment_card_count (card)
-{
-    alter_card_count (card, card.count + 1);
+function highlightCursorPosition(e) {
+    var pos = get_position(e);
+    highlight(pos.x, pos.y);
 }
 
-function alter_card_count (card, count)
-{
-    if (card != undefined)
-    {
+function activate(e) {
+    var pos = get_position(e);
+    var index = xy_to_index(pos.x, pos.y);
+    if (index != undefined && cols[index.x] != undefined && cols[index.x][index.y] != undefined) {
+        /*
+         decrement_card_count(cols[index.x][index.y]);
+         var canvas = document.getElementById("canvas");
+         var context = canvas.getContext("2d");
+         context.clearRect(0, 0, canvas.width, canvas.height);
+         */
+        selected = index;
+    } else {
+        selected = { x: undefined, y: undefined};
+    }
+    redraw();
+}
+
+
+/*
+ * FUNCTIONS
+ */
+
+function xy_to_index(x, y) {
+    var col_index = parseInt(x / parseInt(width + horizontalPadding));
+    var col_rem = x % parseInt(width + horizontalPadding);
+
+    var col_arr = cols[col_index];
+    if (col_arr == undefined || col_rem > width) {
+        return undefined;
+    }
+
+    // all cards but one show only vertical padding area (name part)
+    var row_pixel_length = (col_arr.length - 1) * verticalPadding + height;
+
+    if (y > row_pixel_length) {
+        return undefined;
+    }
+
+    var row_index = parseInt(y / verticalPadding);
+    if (row_index >= col_arr.length) {
+        row_index = col_arr.length - 1;
+    }
+
+    return { x: col_index, y: row_index};
+}
+
+function highlight(x, y) {
+    highlighted = xy_to_index(x, y);
+    redraw();
+}
+
+function is_highlighted(x, y) {
+    return highlighted != undefined && x == highlighted.x && y == highlighted.y;
+}
+
+function draw(canvas, context, card, x, y, only_border) {
+    var h = only_border ? verticalPadding : height;
+    context.drawImage(card.image, sx, sy, width, h,
+            width * x + horizontalPadding * x, verticalPadding * y, width, h);
+
+    if (is_highlighted(x, y)) {
+        var ipic = context.getImageData(width * x + horizontalPadding * x, verticalPadding * y, width, h);
+        var idata = ipic.data;
+        for (var i = 0; i < idata.length; i += 4) {
+            idata[i + 3] = 200;
+        }
+        context.putImageData(ipic, width * x + horizontalPadding * x, verticalPadding * y);
+    }
+
+    //if (card.types.
+    var types = card.types.toLowerCase();
+    if (types.indexOf("basic land") != -1) {
+        context.font = "bold 13px sans-serif";
+        context.textAlign = "right";
+        context.textBaseline = "top";
+        context.fillText(card.count, width * x + horizontalPadding * x + width - 10, verticalPadding * y + 10);
+    }
+}
+
+function redraw() {
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d");
+
+    for (var x = 0; x < 4; x++) { /* todo, more than 4 columns */
+        if (cols[x] == undefined) {
+            continue;
+        }
+        for (var y = 0; y < cols[x].length; y++) {
+            var card = cols[x][y];
+            if (y == cols[x].length - 1) {
+                draw(canvas, context, card, x, y, false);
+            } else {
+                draw(canvas, context, card, x, y, true);
+            }
+        }
+    }
+
+    if (selected != undefined && selected.x != undefined && selected.y != undefined) {
+        var card = cols[selected.x][selected.y];
+        draw(canvas, context, card, selected.x, selected.y, false);
+    }
+}
+
+function update_columns() {
+    cols = new Array();
+    cardHash.each(function(pair) {
+        var card = pair.value;
+        var column = Math.max(card.convertedManaCost - 1, 0);
+        if (cols[column] == undefined) {
+            cols[column] = new Array();
+        }
+        var types = card.types.toLowerCase();
+        if (types.indexOf("basic land") != -1) {
+            cols[column][cols[column].length] = card;
+        } else {
+            for (var i = 1; i <= card.count; ++i) {
+                cols[column][cols[column].length] = card;
+            }
+        }
+    });
+
+    cols = cols.compact();
+
+    var max = 0;
+    for (var i = 0; i < 4; ++i) {
+        if (cols[i] == undefined) {
+            continue;
+        }
+        max = Math.max(cols[i].length, max);
+    }
+
+    $('canvas').height = max * verticalPadding + height;
+}
+
+function increment_card_count(card) {
+    alter_card_count(card, card.count + 1);
+}
+
+function decrement_card_count(card) {
+    alter_card_count(card, card.count - 1);
+}
+
+function alter_card_count(card, count) {
+    if (card != undefined) {
         if (count < 0) {
             return;
         }
 
         card.count = count;
-        show_card_proxy (card);
-        update_card (card);
+        show_card_proxy(card);
+        update_card(card);
+
+        update_columns();
+        redraw();
     }
 }
 
-document.observe('dom:loaded', function()
-{
+document.observe('dom:loaded', function() {
     /**
      * Populate the lists with cards already in the deck.
      */
@@ -319,9 +467,12 @@ document.observe('dom:loaded', function()
                         card.types,
                         card.price,
                         card.count
-                ));
-                add_to_list_proxy (cardHash.get(key));
+                        ));
+                add_to_list_proxy(cardHash.get(key));
             });
+
+            update_columns();
+            redraw();
         }
     });
 
@@ -329,7 +480,7 @@ document.observe('dom:loaded', function()
      * Initialize the asynchronous suggestion mechanism.
      */
     new Ajax.Autocompleter('search-input', 'suggestion-area',
-        '${rc.getContextPath()}/services/card/suggestion',
+            '${rc.getContextPath()}/services/card/suggestion',
     {
         afterUpdateElement: function () {
             var proposed_card_name = $('search-input').value;
@@ -342,26 +493,21 @@ document.observe('dom:loaded', function()
      *
      * If the suggestion box is not showing, try to add the card!
      */
-    $('search-input').observe('keyup', function(e)
-    {
+    $('search-input').observe('keyup', function(e) {
         e.stop();
 
-        if (e.keyCode == Event.KEY_RETURN)
-        {
+        if (e.keyCode == Event.KEY_RETURN) {
             var proposed_card_name = $('search-input').value;
-            if (!$('suggestion-area').visible())
-            {
+            if (!$('suggestion-area').visible()) {
                 request_card_proxy(proposed_card_name);
             }
         }
     });
 
-    $('findadd-button').observe('click', function(e)
-    {
+    $('findadd-button').observe('click', function(e) {
         e.stop();
         var proposed_card_name = $('search-input').value;
-        if (!$('suggestion-area').visible())
-        {
+        if (!$('suggestion-area').visible()) {
             request_card_proxy(proposed_card_name);
         }
     });
@@ -381,5 +527,11 @@ document.observe('dom:loaded', function()
      * Move the cursor to the input box.
      */
     $('search-input').activate();
+
+    /*
+     * Ready the canvas
+     */
+    $('canvas').observe('click', activate);
+    $('canvas').observe('mousemove', highlightCursorPosition);
 });
 
