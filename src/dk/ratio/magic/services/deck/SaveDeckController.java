@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dk.ratio.magic.domain.db.card.Card;
 import dk.ratio.magic.domain.db.deck.Deck;
+import dk.ratio.magic.repository.card.CardDao;
 import dk.ratio.magic.repository.deck.DeckDao;
 import dk.ratio.magic.repository.user.UserDao;
 import dk.ratio.magic.services.deck.chart.ChartBuilder;
@@ -33,6 +34,9 @@ public class SaveDeckController
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private CardDao cardDao;
 
     @RequestMapping("/services/deck/save/{deckId}/key/{key}")
     public ModelAndView defaultHandler(@PathVariable Integer deckId, @PathVariable String key,
@@ -64,9 +68,6 @@ public class SaveDeckController
         deckDao.update(deck);
 
         HashMap<String, Object> model = new HashMap<String, Object>();
-
-        Thread.sleep(5000);
-
         return new ModelAndView("jsonView", model);
     }
 
@@ -82,8 +83,7 @@ public class SaveDeckController
         Map<Integer, Integer> d2 = new Gson().fromJson(d1.get("card_list"), new TypeToken<HashMap<Integer, Integer>>() {}.getType());
         List<Card> cards = new ArrayList<Card>(d2.size());
         for (Map.Entry<Integer, Integer> entry : d2.entrySet()) {
-            Card card = new Card();
-            card.setId(entry.getKey());
+            Card card = cardDao.getCard(entry.getKey());
             card.setCount(entry.getValue());
             cards.add(card);
         }

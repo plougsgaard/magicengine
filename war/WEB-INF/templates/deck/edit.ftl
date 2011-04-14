@@ -5,10 +5,13 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="${rc.getContextPath()}/static/css/default.css" type="text/css" media="screen"/>
     <style>
         body, html {
             margin: 0;
             padding: 0;
+            background-color:white;
+
         }
 
         #canvas_main {
@@ -71,6 +74,10 @@
             font-weight:bold;
         }
 
+        p#card-search-status {
+            color:maroon;
+        }
+
     </style>
     <script src="${rc.getContextPath()}/static/javascript/lib/prototype.js" type="text/javascript"></script>
     <script src="${rc.getContextPath()}/static/javascript/src/scriptaculous.js" type="text/javascript"></script>
@@ -115,7 +122,9 @@
             <p>Search</p>
             <p>
                 <input class="text" id="search-input" name="search-input" type="text"/>
+                <label for="search-input"></label>
                 <input class="button" id="findadd-button" type="button" value="!"/>
+                <label for="findadd-button"></label>
             </p>
 
             <div id="suggestion-area">
@@ -127,10 +136,19 @@
             </span>
 
             <p>Sort by</p>
-            <input id="sort-by-cmc" type="radio" name="sort-by" value="CMC" checked="true">CMC<br>
-            <input id="sort-by-color" type="radio" name="sort-by" value="Color">Color<br>
+            <input id="sort-by-cmc" type="radio" name="sort-by" value="CMC" checked="true">
+            <label for="sort-by-cmc">Converted mana cost</label><br>
 
-            <p id="card-search-status" class="center">&nbsp;</p>
+            <input id="sort-by-color" type="radio" name="sort-by" value="Color">
+            <label for="sort-by-color">Colour</label><br>
+
+            <p>
+                <a href="${rc.getContextPath()}/deck/${deck.id?c}">Show Deck</a>
+            </p>
+
+            <p id="card-search-status" class="center">
+
+            </p>
         </div>
     </div>
 </div>

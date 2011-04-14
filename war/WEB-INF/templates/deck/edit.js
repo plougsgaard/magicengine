@@ -5,6 +5,8 @@
 var CONSTANTS = {
     CONST_STATUS_HIDDEN: "hidden",
     CONST_STATUS_PUBLIC: "public",
+    SORT_BY_COLOR: "sort-by-color",
+    SORT_BY_CMC: "sort-by-cmc",
     GUI: {
         sourceWidth: 220,
         sourceHeight: 314,
@@ -36,6 +38,7 @@ var GUI = {
     selected_index: undefined, // { x: ?, y: ? }
     selected_card: undefined, // *
     pending_card: undefined, // *
+    sort_by: CONSTANTS.SORT_BY_CMC,
     count: {
         cards: 0,
         lands: 0,
@@ -297,9 +300,29 @@ function update_columns() {
     DATA.cards.each(function(pair) {
         var card = pair.value;
         if (card.count == 0) {
-            /* "each" does not provide special "continue" syntax */
+            // ignored
         } else {
-            var column = Math.max(card.convertedManaCost - 1, 0);
+            //UWRBG
+            var column = 0;
+            if (GUI.sort_by == CONSTANTS.SORT_BY_CMC) {
+                column = Math.max(card.convertedManaCost - 1, 0);
+            } else if (GUI.sort_by == CONSTANTS.SORT_BY_COLOR) {
+                if (card.manaCost.indexOf("U") != -1) {
+                    column = 1;
+                } else if (card.manaCost.indexOf("W") != -1) {
+                    column = 2;
+                } else if (card.manaCost.indexOf("R") != -1) {
+                    column = 3;
+                } else if (card.manaCost.indexOf("B") != -1) {
+                    column = 4;
+                } else if (card.manaCost.indexOf("G") != -1) {
+                    column = 5;
+                } else {
+                    column = 0;
+                }
+
+            }
+
             if (GUI.card_grid[column] == undefined) {
                 GUI.card_grid[column] = new Array();
             }
@@ -456,6 +479,17 @@ window.onload = function() {
         }
     });
 
+    $("sort-by-cmc").observe('click', function(e) {
+        GUI.sort_by = CONSTANTS.SORT_BY_CMC;
+        update_columns();
+        redraw();
+    });
+
+    $("sort-by-color").observe('click', function(e) {
+        GUI.sort_by = CONSTANTS.SORT_BY_COLOR;
+        update_columns();
+        redraw();
+    });
 
     /*
      * Ready the canvas
