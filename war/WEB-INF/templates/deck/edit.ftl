@@ -1,217 +1,143 @@
-<#include "../macros/site.ftl">
-<#include "../macros/decks.ftl">
+<#include "../macros/utilities.ftl">
 
-<@page title="Edit Deck" scripts=["/deck/edit.js"]>
-<div class="grid_9 omega">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
-    <div id="content-pane" class="grid_9 alpha">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+        }
 
-        <div id="content-header" class="content">
+        #canvas_main {
+            position: absolute;
+            top: 314px;
+            left: 0px;
+        }
 
-            <h1><a href="${rc.getContextPath()}/decks">Decks</a> | Edit</h1>
+        #canvas_card {
+            background-color: #778899;
+        }
 
+        #top {
+            background-color: #ebe9e9;
+            width: 781px;
+            height: 306px;
+            margin: 0 0 10px 0;
+        }
+
+        input#findadd-button {
+            width: 10px;
+        }
+
+        input.text {
+            width: 240px;
+        }
+
+        input#title-input {
+            width:100%;
+        }
+
+        div#suggestion-area {
+            position: absolute;
+            width: 250px;
+            background-color: #eee;
+            border: 1px solid #242424; /* happy black */
+            margin: 0;
+            padding: 0;
+        }
+
+        div#suggestion-area ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        div#suggestion-area ul li.selected {
+            background-color: #B9D7D9; /* sky blue */
+        }
+
+        div#suggestion-area ul li {
+            list-style-type: none;
+            display: block;
+            margin: 0;
+            padding: 2px;
+            cursor: pointer;
+        }
+
+        .count-span {
+            font-weight:bold;
+        }
+
+    </style>
+    <script src="${rc.getContextPath()}/static/javascript/lib/prototype.js" type="text/javascript"></script>
+    <script src="${rc.getContextPath()}/static/javascript/src/scriptaculous.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        <#include "edit.js"/>
+    </script>
+</head>
+
+<body>
+
+<div id="top">
+    <div style="float:left; width: 250px; height:306px;">
+        <div style="padding:1em;">
+            <p>Deck name</p>
+            <p>
+                <input id="title-input" name="search-input" type="text" value="${deck.title}"/>
+            </p>
+
+            <p>Statistics</p>
+
+            <ul>
+                <li><span id="count-cards" class="count-span">0</span> cards</li>
+                <li><span id="count-creatures" class="count-span">0</span> creatures</li>
+                <li><span id="count-lands" class="count-span">0</span> lands</li>
+            </ul>
+
+            <p>
+                <input class="button" id="save-button" type="button" value="Save"/>
+                <input class="button" id="publish-button" type="button" value="Publish"/>
+            </p>
         </div>
-
-        <form action="" method="post">
-            <input type="hidden" name="id" value="${deck.id}"/>
-
-            <div class='grid_4 alpha'>
-                <div id="title-chooser" class="content">
-                    <h4>Deck Title</h4>
-
-                    <p>
-                        <input id="title-input" name="title" class="text" value="${deck.title}"/>
-                    </p>
-                </div>
-            </div>
-
-            <div class='grid_3'>
-                <div class="content">
-                    <h4>&nbsp;</h4>
-
-                    <p>
-                        <a href="${rc.getContextPath()}/deck/${deck.id?c}" style="text-decoration: none;"
-                           title="View or Preview Deck">
-                            <img src="${rc.getContextPath()}/static/images/site/view.gif"
-                                 style="vertical-align:middle;"/></a>
-                        <a href="${rc.getContextPath()}/deck/${deck.id?c}/copy" style="text-decoration: none;"
-                           title="Duplicate Deck">
-                            <img src="${rc.getContextPath()}/static/images/site/duplicate.gif"
-                                 style="vertical-align:middle;"/></a>
-                        <a href="${rc.getContextPath()}/deck/${deck.id?c}/delete" style="text-decoration: none;"
-                           title="Delete Deck">
-                            <img src="${rc.getContextPath()}/static/images/site/delete.gif"
-                                 style="vertical-align:middle;"/></a>
-                    </p>
-                </div>
-            </div>
-
-            <div class='grid_2 omega'>
-                <div id="controls" class="content">
-                    <h4>&nbsp;</h4>
-
-                    <p>
-                        <input id="save-button" type="button" class="button" value="Save"/>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Format, Colours and Description -->
-            <div class="clear">&nbsp;</div>
-
-            <div class='grid_2 alpha'>
-                <div id="format-chooser" class="content">
-                    <h4>Format</h4>
-
-                    <p>
-                        <select id="format-select" name="format" class="text">
-                            <option value="Extended"<#if deck.format?lower_case == "extended">
-                                    selected="selected"</#if>>Extended
-                            </option>
-                            <option value="Standard"<#if deck.format?lower_case == "standard">
-                                    selected="selected"</#if>>Standard
-                            </option>
-                            <option value="Other"<#if deck.format?lower_case == "none"> selected="selected"</#if>>
-                                Other
-                            </option>
-                        </select>
-                    </p>
-                </div>
-
-                <div id="status-chooser" class="content">
-                    <h4>Status</h4>
-
-                    <p>
-                        <select id="status-select" name="status" class="text">
-                            <option value="Hidden"<#if deck.status?lower_case == "hidden"> selected="selected"</#if>>
-                                Hidden
-                            </option>
-                            <option value="Public"<#if deck.status?lower_case == "public"> selected="selected"</#if>>
-                                Public
-                            </option>
-                        </select>
-                    </p>
-                </div>
-            </div>
-
-            <div class='grid_2'>
-                <div id="colours-chooser" class="content">
-                    <h4>Colours</h4>
-                <@drawColourCheckbox deck.colours "G" /><br/>
-                <@drawColourCheckbox deck.colours "W" /><br/>
-                <@drawColourCheckbox deck.colours "U" /><br/>
-                <@drawColourCheckbox deck.colours "B" /><br/>
-                <@drawColourCheckbox deck.colours "R" />
-                </div>
-            </div>
-
-            <div class='grid_5 omega'>
-                <div style="display:none;" class="content">
-                    <h4>Description</h4>
-
-                    <p><textarea id="description-textarea" name="description" class="text"
-                                 rows="6" cols="0">${deck.description}</textarea></p>
-                </div>
-                <!-- Card search -->
-                <div id="card-search" class="content">
-                    <h3>Card Search</h3>
-
-                    <p>
-                        <input class="text" id="search-input" name="search-input" type="text"/>
-                        <input class="button" id="findadd-button" type="button" value="Find/Add"/>
-                    </p>
-
-                    <div id="suggestion-area">
-                        <!-- Reserved for suggestions -->
-                    </div>
-                </div>
-            </div>
-
-            <div class='clear'>&nbsp;</div>
-
-            <!-- Card image, information & Main Deck -->
-            <div style="display:none;" class='grid_4 alpha'>
-
-                <div id="card-information" class="content">
-                    <h3>&nbsp;</h3>
-
-                    <p class="center">
-                        <img id="card-image" class="card" src="${rc.getContextPath()}/static/images/site/card.jpg"
-                             alt=""/>
-                    </p>
-                    <h4 id="card-price" class="center">&nbsp;</h4>
-
-                    <p id="card-search-status" class="center">&nbsp;</p>
-                </div>
-
-            </div>
-
-            <div style="display:none;" class='grid_5 omega'>
-
-
-
-                <div id="main-deck" class="content">
-                    <h3>Main Deck (<span id="cards-count"></span>)</h3>
-
-                    <div class="card-list">
-                        <h4>Lands <span id="lands-count"></span></h4>
-                        <ul class="deck" id="lands-ul">
-                            <!-- Filled in by JavaScript -->
-                        </ul>
-                    </div>
-
-                    <div class="card-list">
-                        <h4>Creatures <span id="creatures-count"></span></h4>
-                        <ul class="deck" id="creatures-ul">
-                            <!-- Filled in by JavaScript -->
-                        </ul>
-                    </div>
-
-                    <div class="card-list">
-                        <h4>Spells <span id="spells-count"></span></h4>
-                        <ul class="deck" id="spells-ul">
-                            <!-- Filled in by JavaScript -->
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="content">
-                    <h4>Feature Card</h4>
-
-                    <p>
-                        <select name="featureCardId" class="text">
-                            <#list deck.cards as card>
-                                <option value="${card.id?c}"
-                                    <#if (card.id == deck.featureCardId)>
-                                        selected="selected"
-                                    </#if>
-                                        >${card.cardName}</option>
-                            </#list>
-                        </select>
-                    </p>
-                </div>
-            </div>
-        </form>
-
     </div>
-    <!-- end content-pane -->
 
-</div>
+    <div style="float:left; width: 212px; height:306px; border-width:0 10px 0 9px; border-style:solid; border-color:white;">
+        <canvas id="canvas_card" width="212" height="306" style="cursor:pointer; background-color:#d2691e;">
+            <p>Browser doesn't support canvas element.</p>
+        </canvas>
+    </div>
 
-<div class='clear'>&nbsp;</div>
+    <div style="float:left; width: 300px; height:306px;">
+        <div style="padding:1em;">
+            <p>Search</p>
+            <p>
+                <input class="text" id="search-input" name="search-input" type="text"/>
+                <input class="button" id="findadd-button" type="button" value="!"/>
+            </p>
 
-<div class='grid_12 alpha omega'>
+            <div id="suggestion-area">
+                <!-- Reserved for suggestions -->
+            </div>
 
-    <img id="img1" src="${rc.getContextPath()}/services/card/image/1538/thumbnail" style="display:none"/>
+            <span id="loading-indicator" style="display:none;">
+                <img src="${rc.getContextPath()}/static/images/site/progress-running.gif"/>
+            </span>
 
-    <div class="content">
+            <p>Sort by</p>
+            <input id="sort-by-cmc" type="radio" name="sort-by" value="CMC" checked="true">CMC<br>
+            <input id="sort-by-color" type="radio" name="sort-by" value="Color">Color<br>
 
-    <canvas id="canvas" width="925" height="600" style="margin-left:10px;">
-        <p>Browser doesn't support canvas element.</p>
-    </canvas>
-
+            <p id="card-search-status" class="center">&nbsp;</p>
         </div>
-
+    </div>
 </div>
 
-</@page>
+<canvas id="canvas_main" width="100" height="100">
+    <p>Browser doesn't support canvas element.</p>
+</canvas>
+
+</body>
+</html>
