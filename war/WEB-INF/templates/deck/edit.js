@@ -1,18 +1,51 @@
 /*
- * Array to hold the cards locally seen so far. Used to avoid
- * requesting the same (non-existant) card again and again,
- * and to make sure no card is added more than once.
+ * Constants
  */
-var cardHash = new Hash();
-var selectedCard = undefined;
+
+var CONSTANTS = {
+    CONST_STATUS_HIDDEN: "hidden",
+    CONST_STATUS_PUBLIC: "public",
+    GUI: {
+        sourceWidth: 220,
+        sourceHeight: 314,
+        sx: 4,
+        sy: 4,
+        width: 212, //this.sourceWidth - 2 * this.sx,
+        height: 306, // this.sourceHeight - 2 * this.sy,
+        horizontalPadding: 19,
+        verticalPadding: 27
+    }
+};
 
 /*
- * GLOBAL VARIABLES
+ * Data objects
  */
 
-var cols = new Array();
-var highlighted = { x: undefined, y: undefined };
-var selected = { x: undefined, y: undefined };
+var DATA = {
+    cards: new Hash(),
+    transportable_deck: new Hash()
+};
+
+/*
+ * GUI memory
+ */
+
+var GUI = {
+    card_grid: new Array(), // card_grid[x][y]
+    highlighted_index: undefined, // { x: ?, y: ? }
+    selected_index: undefined, // { x: ?, y: ? }
+    selected_card: undefined, // *
+    pending_card: undefined, // *
+    count: {
+        cards: 0,
+        lands: 0,
+        creatures: 0
+    }
+};
+
+/*
+ * Card data type
+ */
 
 function SimpleCard(id, cardName, manaCost, convertedManaCost, types, price, count) {
     this.id = id;
@@ -26,44 +59,45 @@ function SimpleCard(id, cardName, manaCost, convertedManaCost, types, price, cou
     this.image.src = "${rc.getContextPath()}/services/card/image/" + id + "/thumbnail";
 }
 
-function get_colour_images(mana_cost) {
-    var span = Builder.node('span');
-    var mana_array = mana_cost.split(",");
+/*
+ ***************************************************************
+ ************************** FUNCTIONS **************************
+ ***************************************************************
+ */
 
-    mana_array.each(function(symbol) {
-        if (!symbol.isUndefined && symbol.length > 0) {
-            span.appendChild(Builder.node('img',
-            {src: "${rc.getContextPath()}/static/images/symbols/" + symbol + ".gif" }));
-        }
-    });
-
-    return span;
-}
-
-function decorate_price(price, locale) {
-    var result = price.toFixed(2);
-    if (locale == "da_DK") {
-        result = result.split(".")[0] + "," + result.split(".")[1];
-        result += " kr.";
-    } else if (locale == "en_GB") {
-        result = "&pound;" + result;
-    } else if (locale == "en_US") {
-        result = "$" + result;
+function update_publish_status(optional_status) {
+    if (optional_status != undefined) {
+        DATA.transportable_deck.set("status", optional_status);
     }
-    return result;
+    var status = DATA.transportable_deck.get("status").toLowerCase();
+    if (status.indexOf("hidden") != -1) {
+        $("publish-button").value = "Publish";
+    } else {
+        $("publish-button").value = "Hide";
+    }
 }
 
-var pendingCard = "";
+function update_selected_card(card) {
+    GUI.selected_card = card;
+    show_card(card, $('search-input'));
+    var ctx = $("canvas_card").getContext("2d");
+    prim_draw(ctx, card, 0, 0, CONSTANTS.GUI.height);
+}
+
+function show_card(card, search_input) {
+    GUI.selected_card = card;
+    search_input.value = card.cardName;
+}
 
 function request_card_proxy(card_name) {
-    request_card(card_name, $('card-name'), $('card-image'), $('card-price'), undefined, $('card-search-status'));
+    request_card(card_name, undefined, $('card-search-status'));
 }
 
 function request_card_proxy_no_increment(card_name) {
-    request_card(card_name, $('card-name'), $('card-image'), $('card-price'), "true", $('card-search-status'));
+    request_card(card_name, "true", $('card-search-status'));
 }
 
-function request_card(card_name, card_name_text, card_image_img, card_price_text, do_not_increment, card_search_status) {
+function request_card(card_name, do_not_increment, card_search_status) {
     // trim leading and trailing whitespace
     card_name = card_name.replace(/^\s+|\s+$/g, '');
 
@@ -77,44 +111,35 @@ function request_card(card_name, card_name_text, card_image_img, card_price_text
 
     var key = card_name.toLowerCase();
 
-    if (cardHash.get(key) != undefined) {
-        // no need to request it, we already have it
-        selectedCard = cardHash.get(key);
+    if (DATA.cards.get(key) != undefined) {
         if (do_not_increment == undefined) {
             // we were not asked to avoid incrementing, so let's do it
-            increment_card_count(selectedCard);
-        } else {
-            // instead of incrementing we just showHandler the card (also a side-effect of inc)
-            show_card_proxy(cardHash.get(key));
+            increment_card_count(DATA.cards.get(key));
         }
-
-        // no need to request it, we already have it
-        show_card_proxy(cardHash.get(key));
+        update_selected_card(DATA.cards.get(key));
         return;
     }
 
     new Ajax.Request(url, {
         method: 'get',
         onCreate: function() {
-            // Put a nice little loading graphics up
-            card_search_status.update("Searching for `" + card_name + "`.. <img src=\"${rc.getContextPath()}/static/images/site/progress-running.gif\"/>");
-            pendingCard = card_name;
+            GUI.pending_card = card_name;
         },
         onSuccess: function(transport) {
             var card = transport.responseJSON;
-            if (card.cardName.toLowerCase() != pendingCard.toLowerCase()) {
+            if (card.cardName.toLowerCase() != GUI.pending_card.toLowerCase()) {
                 return;
             }
             if (card.exists != "true") {
-                card_search_status.update("Could not find <b>" + card.cardName + "</b>.");
+                card_search_status.update("Could not find " + card.cardName + ".");
                 return;
             }
 
             card_search_status.update("&nbsp;");
 
             // Add an entry for the card so we don't overwrite
-            if (cardHash.get(key) == undefined) {
-                cardHash.set(key, new SimpleCard(
+            if (DATA.cards.get(key) == undefined) {
+                DATA.cards.set(key, new SimpleCard(
                         card.id,
                         card.cardName,
                         card.manaCost,
@@ -124,153 +149,16 @@ function request_card(card_name, card_name_text, card_image_img, card_price_text
                         0
                         ));
             }
-            show_card_proxy(cardHash.get(key));
+
+            update_selected_card(DATA.cards.get(key));
         }
     });
 }
-
-function show_card_proxy(card) {
-    show_card(card, $('card-name'), $('card-image'), $('card-price'), $('search-input'));
-}
-
-function show_card(card, card_name_text, card_image_img, card_price_text, search_input) {
-    selectedCard = card;
-    var price = parseFloat(card.price);
-    card_image_img.src = "${rc.getContextPath()}/services/card/image/" + card.id;
-    //card_name_text.update(Builder.node('span', [card.cardName, Builder.node('br'), get_colour_images(card.manaCost)]));
-    card_price_text.update(decorate_price(price, "en_GB"));
-    search_input.value = card.cardName;
-}
-
-function update_card(card) {
-    add_to_list_proxy(card);
-}
-
-function add_to_list_proxy(card) {
-    add_to_list(card, $('cards-count'),
-            $('creatures-count'), $('creatures-ul'),
-            $('lands-count'), $('lands-ul'),
-            $('spells-count'), $('spells-ul'));
-}
-
-function add_to_list(card, cards_count_box, creatures_count_box, creatures_list_box, lands_count_box, lands_list_box, spells_count_box, spells_list_box) {
-    var types = card.types.toLowerCase();
-    if (types.indexOf("creature") != -1) {
-        add_to_list_helper(card, creatures_count_box, creatures_list_box);
-    } else if (types.indexOf("land") != -1) {
-        add_to_list_helper(card, lands_count_box, lands_list_box);
-    } else {
-        add_to_list_helper(card, spells_count_box, spells_list_box);
-    }
-    cards_count_box.update(get_card_count() + " cards");
-    //$('card_' + card.id).update(decorate_price(card.count * card.price, "en_GB"));
-}
-
-function get_card_count() {
-    var result = 0;
-    cardHash.each(function (pair) {
-        result += pair.value.count;
-    });
-    return result;
-}
-
-function form_input_is_int(input) {
-    return !isNaN(input) && parseInt(input) == input;
-}
-
-function build_element_card_name(card) {
-    var element = Builder.node('a', { href: '' }, card.cardName);
-    element.observe('click', function(e) {
-        e.stop();
-        show_card_proxy(card);
-    });
-    return element;
-}
-
-function build_element_count(card) {
-    var element = Builder.node('input',
-    { id: 'card_' + card.id, name: 'card_' + card.id, value: card.count });
-    element.observe('change', function(e) {
-        if (form_input_is_int(element.value)) {
-            card.count = parseInt(element.value);
-            update_card(card);
-        } else {
-            element.value = card.count;
-        }
-    });
-    return element;
-}
-
-function build_element_price(card) {
-    // TODO: can't display pound tag...
-    return Builder.node('span', {id: 'price_' + card.id, class: 'price'}, [
-        decorate_price(card.count * card.price, "").unescapeHTML()]);
-}
-
-/**
- * Handles both adding new cards and updating existing cards.
- *
- * @param card
- * @param count_box
- * @param list_box
- */
-function add_to_list_helper(card, count_box, list_box) {
-    var cardElement = $('card_' + card.cardName);
-
-    if (cardElement == undefined) {
-        /*
-         * New card is about to be added.
-         */
-
-        // Prepare elements
-        var cardNameElement = build_element_card_name(card);
-        var cardCountInput = build_element_count(card);
-        var manaCostElement = get_colour_images(card.manaCost);
-        var priceElement = build_element_price(card);
-        var cardElementContents = Builder.node('li', [
-            cardCountInput, ' ',
-            cardNameElement, ' ',
-            manaCostElement, ' ',
-            priceElement]);
-        var cardElementDiv = Builder.node('div', {
-            id: 'card_' + card.cardName }, cardElementContents);
-
-        // Add the element
-        list_box.insert({ top: cardElementDiv });
-    }
-    else {
-        /*
-         * Update the existing card.
-         *
-         * What could have changed?
-         *
-         * 1) Price
-         * 2) Count
-         */
-        $('card_' + card.id).value = card.count;
-        $('price_' + card.id).update(decorate_price(card.count * card.price, "").unescapeHTML());
-
-        // Hide it if it's being removed
-        if (card.count <= 0) {
-            cardElement.hide();
-        } else {
-            cardElement.show();
-        }
-    }
-}
-
-/*
- * CONSTANTS
- */
-
-/* 220x314 */
-var sourceWidth = 220, sourceHeight = 314;
-var sx = 4, sy = 4, width = sourceWidth - 2 * sx, height = sourceHeight - 2 * sy;
-var horizontalPadding = 19, verticalPadding = 27;
 
 function get_position(e) {
     var obj = e.target;
-    var curleft = curtop = 0;
+    var curleft = 0;
+    var curtop = 0;
 
     if (obj.offsetParent) {
         do {
@@ -292,42 +180,39 @@ function highlightCursorPosition(e) {
 function activate(e) {
     var pos = get_position(e);
     var index = xy_to_index(pos.x, pos.y);
-    if (index != undefined && cols[index.x] != undefined && cols[index.x][index.y] != undefined) {
-        /*
-         decrement_card_count(cols[index.x][index.y]);
-         var canvas = document.getElementById("canvas");
-         var context = canvas.getContext("2d");
-         context.clearRect(0, 0, canvas.width, canvas.height);
-         */
-        selected = index;
+    if (index != undefined && GUI.card_grid[index.x] != undefined && GUI.card_grid[index.x][index.y] != undefined) {
+        if (GUI.selected_index != undefined && GUI.selected_index.x == index.x && GUI.selected_index.y == index.y) {
+            GUI.selected_index = undefined;
+            decrement_card_count(GUI.card_grid[index.x][index.y]);
+            var context = $("canvas_main").getContext("2d");
+            context.clearRect(0, 0, $("canvas_main").width, $("canvas_main").height);
+        } else {
+            GUI.selected_index = index;
+            update_selected_card(GUI.card_grid[index.x][index.y]);
+        }
     } else {
-        selected = { x: undefined, y: undefined};
+        GUI.selected_index = undefined;
     }
     redraw();
 }
 
-
-/*
- * FUNCTIONS
- */
-
 function xy_to_index(x, y) {
-    var col_index = parseInt(x / parseInt(width + horizontalPadding));
-    var col_rem = x % parseInt(width + horizontalPadding);
+    var col_index = parseInt(x / parseInt(CONSTANTS.GUI.width + CONSTANTS.GUI.horizontalPadding));
+    var col_rem = x % parseInt(CONSTANTS.GUI.width + CONSTANTS.GUI.horizontalPadding);
 
-    var col_arr = cols[col_index];
-    if (col_arr == undefined || col_rem > width) {
+    var col_arr = GUI.card_grid[col_index];
+    if (col_arr == undefined || col_rem > CONSTANTS.GUI.width) {
         return undefined;
     }
 
     // all cards but one show only vertical padding area (name part)
-    var row_pixel_length = (col_arr.length - 1) * verticalPadding + height;
+    var row_pixel_length = (col_arr.length - 1) * CONSTANTS.GUI.verticalPadding + CONSTANTS.GUI.height;
 
     if (y > row_pixel_length) {
         return undefined;
     }
 
-    var row_index = parseInt(y / verticalPadding);
+    var row_index = parseInt(y / CONSTANTS.GUI.verticalPadding);
     if (row_index >= col_arr.length) {
         row_index = col_arr.length - 1;
     }
@@ -336,91 +221,131 @@ function xy_to_index(x, y) {
 }
 
 function highlight(x, y) {
-    highlighted = xy_to_index(x, y);
+    GUI.highlighted_index = xy_to_index(x, y);
+    if (GUI.highlighted_index != undefined) {
+        $("canvas_main").style.cursor = "pointer";
+    } else {
+        $("canvas_main").style.cursor = "default";
+    }
     redraw();
 }
 
 function is_highlighted(x, y) {
-    return highlighted != undefined && x == highlighted.x && y == highlighted.y;
+    return GUI.highlighted_index != undefined && x == GUI.highlighted_index.x && y == GUI.highlighted_index.y;
 }
 
-function draw(canvas, context, card, x, y, only_border) {
-    var h = only_border ? verticalPadding : height;
-    context.drawImage(card.image, sx, sy, width, h,
-            width * x + horizontalPadding * x, verticalPadding * y, width, h);
+function prim_draw(context, card, x, y, height) {
+    context.drawImage(card.image, CONSTANTS.GUI.sx, CONSTANTS.GUI.sy, CONSTANTS.GUI.width, height,
+            CONSTANTS.GUI.width * x + CONSTANTS.GUI.horizontalPadding * x, CONSTANTS.GUI.verticalPadding * y, CONSTANTS.GUI.width, height);
+}
+
+function draw(context, card, x, y, only_border) {
+    var h = only_border ? CONSTANTS.GUI.verticalPadding : CONSTANTS.GUI.height;
+    prim_draw(context, card, x, y, h);
 
     if (is_highlighted(x, y)) {
-        var ipic = context.getImageData(width * x + horizontalPadding * x, verticalPadding * y, width, h);
-        var idata = ipic.data;
-        for (var i = 0; i < idata.length; i += 4) {
-            idata[i + 3] = 200;
+        var ipic1 = context.getImageData(CONSTANTS.GUI.width * x + CONSTANTS.GUI.horizontalPadding * x, CONSTANTS.GUI.verticalPadding * y, CONSTANTS.GUI.width, h);
+        var idata1 = ipic1.data;
+        for (var i = 0; i < idata1.length; i += 4) {
+            idata1[i + 3] = 200;
         }
-        context.putImageData(ipic, width * x + horizontalPadding * x, verticalPadding * y);
+        context.putImageData(ipic1, CONSTANTS.GUI.width * x + CONSTANTS.GUI.horizontalPadding * x, CONSTANTS.GUI.verticalPadding * y);
     }
 
-    //if (card.types.
+    if (GUI.selected_index != undefined && GUI.selected_index.x == x && GUI.selected_index.y == y) {
+        var ipic = context.getImageData(CONSTANTS.GUI.width * x + CONSTANTS.GUI.horizontalPadding * x, CONSTANTS.GUI.verticalPadding * y, CONSTANTS.GUI.width, h);
+        var idata = ipic.data;
+        for (var j = 0; j < idata.length; j += 4) {
+            idata[j + 2] = 255;
+        }
+        context.putImageData(ipic, CONSTANTS.GUI.width * x + CONSTANTS.GUI.horizontalPadding * x, CONSTANTS.GUI.verticalPadding * y);
+    }
+
     var types = card.types.toLowerCase();
     if (types.indexOf("basic land") != -1) {
         context.font = "bold 13px sans-serif";
         context.textAlign = "right";
         context.textBaseline = "top";
-        context.fillText(card.count, width * x + horizontalPadding * x + width - 10, verticalPadding * y + 10);
+        context.fillText(card.count, CONSTANTS.GUI.width * x + CONSTANTS.GUI.horizontalPadding * x + CONSTANTS.GUI.width - 10, CONSTANTS.GUI.verticalPadding * y + 10);
     }
 }
 
 function redraw() {
-    var canvas = document.getElementById("canvas");
-    var context = canvas.getContext("2d");
-
-    for (var x = 0; x < 4; x++) { /* todo, more than 4 columns */
-        if (cols[x] == undefined) {
+    var context = $("canvas_main").getContext("2d");
+    for (var x = 0; x < GUI.card_grid.length; x++) {
+        if (GUI.card_grid[x] == undefined) {
             continue;
         }
-        for (var y = 0; y < cols[x].length; y++) {
-            var card = cols[x][y];
-            if (y == cols[x].length - 1) {
-                draw(canvas, context, card, x, y, false);
+        for (var y = 0; y < GUI.card_grid[x].length; y++) {
+            var card = GUI.card_grid[x][y];
+
+            if (y == GUI.card_grid[x].length - 1) {
+                draw(context, card, x, y, false);
             } else {
-                draw(canvas, context, card, x, y, true);
+                draw(context, card, x, y, true);
             }
         }
-    }
-
-    if (selected != undefined && selected.x != undefined && selected.y != undefined) {
-        var card = cols[selected.x][selected.y];
-        draw(canvas, context, card, selected.x, selected.y, false);
     }
 }
 
 function update_columns() {
-    cols = new Array();
-    cardHash.each(function(pair) {
+
+    var cardList = new Hash();
+    GUI.count.cards = GUI.count.lands = GUI.count.creatures = 0;
+
+    GUI.card_grid = new Array();
+    DATA.cards.each(function(pair) {
         var card = pair.value;
-        var column = Math.max(card.convertedManaCost - 1, 0);
-        if (cols[column] == undefined) {
-            cols[column] = new Array();
-        }
-        var types = card.types.toLowerCase();
-        if (types.indexOf("basic land") != -1) {
-            cols[column][cols[column].length] = card;
+        if (card.count == 0) {
+            /* "each" does not provide special "continue" syntax */
         } else {
-            for (var i = 1; i <= card.count; ++i) {
-                cols[column][cols[column].length] = card;
+            var column = Math.max(card.convertedManaCost - 1, 0);
+            if (GUI.card_grid[column] == undefined) {
+                GUI.card_grid[column] = new Array();
             }
+
+            var types = card.types.toLowerCase();
+            if (types.indexOf("basic land") != -1) {
+                GUI.card_grid[column][GUI.card_grid[column].length] = card;
+            } else {
+                for (var i = 1; i <= card.count; ++i) {
+                    GUI.card_grid[column][GUI.card_grid[column].length] = card;
+                }
+            }
+
+            if (types.indexOf("land") != -1) {
+                GUI.count.lands += card.count;
+            } else if (types.indexOf("creature") != -1) {
+                GUI.count.creatures += card.count;
+            }
+
+            GUI.count.cards += card.count;
+
+            cardList.set("" + card.id, "" + card.count);
         }
     });
 
-    cols = cols.compact();
+    DATA.transportable_deck.set("card_list", cardList.toJSON());
+    DATA.transportable_deck.set("title", $("title-input").value);
+
+    $("count-cards").update(GUI.count.cards);
+    $("count-lands").update(GUI.count.lands);
+    $("count-creatures").update(GUI.count.creatures);
+
+    GUI.card_grid = GUI.card_grid.compact();
 
     var max = 0;
-    for (var i = 0; i < 4; ++i) {
-        if (cols[i] == undefined) {
+    for (var i = 0; i < GUI.card_grid.length; ++i) {
+        if (GUI.card_grid[i] == undefined) {
             continue;
         }
-        max = Math.max(cols[i].length, max);
+        max = Math.max(GUI.card_grid[i].length, max);
     }
 
-    $('canvas').height = max * verticalPadding + height;
+    GUI.card_grid = GUI.card_grid.compact();
+
+    $("canvas_main").height = max * CONSTANTS.GUI.verticalPadding + CONSTANTS.GUI.height;
+    $("canvas_main").width = GUI.card_grid.length * (CONSTANTS.GUI.horizontalPadding + CONSTANTS.GUI.width) - CONSTANTS.GUI.horizontalPadding;
 }
 
 function increment_card_count(card) {
@@ -438,15 +363,37 @@ function alter_card_count(card, count) {
         }
 
         card.count = count;
-        show_card_proxy(card);
-        update_card(card);
+        update_selected_card(card);
 
         update_columns();
         redraw();
     }
 }
 
-document.observe('dom:loaded', function() {
+function save_deck() {
+    new Ajax.Request("${rc.getContextPath()}/services/deck/save/${deck.id?c}/key/${deckKey}", {
+        method: 'post',
+        postBody: DATA.transportable_deck.toJSON(),
+        contentType: "application/json",
+        onCreate: function() {
+            $("publish-button").disable();
+            $("save-button").disable();
+        },
+        onComplete: function() {
+            $("publish-button").enable();
+            $("save-button").enable();
+            update_publish_status();
+        }
+    });
+}
+
+/*
+ ***************************************************************
+ ********************** INITIALIZATION *************************
+ ***************************************************************
+ */
+
+window.onload = function() {
     /**
      * Populate the lists with cards already in the deck.
      */
@@ -459,7 +406,7 @@ document.observe('dom:loaded', function() {
 
             cards.each(function(card) {
                 var key = card.cardName.toLowerCase();
-                cardHash.set(key, new SimpleCard(
+                DATA.cards.set(key, new SimpleCard(
                         card.id,
                         card.cardName,
                         card.manaCost,
@@ -468,7 +415,6 @@ document.observe('dom:loaded', function() {
                         card.price,
                         card.count
                         ));
-                add_to_list_proxy(cardHash.get(key));
             });
 
             update_columns();
@@ -483,24 +429,22 @@ document.observe('dom:loaded', function() {
             '${rc.getContextPath()}/services/card/suggestion',
     {
         afterUpdateElement: function () {
-            var proposed_card_name = $('search-input').value;
-            request_card_proxy_no_increment(proposed_card_name);
+            request_card_proxy_no_increment($('search-input').value);
         }
     });
 
-    /**
-     * Listens for KEY_RETURN.
-     *
-     * If the suggestion box is not showing, try to add the card!
+    /*
+     * Update interface & Initialize data set
      */
+    DATA.transportable_deck.set("id", "${deck.id?c}");
+    DATA.transportable_deck.set("status", "${deck.status}");
+    update_publish_status("${deck.status}");
+
     $('search-input').observe('keyup', function(e) {
         e.stop();
 
         if (e.keyCode == Event.KEY_RETURN) {
-            var proposed_card_name = $('search-input').value;
-            if (!$('suggestion-area').visible()) {
-                request_card_proxy(proposed_card_name);
-            }
+            request_card_proxy($('search-input').value);
         }
     });
 
@@ -512,26 +456,40 @@ document.observe('dom:loaded', function() {
         }
     });
 
-    /**
-     * Normally the save button is not a submit button,
-     * but whence it is clicked it becomes just that.
-     *
-     * This prevents return from causing decks to be
-     * saved.
+
+    /*
+     * Ready the canvas
      */
-    $('save-button').observe('click', function(event) {
-        $('save-button').type = "submit";
+    $("canvas_main").observe('click', activate);
+    $("canvas_main").observe('mousemove', highlightCursorPosition);
+
+    $("canvas_card").observe("click", function (e) {
+        if (GUI.selected_card != undefined) {
+            increment_card_count(GUI.selected_card);
+        }
     });
+
+    $("save-button").observe("click", function (e) {
+        save_deck();
+    });
+
+    $("publish-button").observe("click", function (e) {
+        DATA.transportable_deck.set("status",
+                DATA.transportable_deck.get("status").toLowerCase().indexOf("hidden") != -1 ?
+                        CONSTANTS.CONST_STATUS_PUBLIC : CONSTANTS.CONST_STATUS_HIDDEN);
+        save_deck();
+    });
+
+    /*
+     * Draw GUI for the first time
+     */
+    redraw();
 
     /*
      * Move the cursor to the input box.
      */
     $('search-input').activate();
+};
 
-    /*
-     * Ready the canvas
-     */
-    $('canvas').observe('click', activate);
-    $('canvas').observe('mousemove', highlightCursorPosition);
-});
+
 
