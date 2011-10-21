@@ -44,11 +44,10 @@ class ImageCallable implements Callable<byte[]>
     {
         final String setCode = card.getSetCode();
         final String cardNumber = card.getCardNumber();
-        if (StringUtils.isBlank(cardNumber) && StringUtils.isBlank(setCode)) {
-            return findByName(card);
-        }
-        else if (StringUtils.isBlank(cardNumber) && !StringUtils.isBlank(setCode)) {
+        if (StringUtils.isBlank(cardNumber) && !StringUtils.isBlank(setCode)) {
             return findBySet(card);
+        } else if (StringUtils.isBlank(cardNumber) || StringUtils.isBlank(setCode)) {
+            return findByName(card);
         }
         return findByCardNumber(card);
     }
@@ -131,7 +130,7 @@ class ImageCallable implements Callable<byte[]>
         // eat all unnecessary whitespace
         html = html.replaceAll("\\s+", " ");
 
-        Pattern p = Pattern.compile("(/scans/en/\\w+/\\d+\\.jpg)");
+        Pattern p = Pattern.compile("(/scans/en/\\w+/\\w+\\.jpg)");
         Matcher matcher = p.matcher(html);
 
         if (matcher.find()) {
